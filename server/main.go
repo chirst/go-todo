@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"todo/adding"
 	"todo/http/rest"
@@ -13,5 +14,6 @@ func main() {
 	listingService := listing.NewService(todosRepo)
 	addingService := adding.NewService(todosRepo)
 	router := rest.Handler(listingService, addingService)
-	http.ListenAndServe(":3000", router)
+	fmt.Println("started server on localhost:3000")
+	http.ListenAndServe("localhost:3000", router)
 }

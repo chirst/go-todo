@@ -21,16 +21,28 @@ func Handler(listingService *listing.Service, addingService *adding.Service) htt
 
 func getTodos(service *listing.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
 		todos := service.GetTodos()
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(todos)
 	}
 }
 
 func addTodo(service *adding.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		decoder := json.NewDecoder(r.Body)
+		var bodyTodo adding.Todo
+		err := decoder.Decode(&bodyTodo)
+		if err != nil {
+			http.Error(w, http.StatusText(400), 400)
+			return
+		}
+
+		newTodo, err := service.AddTodo(bodyTodo)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
-		newTodo := service.AddTodo()
 		json.NewEncoder(w).Encode(newTodo)
 	}
 }

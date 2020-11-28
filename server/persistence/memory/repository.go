@@ -17,8 +17,8 @@ func (s *Storage) GetTodos() []listing.Todo {
 	return ret
 }
 
-func (s *Storage) AddTodo() adding.Todo {
-	newTodo := Todo{Name: "do stuff"}
+func (s *Storage) AddTodo(todo adding.Todo) adding.Todo {
+	newTodo := Todo{Name: todo.Name}
 	s.todos = append(s.todos, newTodo)
 	return adding.Todo{Name: newTodo.Name}
 }

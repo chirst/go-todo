@@ -5,10 +5,12 @@ import (
 	"todo/listing"
 )
 
+// Storage ...
 type Storage struct {
 	todos []Todo
 }
 
+// GetTodos ...
 func (s *Storage) GetTodos() []listing.Todo {
 	ret := []listing.Todo{}
 	for _, todo := range s.todos {
@@ -17,6 +19,7 @@ func (s *Storage) GetTodos() []listing.Todo {
 	return ret
 }
 
+// AddTodo ...
 func (s *Storage) AddTodo(todo adding.Todo) *adding.Todo {
 	newTodo := Todo{Name: todo.Name}
 	s.todos = append(s.todos, newTodo)

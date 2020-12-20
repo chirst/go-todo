@@ -4,24 +4,15 @@ import (
 	"encoding/json"
 	"net/http"
 	"todo/adding"
-	"todo/auth"
 	"todo/listing"
 
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
 )
 
-// Handler ...
-func Handler(listingService *listing.Service, addingService *adding.Service) http.Handler {
-	router := chi.NewRouter()
-
-	router.Use(middleware.Logger)
-	router.Use(auth.Verifier)
-	router.Use(auth.Authenticator)
-
+// Todos ...
+func Todos(router chi.Router, listingService *listing.Service, addingService *adding.Service) {
 	router.Get("/todos", getTodos(listingService))
 	router.Post("/todos", addTodo(addingService))
-	return router
 }
 
 func getTodos(service *listing.Service) func(w http.ResponseWriter, r *http.Request) {

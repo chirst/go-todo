@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"todo/adding"
 	"todo/auth"
 	"todo/http/rest"
-	"todo/listing"
 	"todo/persistence/memory"
+	"todo/todo"
 	"todo/user"
 
 	"github.com/go-chi/chi"
@@ -17,8 +16,7 @@ import (
 func main() {
 	todosRepo := new(memory.TodoStorage)
 	usersRepo := new(memory.UserStorage)
-	listingService := listing.NewService(todosRepo)
-	addingService := adding.NewService(todosRepo)
+	todoService := todo.NewService(todosRepo)
 	usersService := user.NewService(usersRepo)
 
 	router := chi.NewRouter()
@@ -29,7 +27,7 @@ func main() {
 		r.Use(auth.Verifier)
 		r.Use(auth.Authenticator)
 
-		rest.Todos(r, listingService, addingService)
+		rest.Todos(r, todoService)
 	})
 
 	// unprotected routes

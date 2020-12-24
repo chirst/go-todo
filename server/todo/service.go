@@ -1,4 +1,4 @@
-package adding
+package todo
 
 import (
 	"errors"
@@ -11,6 +11,7 @@ var ErrNameRequired = errors.New("Name is required")
 // Repository ...
 type Repository interface {
 	AddTodo(domain.Todo) *domain.Todo
+	GetTodos() []domain.Todo
 }
 
 // Service ...
@@ -29,4 +30,9 @@ func (s *Service) AddTodo(todo domain.Todo) (*domain.Todo, error) {
 		return nil, ErrNameRequired
 	}
 	return s.r.AddTodo(todo), nil
+}
+
+// GetTodos ...
+func (s *Service) GetTodos() []domain.Todo {
+	return s.r.GetTodos()
 }

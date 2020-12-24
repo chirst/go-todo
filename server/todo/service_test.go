@@ -1,4 +1,4 @@
-package adding
+package todo
 
 import (
 	"testing"
@@ -37,5 +37,20 @@ func TestAddBlankName(t *testing.T) {
 	}
 	if addedTodo != nil {
 		t.Errorf("got %v want nil", addedTodo)
+	}
+}
+
+func TestGetTodos(t *testing.T) {
+	r := new(memory.TodoStorage)
+	s := NewService(r)
+	todo := domain.Todo{
+		Name: "do stuff",
+	}
+	s.AddTodo(todo)
+	s.AddTodo(todo)
+	s.AddTodo(todo)
+	todos := s.GetTodos()
+	if len(todos) != 3 {
+		t.Errorf("got %v want %v", len(todos), 3)
 	}
 }

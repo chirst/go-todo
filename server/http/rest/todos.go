@@ -3,20 +3,19 @@ package rest
 import (
 	"encoding/json"
 	"net/http"
-	"todo/adding"
 	"todo/domain"
-	"todo/listing"
+	"todo/todo"
 
 	"github.com/go-chi/chi"
 )
 
 // Todos ...
-func Todos(router chi.Router, listingService *listing.Service, addingService *adding.Service) {
-	router.Get("/todos", getTodos(listingService))
-	router.Post("/todos", addTodo(addingService))
+func Todos(router chi.Router, todoService *todo.Service) {
+	router.Get("/todos", getTodos(todoService))
+	router.Post("/todos", addTodo(todoService))
 }
 
-func getTodos(service *listing.Service) func(w http.ResponseWriter, r *http.Request) {
+func getTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todos := service.GetTodos()
 		w.Header().Set("Content-Type", "application/json")
@@ -24,7 +23,7 @@ func getTodos(service *listing.Service) func(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-func addTodo(service *adding.Service) func(w http.ResponseWriter, r *http.Request) {
+func addTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
 		var bodyTodo domain.Todo

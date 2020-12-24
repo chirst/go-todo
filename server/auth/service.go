@@ -39,7 +39,7 @@ func FromContext(ctx context.Context) (*jwt.Token, jwt.MapClaims, error) {
 	return jwtauth.FromContext(ctx)
 }
 
-// GetClaims ...
+// GetClaims gets claims
 func GetClaims(ctx context.Context) jwt.MapClaims {
 	_, claims, _ := jwtauth.FromContext(ctx)
 	return claims

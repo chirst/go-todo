@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-// Todos ...
+// Todos creates endpoints and handlers for todos
 func Todos(router chi.Router, todoService *todo.Service) {
 	router.Get("/todos", getTodos(todoService))
 	router.Post("/todos", addTodo(todoService))

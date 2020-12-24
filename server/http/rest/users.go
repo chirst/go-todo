@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
+// Users creates endpoints and handlers for users
 func Users(router chi.Router, usersService *user.Service) {
 	router.Post("/users", addUser(usersService))
 }

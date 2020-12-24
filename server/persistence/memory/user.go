@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"todo/user"
+	"todo/domain"
 )
 
 type User struct {
@@ -14,8 +14,8 @@ type UserStorage struct {
 	users []User
 }
 
-func (s *UserStorage) AddUser(u user.User) *user.User {
+func (s *UserStorage) AddUser(u domain.User) *domain.User {
 	newUser := User{u.ID, u.Name, u.Password}
 	s.users = append(s.users, newUser)
-	return &user.User{ID: u.ID, Name: u.Name, Password: u.Password}
+	return &domain.User{ID: u.ID, Name: u.Name, Password: u.Password}
 }

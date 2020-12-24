@@ -1,8 +1,10 @@
 package listing
 
+import "todo/domain"
+
 // Repository ...
 type Repository interface {
-	GetTodos() []Todo
+	GetTodos() []domain.Todo
 }
 
 // Service ...
@@ -16,6 +18,6 @@ func NewService(r Repository) *Service {
 }
 
 // GetTodos ...
-func (s *Service) GetTodos() []Todo {
+func (s *Service) GetTodos() []domain.Todo {
 	return s.r.GetTodos()
 }

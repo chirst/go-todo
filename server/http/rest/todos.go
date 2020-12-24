@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"todo/adding"
+	"todo/domain"
 	"todo/listing"
 
 	"github.com/go-chi/chi"
@@ -26,7 +27,7 @@ func getTodos(service *listing.Service) func(w http.ResponseWriter, r *http.Requ
 func addTodo(service *adding.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
-		var bodyTodo adding.Todo
+		var bodyTodo domain.Todo
 		err := decoder.Decode(&bodyTodo)
 		if err != nil {
 			http.Error(w, http.StatusText(400), 400)

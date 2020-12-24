@@ -1,9 +1,6 @@
 package memory
 
-import (
-	"todo/adding"
-	"todo/listing"
-)
+import "todo/domain"
 
 // Todo ...
 type Todo struct {
@@ -16,17 +13,17 @@ type TodoStorage struct {
 }
 
 // GetTodos ...
-func (s *TodoStorage) GetTodos() []listing.Todo {
-	ret := []listing.Todo{}
+func (s *TodoStorage) GetTodos() []domain.Todo {
+	ret := []domain.Todo{}
 	for _, todo := range s.todos {
-		ret = append(ret, listing.Todo{Name: todo.Name})
+		ret = append(ret, domain.Todo{Name: todo.Name})
 	}
 	return ret
 }
 
 // AddTodo ...
-func (s *TodoStorage) AddTodo(todo adding.Todo) *adding.Todo {
+func (s *TodoStorage) AddTodo(todo domain.Todo) *domain.Todo {
 	newTodo := Todo{Name: todo.Name}
 	s.todos = append(s.todos, newTodo)
-	return &adding.Todo{Name: newTodo.Name}
+	return &domain.Todo{Name: newTodo.Name}
 }

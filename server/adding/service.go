@@ -1,13 +1,16 @@
 package adding
 
-import "errors"
+import (
+	"errors"
+	"todo/domain"
+)
 
 // ErrNameRequired ...
 var ErrNameRequired = errors.New("Name is required")
 
 // Repository ...
 type Repository interface {
-	AddTodo(Todo) *Todo
+	AddTodo(domain.Todo) *domain.Todo
 }
 
 // Service ...
@@ -21,7 +24,7 @@ func NewService(r Repository) *Service {
 }
 
 // AddTodo is for adding a new Todo
-func (s *Service) AddTodo(todo Todo) (*Todo, error) {
+func (s *Service) AddTodo(todo domain.Todo) (*domain.Todo, error) {
 	if todo.Name == "" {
 		return nil, ErrNameRequired
 	}

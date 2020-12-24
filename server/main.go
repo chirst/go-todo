@@ -8,21 +8,24 @@ import (
 	"todo/http/rest"
 	"todo/listing"
 	"todo/persistence/memory"
+	"todo/user"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )
 
 func main() {
-	todosRepo := new(memory.Storage)
+	todosRepo := new(memory.TodoStorage)
+	usersRepo := new(memory.UserStorage)
 	listingService := listing.NewService(todosRepo)
 	addingService := adding.NewService(todosRepo)
+	usersService := user.NewService(usersRepo)
 
 	router := chi.NewRouter()
+	router.Use(middleware.Logger)
 
 	// protected routes
 	router.Group(func(r chi.Router) {
-		r.Use(middleware.Logger)
 		r.Use(auth.Verifier)
 		r.Use(auth.Authenticator)
 
@@ -31,9 +34,10 @@ func main() {
 
 	// unprotected routes
 	router.Group(func(r chi.Router) {
-		rest.Users(r)
+		rest.Users(r, usersService)
 	})
 
-	fmt.Println("started server on localhost:3000")
-	http.ListenAndServe("localhost:3000", router)
+	address := "localhost:3000"
+	fmt.Printf("starting server on %s\n", address)
+	http.ListenAndServe(address, router)
 }

@@ -2,7 +2,7 @@ package user
 
 // Repository for users
 type Repository interface {
-	AddUser(User) *User
+	addUser(User) *User
 }
 
 // Service for users
@@ -21,5 +21,5 @@ func (s *Service) AddUser(name, password string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return s.r.AddUser(*u), nil
+	return s.r.addUser(*u), nil
 }

@@ -13,8 +13,8 @@ import (
 )
 
 func main() {
-	todosRepo := new(todo.TodoStorage)
-	usersRepo := new(user.UserStorage)
+	todosRepo := new(todo.MemoryRepository)
+	usersRepo := new(user.MemoryRepository)
 	todoService := todo.NewService(todosRepo)
 	usersService := user.NewService(usersRepo)
 
@@ -26,12 +26,13 @@ func main() {
 		r.Use(auth.Verifier)
 		r.Use(auth.Authenticator)
 
-		rest.Todos(r, todoService)
+		r.Get("/todos", rest.GetTodos(todoService))
+		r.Post("/todos", rest.AddTodo(todoService))
 	})
 
 	// unprotected routes
 	router.Group(func(r chi.Router) {
-		rest.Users(r, usersService)
+		r.Post("/users", (rest.AddUser(usersService)))
 	})
 
 	address := "localhost:3000"

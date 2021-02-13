@@ -4,17 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"todo/todo"
-
-	"github.com/go-chi/chi"
 )
 
-// Todos creates endpoints and handlers for todos
-func Todos(router chi.Router, todoService *todo.Service) {
-	router.Get("/todos", getTodos(todoService))
-	router.Post("/todos", addTodo(todoService))
-}
-
-func getTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
+// GetTodos returns all todos
+func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todos := service.GetTodos()
 		w.Header().Set("Content-Type", "application/json")
@@ -22,7 +15,8 @@ func getTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func addTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
+// AddTodo adds a todo
+func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
 		var bodyTodo todo.Todo

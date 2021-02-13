@@ -5,7 +5,7 @@ import (
 )
 
 func TestAddUser(t *testing.T) {
-	userStorage := new(UserStorage)
+	userStorage := new(MemoryRepository)
 	s := NewService(userStorage)
 	newUser, err := s.AddUser("gud name", "1234")
 	if err != nil {

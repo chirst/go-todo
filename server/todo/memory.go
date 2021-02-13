@@ -1,26 +1,17 @@
 package todo
 
-type todo struct {
-	Name string
-}
-
-// TodoStorage persists todos
-type TodoStorage struct {
-	todos []todo
+// MemoryRepository persists todos
+type MemoryRepository struct {
+	todos []Todo
 }
 
 // GetTodos gets all todos in storage
-func (s *TodoStorage) GetTodos() []Todo {
-	ret := []Todo{}
-	for _, t := range s.todos {
-		ret = append(ret, Todo{Name: t.Name})
-	}
-	return ret
+func (s *MemoryRepository) getTodos() []Todo {
+	return s.todos
 }
 
 // AddTodo adds a single todo to storage
-func (s *TodoStorage) AddTodo(t Todo) *Todo {
-	newTodo := todo{Name: t.Name}
-	s.todos = append(s.todos, newTodo)
-	return &Todo{Name: newTodo.Name}
+func (s *MemoryRepository) addTodo(t Todo) *Todo {
+	s.todos = append(s.todos, t)
+	return &Todo{Name: t.Name}
 }

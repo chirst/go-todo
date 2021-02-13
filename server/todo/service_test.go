@@ -5,7 +5,7 @@ import (
 )
 
 func TestAddTodo(t *testing.T) {
-	r := new(TodoStorage)
+	r := new(MemoryRepository)
 	s := NewService(r)
 	todo := Todo{
 		Name: "do stuff",
@@ -22,7 +22,7 @@ func TestAddTodo(t *testing.T) {
 }
 
 func TestAddBlankName(t *testing.T) {
-	r := new(TodoStorage)
+	r := new(MemoryRepository)
 	s := NewService(r)
 	todo := Todo{
 		Name: "",
@@ -39,7 +39,7 @@ func TestAddBlankName(t *testing.T) {
 }
 
 func TestGetTodos(t *testing.T) {
-	r := new(TodoStorage)
+	r := new(MemoryRepository)
 	s := NewService(r)
 	todo := Todo{
 		Name: "do stuff",

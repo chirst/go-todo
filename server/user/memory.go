@@ -1,19 +1,12 @@
 package user
 
-type user struct {
-	ID       int64
-	Name     string
-	Password string
-}
-
-// UserStorage persists users
-type UserStorage struct {
-	users []user
+// MemoryRepository persists users
+type MemoryRepository struct {
+	users []User
 }
 
 // AddUser saves a single user
-func (s *UserStorage) AddUser(u User) *User {
-	newUser := user{u.ID, u.Name, u.Password}
-	s.users = append(s.users, newUser)
+func (s *MemoryRepository) addUser(u User) *User {
+	s.users = append(s.users, u)
 	return &User{ID: u.ID, Name: u.Name, Password: u.Password}
 }

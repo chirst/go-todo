@@ -20,7 +20,10 @@ func NewService(r Repository) *Service {
 }
 
 // AddUser validates, creates, and adds the user to persistence
-func (s *Service) AddUser(name, password string) *domain.User {
-	u := domain.User{ID: 1, Name: name, Password: password}
-	return s.r.AddUser(u)
+func (s *Service) AddUser(name, password string) (*domain.User, error) {
+	u, err := domain.CreateUser(name, password)
+	if err != nil {
+		return nil, err
+	}
+	return s.r.AddUser(*u), nil
 }

@@ -3,7 +3,6 @@ package rest
 import (
 	"encoding/json"
 	"net/http"
-	"todo/domain"
 	"todo/user"
 
 	"github.com/go-chi/chi"
@@ -16,8 +15,11 @@ func Users(router chi.Router, usersService *user.Service) {
 
 func addUser(service *user.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		service.AddUser("gud", "1234")
-		user := domain.User{ID: 1, Name: "gud", Password: "1234"}
+		user, err := service.AddUser("gud", "1234")
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(user)
 	}

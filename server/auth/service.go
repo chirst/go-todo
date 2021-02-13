@@ -44,3 +44,9 @@ func GetClaims(ctx context.Context) jwt.MapClaims {
 	_, claims, _ := jwtauth.FromContext(ctx)
 	return claims
 }
+
+// GetTokenForUser returns a token with the given claims
+func GetTokenForUser(userID int64) (*jwt.Token, string, error) {
+	tokenAuth = jwtauth.New("HS256", []byte("secret"), nil)
+	return tokenAuth.Encode(jwt.MapClaims{"userID": userID})
+}

@@ -33,6 +33,7 @@ func main() {
 	// unprotected routes
 	router.Group(func(r chi.Router) {
 		r.Post("/users", rest.AddUser(usersService))
+		r.Post("/login", rest.Login(usersService))
 	})
 
 	address := "localhost:3000"

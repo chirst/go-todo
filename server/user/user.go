@@ -9,8 +9,7 @@ type User struct {
 	Password string `json:"-"`
 }
 
-// CreateUser creates a valid user
-func CreateUser(name, password string) (*User, error) {
+func createUser(name, password string) (*User, error) {
 	if name == "" {
 		return nil, errors.New("name required")
 	}

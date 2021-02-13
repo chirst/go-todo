@@ -1,8 +1,14 @@
 package user
 
+import (
+	"errors"
+	"todo/auth"
+)
+
 // Repository for users
 type Repository interface {
 	addUser(User) *User
+	getUserByName(string) *User
 }
 
 // Service for users
@@ -17,9 +23,26 @@ func NewService(r Repository) *Service {
 
 // AddUser validates, creates, and adds the user to persistence
 func (s *Service) AddUser(name, password string) (*User, error) {
-	u, err := CreateUser(name, password)
+	u, err := createUser(name, password)
 	if err != nil {
 		return nil, err
 	}
 	return s.r.addUser(*u), nil
+}
+
+// GetUserTokenString returns an auth token string for the first user matching the
+// given name and password. It returns nil for anything invalid.
+func (s *Service) GetUserTokenString(name, password string) (*string, error) {
+	u := s.r.getUserByName(name)
+	if u == nil {
+		return nil, errors.New("user not found")
+	}
+	if u.Password != password {
+		return nil, errors.New("password not matching")
+	}
+	_, tokenString, err := auth.GetTokenForUser(u.ID)
+	if err != nil {
+		return nil, errors.New("unable to generate token")
+	}
+	return &tokenString, nil
 }

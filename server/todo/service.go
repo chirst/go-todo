@@ -2,7 +2,6 @@ package todo
 
 import (
 	"errors"
-	"todo/domain"
 )
 
 // ErrNameRequired for an empty todo name
@@ -10,8 +9,8 @@ var ErrNameRequired = errors.New("Name is required")
 
 // Repository for todos
 type Repository interface {
-	AddTodo(domain.Todo) *domain.Todo
-	GetTodos() []domain.Todo
+	AddTodo(Todo) *Todo
+	GetTodos() []Todo
 }
 
 // Service for todos
@@ -25,7 +24,7 @@ func NewService(r Repository) *Service {
 }
 
 // AddTodo is for creating, validating and adding a new todo to persistence
-func (s *Service) AddTodo(t domain.Todo) (*domain.Todo, error) {
+func (s *Service) AddTodo(t Todo) (*Todo, error) {
 	if t.Name == "" {
 		return nil, ErrNameRequired
 	}
@@ -33,6 +32,6 @@ func (s *Service) AddTodo(t domain.Todo) (*domain.Todo, error) {
 }
 
 // GetTodos gets all todos from persistence
-func (s *Service) GetTodos() []domain.Todo {
+func (s *Service) GetTodos() []Todo {
 	return s.r.GetTodos()
 }

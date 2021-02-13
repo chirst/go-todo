@@ -2,11 +2,10 @@ package user
 
 import (
 	"testing"
-	"todo/persistence/memory"
 )
 
 func TestAddUser(t *testing.T) {
-	userStorage := new(memory.UserStorage)
+	userStorage := new(UserStorage)
 	s := NewService(userStorage)
 	newUser, err := s.AddUser("gud name", "1234")
 	if err != nil {

@@ -3,7 +3,6 @@ package rest
 import (
 	"encoding/json"
 	"net/http"
-	"todo/domain"
 	"todo/todo"
 
 	"github.com/go-chi/chi"
@@ -26,7 +25,7 @@ func getTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request
 func addTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
-		var bodyTodo domain.Todo
+		var bodyTodo todo.Todo
 		err := decoder.Decode(&bodyTodo)
 		if err != nil {
 			http.Error(w, http.StatusText(400), 400)

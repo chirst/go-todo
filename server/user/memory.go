@@ -1,8 +1,4 @@
-package memory
-
-import (
-	"todo/domain"
-)
+package user
 
 type user struct {
 	ID       int64
@@ -16,8 +12,8 @@ type UserStorage struct {
 }
 
 // AddUser saves a single user
-func (s *UserStorage) AddUser(u domain.User) *domain.User {
+func (s *UserStorage) AddUser(u User) *User {
 	newUser := user{u.ID, u.Name, u.Password}
 	s.users = append(s.users, newUser)
-	return &domain.User{ID: u.ID, Name: u.Name, Password: u.Password}
+	return &User{ID: u.ID, Name: u.Name, Password: u.Password}
 }

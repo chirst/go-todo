@@ -2,14 +2,12 @@ package todo
 
 import (
 	"testing"
-	"todo/domain"
-	"todo/persistence/memory"
 )
 
 func TestAddTodo(t *testing.T) {
-	r := new(memory.TodoStorage)
+	r := new(TodoStorage)
 	s := NewService(r)
-	todo := domain.Todo{
+	todo := Todo{
 		Name: "do stuff",
 	}
 
@@ -24,9 +22,9 @@ func TestAddTodo(t *testing.T) {
 }
 
 func TestAddBlankName(t *testing.T) {
-	r := new(memory.TodoStorage)
+	r := new(TodoStorage)
 	s := NewService(r)
-	todo := domain.Todo{
+	todo := Todo{
 		Name: "",
 	}
 
@@ -41,9 +39,9 @@ func TestAddBlankName(t *testing.T) {
 }
 
 func TestGetTodos(t *testing.T) {
-	r := new(memory.TodoStorage)
+	r := new(TodoStorage)
 	s := NewService(r)
-	todo := domain.Todo{
+	todo := Todo{
 		Name: "do stuff",
 	}
 	s.AddTodo(todo)

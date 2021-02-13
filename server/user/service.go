@@ -1,12 +1,8 @@
 package user
 
-import (
-	"todo/domain"
-)
-
 // Repository for users
 type Repository interface {
-	AddUser(domain.User) *domain.User
+	AddUser(User) *User
 }
 
 // Service for users
@@ -20,8 +16,8 @@ func NewService(r Repository) *Service {
 }
 
 // AddUser validates, creates, and adds the user to persistence
-func (s *Service) AddUser(name, password string) (*domain.User, error) {
-	u, err := domain.CreateUser(name, password)
+func (s *Service) AddUser(name, password string) (*User, error) {
+	u, err := CreateUser(name, password)
 	if err != nil {
 		return nil, err
 	}

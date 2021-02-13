@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"todo/auth"
 	"todo/http/rest"
-	"todo/persistence/memory"
 	"todo/todo"
 	"todo/user"
 
@@ -14,8 +13,8 @@ import (
 )
 
 func main() {
-	todosRepo := new(memory.TodoStorage)
-	usersRepo := new(memory.UserStorage)
+	todosRepo := new(todo.TodoStorage)
+	usersRepo := new(user.UserStorage)
 	todoService := todo.NewService(todosRepo)
 	usersService := user.NewService(usersRepo)
 

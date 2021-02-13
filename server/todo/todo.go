@@ -1,4 +1,4 @@
-package domain
+package todo
 
 // Todo ...
 type Todo struct {

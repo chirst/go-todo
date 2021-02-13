@@ -11,8 +11,8 @@ func TestAddUser(t *testing.T) {
 	if err != nil {
 		t.Errorf("got %v want no error", err)
 	}
-	if newUser.Name != "gud name" {
-		t.Errorf("got %v want %v", newUser.Name, "gud name")
+	if newUser.Username != "gud name" {
+		t.Errorf("got %v want %v", newUser.Username, "gud name")
 	}
 }
 

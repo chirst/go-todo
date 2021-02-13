@@ -12,7 +12,7 @@ func Login(userService *user.Service) func(w http.ResponseWriter, r *http.Reques
 		b := struct {
 			Username string `json:"username"`
 			Password string `json:"password"`
-		}{"", ""}
+		}{}
 		err := json.NewDecoder(r.Body).Decode(&b)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)

@@ -22,8 +22,8 @@ func NewService(r Repository) *Service {
 }
 
 // AddUser validates, creates, and adds the user to persistence
-func (s *Service) AddUser(name, password string) (*User, error) {
-	u, err := createUser(name, password)
+func (s *Service) AddUser(username, password string) (*User, error) {
+	u, err := createUser(username, password)
 	if err != nil {
 		return nil, err
 	}
@@ -31,9 +31,9 @@ func (s *Service) AddUser(name, password string) (*User, error) {
 }
 
 // GetUserTokenString returns an auth token string for the first user matching the
-// given name and password. It returns nil for anything invalid.
-func (s *Service) GetUserTokenString(name, password string) (*string, error) {
-	u := s.r.getUserByName(name)
+// given username and password. It returns nil for anything invalid.
+func (s *Service) GetUserTokenString(username, password string) (*string, error) {
+	u := s.r.getUserByName(username)
 	if u == nil {
 		return nil, errors.New("user not found")
 	}

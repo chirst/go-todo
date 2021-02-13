@@ -9,7 +9,12 @@ import (
 // AddUser adds a user
 func AddUser(service *user.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user, err := service.AddUser("gud", "1234")
+		b := struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+		}{}
+		json.NewDecoder(r.Body).Decode(&b)
+		user, err := service.AddUser(b.Username, b.Password)
 		if err != nil {
 			http.Error(w, err.Error(), 400)
 			return

@@ -5,16 +5,16 @@ import "errors"
 // User ...
 type User struct {
 	ID       int64  `json:"id"`
-	Name     string `json:"name"`
+	Username string `json:"username"`
 	Password string `json:"-"`
 }
 
-func createUser(name, password string) (*User, error) {
-	if name == "" {
-		return nil, errors.New("name required")
+func createUser(username, password string) (*User, error) {
+	if username == "" {
+		return nil, errors.New("username required")
 	}
 	if password == "" {
 		return nil, errors.New("password required")
 	}
-	return &User{ID: 0, Name: name, Password: password}, nil
+	return &User{ID: 0, Username: username, Password: password}, nil
 }

@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -13,11 +12,6 @@ var tokenAuth *jwtauth.JWTAuth
 
 func init() {
 	tokenAuth = jwtauth.New("HS256", []byte("secret"), nil)
-
-	// For debugging/example purposes, we generate and print
-	// a sample jwt token with claims `user_id:123` here:
-	_, tokenString, _ := tokenAuth.Encode(jwt.MapClaims{"user_id": 123})
-	fmt.Printf("DEBUG: a sample jwt is %s\n\n", tokenString)
 }
 
 // Verifier seeks, verifies and validates JWT tokens
@@ -47,6 +41,5 @@ func GetClaims(ctx context.Context) jwt.MapClaims {
 
 // GetTokenForUser returns a token with the given claims
 func GetTokenForUser(userID int64) (*jwt.Token, string, error) {
-	tokenAuth = jwtauth.New("HS256", []byte("secret"), nil)
 	return tokenAuth.Encode(jwt.MapClaims{"userID": userID})
 }

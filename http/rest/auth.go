@@ -6,11 +6,6 @@ import (
 	"todo/user"
 )
 
-type loginBody struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 // Login returns an auth token for a valid login
 func Login(userService *user.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {

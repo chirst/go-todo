@@ -15,12 +15,12 @@ func Login(userService *user.Service) func(w http.ResponseWriter, r *http.Reques
 		}{}
 		err := json.NewDecoder(r.Body).Decode(&b)
 		if err != nil {
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		tokenString, err := userService.GetUserTokenString(b.Username, b.Password)
 		if err != nil {
-			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")

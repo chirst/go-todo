@@ -22,13 +22,12 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 		var bodyTodo todo.Todo
 		err := decoder.Decode(&bodyTodo)
 		if err != nil {
-			http.Error(w, http.StatusText(400), 400)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
 		newTodo, err := service.AddTodo(bodyTodo)
 		if err != nil {
-			http.Error(w, err.Error(), 400)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")

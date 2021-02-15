@@ -13,5 +13,5 @@ func (s *MemoryRepository) getTodos() []Todo {
 // AddTodo adds a single todo to storage
 func (s *MemoryRepository) addTodo(t Todo) *Todo {
 	s.todos = append(s.todos, t)
-	return &Todo{Name: t.Name}
+	return &Todo{Name: t.Name, Completed: t.Completed}
 }

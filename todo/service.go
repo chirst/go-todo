@@ -10,7 +10,7 @@ var ErrNameRequired = errors.New("Name is required")
 // Repository for todos
 type Repository interface {
 	addTodo(Todo) *Todo
-	getTodos() []Todo
+	getTodos(int64) []Todo
 }
 
 // Service for todos
@@ -31,7 +31,7 @@ func (s *Service) AddTodo(t Todo) (*Todo, error) {
 	return s.r.addTodo(t), nil
 }
 
-// GetTodos gets all todos from persistence
-func (s *Service) GetTodos() []Todo {
-	return s.r.getTodos()
+// GetTodos gets all todos for user from persistence
+func (s *Service) GetTodos(userID int64) []Todo {
+	return s.r.getTodos(userID)
 }

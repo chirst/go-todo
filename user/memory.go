@@ -6,9 +6,9 @@ type MemoryRepository struct {
 }
 
 func (s *MemoryRepository) addUser(u User) *User {
+	u.ID = int64(len(s.users)) + 1
 	s.users = append(s.users, u)
-	fakeID := int64(len(s.users))
-	return &User{ID: fakeID, Username: u.Username, Password: u.Password}
+	return &u
 }
 
 func (s *MemoryRepository) getUserByName(n string) *User {

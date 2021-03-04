@@ -3,13 +3,15 @@ package rest
 import (
 	"encoding/json"
 	"net/http"
+	"todo/auth"
 	"todo/todo"
 )
 
 // GetTodos returns all todos
 func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		todos := service.GetTodos()
+		uid := auth.GetUidClaim(r.Context())
+		todos := service.GetTodos(uid)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(todos)
 	}
@@ -25,6 +27,8 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		uid := auth.GetUidClaim(r.Context())
+		bodyTodo.UserID = uid
 		newTodo, err := service.AddTodo(bodyTodo)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)

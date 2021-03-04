@@ -39,6 +39,12 @@ func GetClaims(ctx context.Context) jwt.MapClaims {
 	return claims
 }
 
+// GetUidClaim gets the userID from claims
+func GetUidClaim(ctx context.Context) int64 {
+	c := GetClaims(ctx)
+	return int64(c["userID"].(float64))
+}
+
 // GetTokenForUser returns a token with the given claims
 func GetTokenForUser(userID int64) (*jwt.Token, string, error) {
 	return tokenAuth.Encode(jwt.MapClaims{"userID": userID})

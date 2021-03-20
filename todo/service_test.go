@@ -14,12 +14,12 @@ func TestAddTodo(t *testing.T) {
 		want  *Todo
 		want2 error
 	}{
-		"one": {
+		"happy path": {
 			input: Todo{Name: "do stuff"},
 			want:  &Todo{Name: "do stuff"},
 			want2: nil,
 		},
-		"two": {
+		"no name": {
 			input: Todo{Name: ""},
 			want:  nil,
 			want2: ErrNameRequired,

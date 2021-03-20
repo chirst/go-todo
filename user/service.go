@@ -7,6 +7,9 @@ import (
 
 var ErrUsernameRequired error = errors.New("username required")
 var ErrPasswordRequired error = errors.New("password required")
+var ErrPasswordNotMatching error = errors.New("password not matching")
+var ErrUserNotFound error = errors.New("user not found")
+var ErrTokenGeneration error = errors.New("token generation error")
 
 // Repository for users
 type Repository interface {
@@ -41,14 +44,14 @@ func (s *Service) AddUser(username, password string) (*User, error) {
 func (s *Service) GetUserTokenString(username, password string) (*string, error) {
 	u := s.r.getUserByName(username)
 	if u == nil {
-		return nil, errors.New("user not found")
+		return nil, ErrUserNotFound
 	}
 	if u.Password != password {
-		return nil, errors.New("password not matching")
+		return nil, ErrPasswordNotMatching
 	}
 	_, tokenString, err := auth.GetTokenForUser(u.ID)
 	if err != nil {
-		return nil, errors.New("unable to generate token")
+		return nil, ErrTokenGeneration
 	}
 	return &tokenString, nil
 }

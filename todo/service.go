@@ -1,8 +1,8 @@
 package todo
 
-import (
-	"errors"
-)
+import "errors"
+
+var ErrNameRequired error = errors.New("Name is required")
 
 // Repository for todos
 type Repository interface {
@@ -23,7 +23,7 @@ func NewService(r Repository) *Service {
 // AddTodo is for creating, validating and adding a new todo to persistence
 func (s *Service) AddTodo(t Todo) (*Todo, error) {
 	if t.Name == "" {
-		return nil, errors.New("Name is required")
+		return nil, ErrNameRequired
 	}
 	return s.r.addTodo(t), nil
 }

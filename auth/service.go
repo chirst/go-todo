@@ -1,5 +1,8 @@
 package auth
 
+// The following package is incomplete and no
+// where near an acceptable solution
+
 import (
 	"context"
 	"net/http"
@@ -11,38 +14,27 @@ import (
 var tokenAuth *jwtauth.JWTAuth
 
 func init() {
+	// Todo: this secret in a config
 	tokenAuth = jwtauth.New("HS256", []byte("secret"), nil)
 }
 
-// Verifier seeks, verifies and validates JWT tokens
+// Verifier is middleware for seeking, verifying and validating JWT tokens
 func Verifier(h http.Handler) http.Handler {
 	return jwtauth.Verifier(tokenAuth)(h)
 }
 
-// Authenticator handles valid / invalid tokens
+// Authenticator is middleware who sends a 401 response for requests with
+// bad tokens and accepts requests with good tokens
 func Authenticator(h http.Handler) http.Handler {
-	// In this example, we use
-	// the provided authenticator middleware, but you can write your
-	// own very easily, look at the Authenticator method in jwtauth.go
-	// and tweak it, its not scary.
+	// Todo: think about expiration
+	// Todo: this can be modified
 	return jwtauth.Authenticator(h)
-}
-
-// FromContext returns a Token and Claims
-func FromContext(ctx context.Context) (*jwt.Token, jwt.MapClaims, error) {
-	return jwtauth.FromContext(ctx)
-}
-
-// GetClaims gets claims
-func GetClaims(ctx context.Context) jwt.MapClaims {
-	_, claims, _ := jwtauth.FromContext(ctx)
-	return claims
 }
 
 // GetUidClaim gets the userID from claims
 func GetUidClaim(ctx context.Context) int64 {
-	c := GetClaims(ctx)
-	return int64(c["userID"].(float64))
+	_, claims, _ := jwtauth.FromContext(ctx)
+	return int64(claims["userID"].(float64))
 }
 
 // GetTokenForUser returns a token with the given claims

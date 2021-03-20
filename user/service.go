@@ -29,6 +29,7 @@ func NewService(r Repository) *Service {
 
 // AddUser validates, creates, and adds the user to persistence
 func (s *Service) AddUser(username, password string) (*User, error) {
+	// Todo: obfuscate password
 	if username == "" {
 		return nil, ErrUsernameRequired
 	}

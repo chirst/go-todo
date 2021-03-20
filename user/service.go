@@ -5,6 +5,9 @@ import (
 	"todo/auth"
 )
 
+var ErrUsernameRequired error = errors.New("username required")
+var ErrPasswordRequired error = errors.New("password required")
+
 // Repository for users
 type Repository interface {
 	addUser(User) *User
@@ -23,11 +26,14 @@ func NewService(r Repository) *Service {
 
 // AddUser validates, creates, and adds the user to persistence
 func (s *Service) AddUser(username, password string) (*User, error) {
-	u, err := createUser(username, password)
-	if err != nil {
-		return nil, err
+	if username == "" {
+		return nil, ErrUsernameRequired
 	}
-	return s.r.addUser(*u), nil
+	if password == "" {
+		return nil, ErrPasswordRequired
+	}
+	u := User{ID: 0, Username: username, Password: password}
+	return s.r.addUser(u), nil
 }
 
 // GetUserTokenString returns an auth token string for the first user matching the

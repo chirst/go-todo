@@ -14,7 +14,7 @@ func TestAddTodo(t *testing.T) {
 		want  *Todo
 		want2 error
 	}{
-		"happy path": {
+		"adds": {
 			input: Todo{Name: "do stuff"},
 			want:  &Todo{Name: "do stuff"},
 			want2: nil,

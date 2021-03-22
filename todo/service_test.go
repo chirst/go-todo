@@ -3,11 +3,14 @@ package todo
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestAddTodo(t *testing.T) {
 	r := new(MemoryRepository)
 	s := NewService(r)
+
+	now := time.Now()
 
 	tests := map[string]struct {
 		input Todo
@@ -15,8 +18,16 @@ func TestAddTodo(t *testing.T) {
 		want2 error
 	}{
 		"adds": {
-			input: Todo{Name: "do stuff"},
-			want:  &Todo{Name: "do stuff"},
+			input: Todo{
+				Name:      "do stuff",
+				Completed: now,
+				UserID:    1,
+			},
+			want: &Todo{
+				Name:      "do stuff",
+				Completed: now,
+				UserID:    1,
+			},
 			want2: nil,
 		},
 		"no name": {

@@ -53,6 +53,7 @@ func TestAddTodo(t *testing.T) {
 func TestGetTodos(t *testing.T) {
 	r := new(MemoryRepository)
 	s := NewService(r)
+
 	todo := Todo{
 		UserID: 1,
 		Name:   "do stuff",
@@ -65,8 +66,23 @@ func TestGetTodos(t *testing.T) {
 	s.AddTodo(todo)
 	s.AddTodo(todo)
 	s.AddTodo(nonUserTodo)
-	todos := s.GetTodos(1)
-	if len(todos) != 3 {
-		t.Errorf("got %v want %v", len(todos), 3)
+
+	tests := map[string]struct {
+		userID         int64
+		wantTodoLength int
+	}{
+		"gets": {
+			1,
+			3,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := s.GetTodos(tc.userID)
+			if len(got) != tc.wantTodoLength {
+				t.Errorf("expected %#v, got: %#v", tc.wantTodoLength, len(got))
+			}
+		})
 	}
 }

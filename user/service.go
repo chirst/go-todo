@@ -28,15 +28,18 @@ func NewService(r Repository) *Service {
 }
 
 // AddUser validates, creates, and adds the user to persistence
-func (s *Service) AddUser(username, password string) (*User, error) {
-	// Todo: obfuscate password
+func (s *Service) AddUser(username, p string) (*User, error) {
 	if username == "" {
 		return nil, ErrUsernameRequired
 	}
-	if password == "" {
+	if p == "" {
 		return nil, ErrPasswordRequired
 	}
-	u := User{ID: 0, Username: username, Password: password}
+	hashedPassword, err := auth.GenerateFromPassword(p)
+	if err != nil {
+		return nil, err
+	}
+	u := User{ID: 0, Username: username, Password: *hashedPassword}
 	return s.r.addUser(u), nil
 }
 
@@ -47,7 +50,7 @@ func (s *Service) GetUserTokenString(username, password string) (*string, error)
 	if u == nil {
 		return nil, ErrUserNotFound
 	}
-	if u.Password != password {
+	if auth.CompareHashAndPassword(u.Password, password) != nil {
 		return nil, ErrPasswordNotMatching
 	}
 	_, tokenString, err := auth.GetTokenForUser(u.ID)

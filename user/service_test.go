@@ -18,7 +18,7 @@ func TestAddUser(t *testing.T) {
 		"adds": {
 			input:  "gud name",
 			input2: "1234",
-			want:   &User{ID: 1, Username: "gud name", Password: "1234"},
+			want:   &User{ID: 1, Username: "gud name"},
 			want2:  nil,
 		},
 		"no username": {
@@ -38,9 +38,16 @@ func TestAddUser(t *testing.T) {
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			got, got2 := s.AddUser(tc.input, tc.input2)
-			if !reflect.DeepEqual(tc.want, got) {
-				t.Fatalf("expected %#v, got: %#v", tc.want, got)
+
+			if got != nil {
+				if tc.want.ID != got.ID || tc.want.Username != got.Username {
+					t.Fatalf("expected %#v, got: %#v", tc.want, got)
+				}
+				if tc.input2 == got.Password {
+					t.Fatalf("expected hashed password, got %#v", got.Password)
+				}
 			}
+
 			if tc.want2 != got2 {
 				t.Fatalf("expected %#v, got %#v", tc.want2, got2)
 			}
@@ -52,7 +59,7 @@ func TestGetUserTokenString(t *testing.T) {
 	userStorage := new(MemoryRepository)
 	s := NewService(userStorage)
 
-	s.r.addUser(User{ID: 0, Username: "gud name", Password: "1234"})
+	s.AddUser("gud name", "1234")
 
 	tests := map[string]struct {
 		input  string

@@ -9,6 +9,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/jwtauth"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var tokenAuth *jwtauth.JWTAuth
@@ -40,4 +41,20 @@ func GetUidClaim(ctx context.Context) int64 {
 // GetTokenForUser returns a token with the given claims
 func GetTokenForUser(userID int64) (*jwt.Token, string, error) {
 	return tokenAuth.Encode(jwt.MapClaims{"userID": userID})
+}
+
+// GenerateFromPassword returns a hashed version of the given string
+func GenerateFromPassword(p string) (*string, error) {
+	h, err := bcrypt.GenerateFromPassword([]byte(p), 6)
+	if err != nil {
+		return nil, err
+	}
+	sh := string(h)
+	return &sh, nil
+}
+
+// CompareHashAndPassword compares a hash and a password.
+// Returns nil on success, or an error on failure
+func CompareHashAndPassword(h, p string) error {
+	return bcrypt.CompareHashAndPassword([]byte(h), []byte(p))
 }

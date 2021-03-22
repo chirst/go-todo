@@ -29,6 +29,8 @@ func NewService(r Repository) *Service {
 
 // AddUser validates, creates, and adds the user to persistence
 func (s *Service) AddUser(username, p string) (*User, error) {
+	// Todo: check if user already exists
+	// Todo: stricter validation on name and pass
 	if username == "" {
 		return nil, ErrUsernameRequired
 	}

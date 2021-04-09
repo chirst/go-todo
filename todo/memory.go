@@ -6,11 +6,12 @@ type MemoryRepository struct {
 }
 
 // GetTodos gets all todos in storage
-func (s *MemoryRepository) getTodos(userID int64) []Todo {
-	var userTodos []Todo
+func (s *MemoryRepository) getTodos(userID int64) []*Todo {
+	var userTodos []*Todo
+	userTodos = []*Todo{}
 	for _, t := range s.todos {
 		if t.UserID == userID {
-			userTodos = append(userTodos, t)
+			userTodos = append(userTodos, &t)
 		}
 	}
 	return userTodos

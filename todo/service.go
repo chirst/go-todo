@@ -7,7 +7,7 @@ var ErrNameRequired error = errors.New("Name is required")
 // Repository for todos
 type Repository interface {
 	addTodo(Todo) *Todo
-	getTodos(int64) []Todo
+	getTodos(int64) []*Todo
 }
 
 // Service for todos
@@ -29,8 +29,7 @@ func (s *Service) AddTodo(t Todo) (*Todo, error) {
 }
 
 // GetTodos gets all todos for user from persistence
-func (s *Service) GetTodos(userID int64) []Todo {
+func (s *Service) GetTodos(userID int64) []*Todo {
 	// Todo: error for non existing UserID
-	// Todo: if no todos return an empty array
 	return s.r.getTodos(userID)
 }

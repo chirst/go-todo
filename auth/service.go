@@ -6,6 +6,7 @@ package auth
 import (
 	"context"
 	"net/http"
+	"todo/config"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/jwtauth"
@@ -15,8 +16,8 @@ import (
 var tokenAuth *jwtauth.JWTAuth
 
 func init() {
-	// Todo: this secret in a config
-	tokenAuth = jwtauth.New("HS256", []byte("secret"), nil)
+	key := config.GetSignKey()
+	tokenAuth = jwtauth.New("HS256", []byte(key), nil)
 }
 
 // Verifier is middleware for seeking, verifying and validating JWT tokens

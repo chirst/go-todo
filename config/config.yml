@@ -1,0 +1,2 @@
+jwt_sign_key: 'secret'
+server_address: 'localhost:3000'

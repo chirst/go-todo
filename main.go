@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"todo/auth"
+	"todo/config"
 	"todo/http/rest"
 	"todo/todo"
 	"todo/user"
@@ -13,6 +14,8 @@ import (
 )
 
 func main() {
+	config.InitConfig()
+
 	todosRepo := new(todo.MemoryRepository)
 	usersRepo := new(user.MemoryRepository)
 	todoService := todo.NewService(todosRepo)
@@ -36,7 +39,7 @@ func main() {
 		r.Post("/login", rest.Login(usersService))
 	})
 
-	address := "localhost:3000"
+	address := config.GetAddress()
 	fmt.Printf("starting server on %s\n", address)
 	http.ListenAndServe(address, router)
 }

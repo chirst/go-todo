@@ -2,7 +2,7 @@ package todo
 
 import "errors"
 
-var ErrNameRequired error = errors.New("Name is required")
+var ErrNameRequired error = errors.New("name is required")
 
 // Repository for todos
 type Repository interface {

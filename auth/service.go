@@ -28,8 +28,8 @@ func Verifier(h http.Handler) http.Handler {
 // Authenticator is middleware who sends a 401 response for requests with
 // bad tokens and accepts requests with good tokens
 func Authenticator(h http.Handler) http.Handler {
-	// Todo: think about expiration
-	// Todo: this can be modified
+	// TODO: think about expiration
+	// TODO: this can be modified
 	return jwtauth.Authenticator(h)
 }
 

@@ -21,6 +21,12 @@ func TestAddUser(t *testing.T) {
 			want:   &User{ID: 1, Username: "gud name"},
 			want2:  nil,
 		},
+		"add existing": {
+			input:  "gud name",
+			input2: "1234",
+			want:   nil,
+			want2:  ErrUserExists,
+		},
 		"no username": {
 			input:  "",
 			input2: "1234",

@@ -10,6 +10,7 @@ var ErrPasswordRequired error = errors.New("password required")
 var ErrPasswordNotMatching error = errors.New("password not matching")
 var ErrUserNotFound error = errors.New("user not found")
 var ErrTokenGeneration error = errors.New("token generation error")
+var ErrUserExists error = errors.New("user exists")
 
 // Repository for users
 type Repository interface {
@@ -36,6 +37,9 @@ func (s *Service) AddUser(username, p string) (*User, error) {
 	}
 	if p == "" {
 		return nil, ErrPasswordRequired
+	}
+	if s.r.getUserByName(username) != nil {
+		return nil, ErrUserExists
 	}
 	hashedPassword, err := auth.GenerateFromPassword(p)
 	if err != nil {

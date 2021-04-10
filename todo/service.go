@@ -30,6 +30,5 @@ func (s *Service) AddTodo(t Todo) (*Todo, error) {
 
 // GetTodos gets all todos for user from persistence
 func (s *Service) GetTodos(userID int64) []*Todo {
-	// Todo: error for non existing UserID
 	return s.r.getTodos(userID)
 }

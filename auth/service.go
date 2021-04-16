@@ -33,8 +33,8 @@ func Authenticator(h http.Handler) http.Handler {
 	return jwtauth.Authenticator(h)
 }
 
-// GetUidClaim gets the userID from claims
-func GetUidClaim(ctx context.Context) int64 {
+// GetUIDClaim gets the userID from claims
+func GetUIDClaim(ctx context.Context) int64 {
 	_, claims, _ := jwtauth.FromContext(ctx)
 	return int64(claims["userID"].(float64))
 }

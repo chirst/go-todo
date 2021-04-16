@@ -2,7 +2,7 @@ package todo
 
 import "errors"
 
-var ErrNameRequired error = errors.New("name is required")
+var errNameRequired error = errors.New("name is required")
 
 // Repository for todos
 type Repository interface {
@@ -23,7 +23,7 @@ func NewService(r Repository) *Service {
 // AddTodo is for creating, validating, and adding a new todo to persistence
 func (s *Service) AddTodo(t Todo) (*Todo, error) {
 	if t.Name == "" {
-		return nil, ErrNameRequired
+		return nil, errNameRequired
 	}
 	return s.r.addTodo(t), nil
 }

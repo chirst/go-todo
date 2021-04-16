@@ -5,12 +5,12 @@ import (
 	"todo/auth"
 )
 
-var ErrUsernameRequired error = errors.New("username required")
-var ErrPasswordRequired error = errors.New("password required")
-var ErrPasswordNotMatching error = errors.New("password not matching")
-var ErrUserNotFound error = errors.New("user not found")
-var ErrTokenGeneration error = errors.New("token generation error")
-var ErrUserExists error = errors.New("user exists")
+var errUsernameRequired error = errors.New("username required")
+var errPasswordRequired error = errors.New("password required")
+var errPasswordNotMatching error = errors.New("password not matching")
+var errUserNotFound error = errors.New("user not found")
+var errTokenGeneration error = errors.New("token generation error")
+var errUserExists error = errors.New("user exists")
 
 // Repository for users
 type Repository interface {
@@ -32,13 +32,13 @@ func NewService(r Repository) *Service {
 func (s *Service) AddUser(username, p string) (*User, error) {
 	// TODO: stricter validation on name and pass
 	if username == "" {
-		return nil, ErrUsernameRequired
+		return nil, errUsernameRequired
 	}
 	if p == "" {
-		return nil, ErrPasswordRequired
+		return nil, errPasswordRequired
 	}
 	if s.r.getUserByName(username) != nil {
-		return nil, ErrUserExists
+		return nil, errUserExists
 	}
 	hashedPassword, err := auth.GenerateFromPassword(p)
 	if err != nil {
@@ -53,14 +53,14 @@ func (s *Service) AddUser(username, p string) (*User, error) {
 func (s *Service) GetUserTokenString(username, password string) (*string, error) {
 	u := s.r.getUserByName(username)
 	if u == nil {
-		return nil, ErrUserNotFound
+		return nil, errUserNotFound
 	}
 	if auth.CompareHashAndPassword(u.Password, password) != nil {
-		return nil, ErrPasswordNotMatching
+		return nil, errPasswordNotMatching
 	}
 	_, tokenString, err := auth.GetTokenForUser(u.ID)
 	if err != nil {
-		return nil, ErrTokenGeneration
+		return nil, errTokenGeneration
 	}
 	return &tokenString, nil
 }

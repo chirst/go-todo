@@ -25,19 +25,19 @@ func TestAddUser(t *testing.T) {
 			input:  "gud name",
 			input2: "1234",
 			want:   nil,
-			want2:  ErrUserExists,
+			want2:  errUserExists,
 		},
 		"no username": {
 			input:  "",
 			input2: "1234",
 			want:   nil,
-			want2:  ErrUsernameRequired,
+			want2:  errUsernameRequired,
 		},
 		"no password": {
 			input:  "gud name",
 			input2: "",
 			want:   nil,
-			want2:  ErrPasswordRequired,
+			want2:  errPasswordRequired,
 		},
 	}
 
@@ -83,13 +83,13 @@ func TestGetUserTokenString(t *testing.T) {
 			input:  "gud name",
 			input2: "123",
 			want:   nil,
-			want2:  ErrPasswordNotMatching,
+			want2:  errPasswordNotMatching,
 		},
 		"user not found": {
 			input:  "wut name",
 			input2: "1234",
 			want:   nil,
-			want2:  ErrUserNotFound,
+			want2:  errUserNotFound,
 		},
 	}
 

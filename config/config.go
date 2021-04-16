@@ -14,7 +14,7 @@ func InitConfig() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Fatal error in config: %s\n", err))
+		panic(fmt.Errorf("fatal error in config: %s", err))
 	}
 }
 

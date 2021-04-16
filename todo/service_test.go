@@ -35,7 +35,7 @@ func TestAddTodo(t *testing.T) {
 		"no name": {
 			input: Todo{Name: ""},
 			want:  nil,
-			want2: ErrNameRequired,
+			want2: errNameRequired,
 		},
 	}
 

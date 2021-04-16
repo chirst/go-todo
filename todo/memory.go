@@ -9,9 +9,9 @@ type MemoryRepository struct {
 func (s *MemoryRepository) getTodos(userID int64) []*Todo {
 	var userTodos []*Todo
 	userTodos = []*Todo{}
-	for _, t := range s.todos {
-		if t.UserID == userID {
-			userTodos = append(userTodos, &t)
+	for i := range s.todos {
+		if s.todos[i].UserID == userID {
+			userTodos = append(userTodos, &s.todos[i])
 		}
 	}
 	return userTodos
@@ -19,6 +19,7 @@ func (s *MemoryRepository) getTodos(userID int64) []*Todo {
 
 // AddTodo adds a single todo to storage
 func (s *MemoryRepository) addTodo(t Todo) *Todo {
+	t.ID = int64(len(s.todos)) + 1
 	s.todos = append(s.todos, t)
 	return &t
 }

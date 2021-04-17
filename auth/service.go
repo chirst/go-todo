@@ -36,7 +36,10 @@ func Authenticator(h http.Handler) http.Handler {
 // GetUIDClaim gets the userID from claims
 func GetUIDClaim(ctx context.Context) int64 {
 	_, claims, _ := jwtauth.FromContext(ctx)
-	return int64(claims["userID"].(float64))
+	if t, ok := claims["userID"].(float64); ok {
+		return int64(t)
+	}
+	return claims["userID"].(int64)
 }
 
 // GetTokenForUser returns a token with the given claims

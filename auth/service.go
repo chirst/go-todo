@@ -6,6 +6,7 @@ package auth
 import (
 	"context"
 	"net/http"
+	"time"
 	"todo/config"
 
 	"github.com/dgrijalva/jwt-go"
@@ -26,11 +27,36 @@ func Verifier(h http.Handler) http.Handler {
 }
 
 // Authenticator is middleware who sends a 401 response for requests with
-// bad tokens and accepts requests with good tokens
-func Authenticator(h http.Handler) http.Handler {
-	// TODO: think about expiration
-	// TODO: this can be modified
-	return jwtauth.Authenticator(h)
+// bad tokens and accepts requests with good tokens. This implementation comes from
+// jwtauth.Authenticator, but is enhanced to check for expired tokens.
+func Authenticator(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token, claims, err := jwtauth.FromContext(r.Context())
+
+		// Checks from the jwt.Authenticator to see if the token is valid
+		if err != nil {
+			http.Error(w, http.StatusText(401), 401)
+			return
+		}
+		if token == nil || !token.Valid {
+			http.Error(w, http.StatusText(401), 401)
+			return
+		}
+
+		// Check if token is expired
+		e, ok := claims["expires"].(float64)
+		if !ok {
+			http.Error(w, "unauthorized failed to parse expiration", 401)
+			return
+		}
+		if int64(e) < time.Now().Unix() {
+			http.Error(w, "unauthorized token expired", 401)
+			return
+		}
+
+		// Token is authenticated, pass it through
+		next.ServeHTTP(w, r)
+	})
 }
 
 // GetUIDClaim gets the userID from claims
@@ -44,7 +70,10 @@ func GetUIDClaim(ctx context.Context) int64 {
 
 // GetTokenForUser returns a token with the given claims
 func GetTokenForUser(userID int64) (*jwt.Token, string, error) {
-	return tokenAuth.Encode(jwt.MapClaims{"userID": userID})
+	return tokenAuth.Encode(jwt.MapClaims{
+		"userID":  userID,
+		"expires": time.Now().Add(time.Hour * 24).Unix(),
+	})
 }
 
 // GenerateFromPassword returns a hashed version of the given string

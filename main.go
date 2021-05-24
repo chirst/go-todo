@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 	"todo/auth"
 	"todo/config"
 	"todo/http/rest"
@@ -11,6 +12,8 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
+	"github.com/go-chi/httprate"
 )
 
 func main() {
@@ -23,6 +26,15 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
+	router.Use(httprate.LimitByIP(100, 1*time.Minute))
+	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
 
 	// protected routes
 	router.Group(func(r chi.Router) {

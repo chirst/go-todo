@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"time"
@@ -9,6 +10,8 @@ import (
 	"todo/http/rest"
 	"todo/todo"
 	"todo/user"
+
+	_ "github.com/lib/pq"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -19,14 +22,23 @@ import (
 func main() {
 	config.InitConfig()
 
-	todosRepo := new(todo.MemoryRepository)
-	usersRepo := new(user.MemoryRepository)
+	// TODO: extract to config and make repo configurable
+	db, err := sql.Open("postgres", "host=127.0.0.1 port=5432 user=postgres password=12345 dbname=todo sslmode=disable")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+
+	// todosRepo := new(todo.MemoryRepository)
+	todosRepo := &todo.PostgresRepository{DB: db}
+	// usersRepo := new(user.MemoryRepository)
+	usersRepo := &user.PostgresRepository{DB: db}
 	todoService := todo.NewService(todosRepo)
 	usersService := user.NewService(usersRepo)
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
-	router.Use(httprate.LimitByIP(100, 1*time.Minute))
+	router.Use(httprate.LimitByIP(100, time.Minute))
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

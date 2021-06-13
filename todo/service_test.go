@@ -21,13 +21,13 @@ func TestAddTodo(t *testing.T) {
 			input: Todo{
 				ID:        1,
 				Name:      "do stuff",
-				Completed: now,
+				Completed: &now,
 				UserID:    1,
 			},
 			want: &Todo{
 				ID:        1,
 				Name:      "do stuff",
-				Completed: now,
+				Completed: &now,
 				UserID:    1,
 			},
 			want2: nil,

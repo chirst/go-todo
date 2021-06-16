@@ -27,3 +27,14 @@ func GetAddress() string {
 func GetSignKey() string {
 	return viper.GetString("jwt_sign_key")
 }
+
+// GetPostgresSourceName returns a string containing connection info
+// specific to a Postgres database
+func GetPostgresSourceName() string {
+	return "host=" + viper.GetString("pg_host") + " " +
+		"port=" + viper.GetString("pg_port") + " " +
+		"user=" + viper.GetString("pg_user") + " " +
+		"password=" + viper.GetString("pg_password") + " " +
+		"dbname=" + viper.GetString("pg_dbname") + " " +
+		"sslmode=" + viper.GetString("pg_sslmode")
+}

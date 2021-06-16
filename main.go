@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"net/http"
 	"time"
@@ -21,18 +22,23 @@ import (
 
 func main() {
 	config.InitConfig()
+	inMemoryFlag := flag.Bool("use-memory", false, "use in memory db")
+	flag.Parse()
 
-	// TODO: extract to config and make repo configurable
-	db, err := sql.Open("postgres", "host=127.0.0.1 port=5432 user=postgres password=12345 dbname=todo sslmode=disable")
-	if err != nil {
-		panic(err.Error())
+	var todosRepo todo.Repository
+	var usersRepo user.Repository
+	if *inMemoryFlag {
+		todosRepo = new(todo.MemoryRepository)
+		usersRepo = new(user.MemoryRepository)
+	} else {
+		db, err := sql.Open("postgres", config.GetPostgresSourceName())
+		if err != nil {
+			panic(err.Error())
+		}
+		defer db.Close()
+		todosRepo = &todo.PostgresRepository{DB: db}
+		usersRepo = &user.PostgresRepository{DB: db}
 	}
-	defer db.Close()
-
-	// todosRepo := new(todo.MemoryRepository)
-	todosRepo := &todo.PostgresRepository{DB: db}
-	// usersRepo := new(user.MemoryRepository)
-	usersRepo := &user.PostgresRepository{DB: db}
 	todoService := todo.NewService(todosRepo)
 	usersService := user.NewService(usersRepo)
 
@@ -64,6 +70,6 @@ func main() {
 	})
 
 	address := config.GetAddress()
-	fmt.Printf("starting server on %s\n", address)
+	fmt.Printf("server listening on %s\n", address)
 	http.ListenAndServe(address, router)
 }

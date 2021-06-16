@@ -5,6 +5,9 @@
 # run server
 go run main.go
 
+# run server with memory repositories
+go run main.go -use-memory
+
 # run all tests with verbose output
 go test ./... -v
 

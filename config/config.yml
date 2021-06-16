@@ -1,2 +1,13 @@
+# auth configs
 jwt_sign_key: 'secret'
+
+# server configs
 server_address: 'localhost:3000'
+
+# postgres configs
+pg_host: '127.0.0.1'
+pg_port: '5432'
+pg_user: 'postgres'
+pg_password: '12345'
+pg_dbname: 'todo'
+pg_sslmode: 'disable'

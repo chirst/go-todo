@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"todo/auth"
 	"todo/todo"
@@ -24,6 +25,7 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 		var bodyTodo todo.Todo
 		err := decoder.Decode(&bodyTodo)
 		if err != nil {
+			log.Print(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -31,6 +33,7 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 		bodyTodo.UserID = uid
 		newTodo, err := service.AddTodo(bodyTodo)
 		if err != nil {
+			log.Print(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}

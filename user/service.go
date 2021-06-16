@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"log"
 	"todo/auth"
 )
 
@@ -42,6 +43,7 @@ func (s *Service) AddUser(username, p string) (*User, error) {
 	}
 	hashedPassword, err := auth.GenerateFromPassword(p)
 	if err != nil {
+		log.Print(err)
 		return nil, err
 	}
 	u := User{ID: 0, Username: username, Password: *hashedPassword}
@@ -60,6 +62,7 @@ func (s *Service) GetUserTokenString(username, password string) (*string, error)
 	}
 	_, tokenString, err := auth.GetTokenForUser(u.ID)
 	if err != nil {
+		log.Print(err)
 		return nil, errTokenGeneration
 	}
 	return &tokenString, nil

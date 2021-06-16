@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"todo/user"
 )
@@ -16,6 +17,7 @@ func AddUser(service *user.Service) func(w http.ResponseWriter, r *http.Request)
 		json.NewDecoder(r.Body).Decode(&b)
 		user, err := service.AddUser(b.Username, b.Password)
 		if err != nil {
+			log.Print(err)
 			http.Error(w, err.Error(), 400)
 			return
 		}

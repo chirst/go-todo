@@ -5,6 +5,7 @@ package auth
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 	"todo/config"
@@ -35,6 +36,7 @@ func Authenticator(next http.Handler) http.Handler {
 
 		// Checks from the jwt.Authenticator to see if the token is valid
 		if err != nil {
+			log.Print(err)
 			http.Error(w, http.StatusText(401), 401)
 			return
 		}
@@ -80,6 +82,7 @@ func GetTokenForUser(userID int64) (*jwt.Token, string, error) {
 func GenerateFromPassword(p string) (*string, error) {
 	h, err := bcrypt.GenerateFromPassword([]byte(p), 6)
 	if err != nil {
+		log.Print(err)
 		return nil, err
 	}
 	sh := string(h)

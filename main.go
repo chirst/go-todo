@@ -22,7 +22,7 @@ import (
 
 func main() {
 	config.InitConfig()
-	inMemoryFlag := flag.Bool("use-memory", false, "use in memory db")
+	inMemoryFlag := flag.Bool("use-memory", false, "enable to swap database for in memory")
 	flag.Parse()
 
 	var todosRepo todo.Repository

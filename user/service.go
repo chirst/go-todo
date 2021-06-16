@@ -42,7 +42,7 @@ func (s *Service) AddUser(username, p string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	if u != nil {
+	if u != nil { // TODO: read this and make sure it doesn't suck
 		return nil, errUserExists
 	}
 	hashedPassword, err := auth.GenerateFromPassword(p)
@@ -60,7 +60,7 @@ func (s *Service) GetUserTokenString(username, password string) (*string, error)
 	if err != nil {
 		return nil, err
 	}
-	if u == nil {
+	if u == nil { // TODO: this should probably just be an error from the repo
 		return nil, errUserNotFound
 	}
 	if auth.CompareHashAndPassword(u.Password, password) != nil {

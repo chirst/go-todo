@@ -31,6 +31,7 @@ func main() {
 		todosRepo = new(todo.MemoryRepository)
 		usersRepo = new(user.MemoryRepository)
 	} else {
+		// TODO: migrations
 		db, err := sql.Open("postgres", config.GetPostgresSourceName())
 		if err != nil {
 			panic(err.Error())

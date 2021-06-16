@@ -1,5 +1,6 @@
 // TODO: integration tests
 // TODO: filter gets by user
+// TODO: fix listing columns in query and scan
 package todo
 
 import (

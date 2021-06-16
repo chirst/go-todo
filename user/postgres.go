@@ -1,4 +1,5 @@
 // TODO: integration tests
+// TODO: fix listing columns in query and scan
 package user
 
 import (

@@ -1,5 +1,4 @@
 // TODO: integration tests
-// TODO: return errors
 package user
 
 import (
@@ -12,7 +11,7 @@ type PostgresRepository struct {
 	DB *sql.DB
 }
 
-func (s *PostgresRepository) addUser(u User) *User {
+func (s *PostgresRepository) addUser(u User) (*User, error) {
 	result := s.DB.QueryRow(`
 		INSERT INTO public.user (username, password)
 		VALUES ($1, $2)
@@ -22,12 +21,12 @@ func (s *PostgresRepository) addUser(u User) *User {
 	err := result.Scan(&insertedUser.ID, &insertedUser.Username, &insertedUser.Password)
 	if err != nil {
 		log.Print(err)
-		return nil
+		return nil, err
 	}
-	return insertedUser
+	return insertedUser, nil
 }
 
-func (s *PostgresRepository) getUserByName(n string) *User {
+func (s *PostgresRepository) getUserByName(n string) (*User, error) {
 	row := s.DB.QueryRow(`
 		SELECT id, username, password
 		FROM public.user
@@ -36,7 +35,7 @@ func (s *PostgresRepository) getUserByName(n string) *User {
 	err := row.Scan(&user.ID, &user.Username, &user.Password)
 	if err != nil {
 		log.Print(err)
-		return nil
+		return nil, err
 	}
-	return user
+	return user, nil
 }

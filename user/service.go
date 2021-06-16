@@ -15,8 +15,8 @@ var errUserExists error = errors.New("user exists")
 
 // Repository for users
 type Repository interface {
-	addUser(User) *User
-	getUserByName(string) *User
+	addUser(User) (*User, error)
+	getUserByName(string) (*User, error)
 }
 
 // Service for users
@@ -38,7 +38,11 @@ func (s *Service) AddUser(username, p string) (*User, error) {
 	if p == "" {
 		return nil, errPasswordRequired
 	}
-	if s.r.getUserByName(username) != nil {
+	u, err := s.r.getUserByName(username)
+	if err != nil {
+		return nil, err
+	}
+	if u != nil {
 		return nil, errUserExists
 	}
 	hashedPassword, err := auth.GenerateFromPassword(p)
@@ -46,14 +50,16 @@ func (s *Service) AddUser(username, p string) (*User, error) {
 		log.Print(err)
 		return nil, err
 	}
-	u := User{ID: 0, Username: username, Password: *hashedPassword}
-	return s.r.addUser(u), nil
+	return s.r.addUser(User{ID: 0, Username: username, Password: *hashedPassword})
 }
 
 // GetUserTokenString returns an auth token string for the first user matching the
 // given username and password. It returns nil for anything invalid.
 func (s *Service) GetUserTokenString(username, password string) (*string, error) {
-	u := s.r.getUserByName(username)
+	u, err := s.r.getUserByName(username)
+	if err != nil {
+		return nil, err
+	}
 	if u == nil {
 		return nil, errUserNotFound
 	}

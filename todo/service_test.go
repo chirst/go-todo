@@ -81,7 +81,7 @@ func TestGetTodos(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			got := s.GetTodos(tc.userID)
+			got, _ := s.GetTodos(tc.userID)
 			if len(got) != tc.wantTodoLength {
 				t.Errorf("expected %#v, got: %#v", tc.wantTodoLength, len(got))
 			}

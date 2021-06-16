@@ -12,7 +12,12 @@ import (
 func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uid := auth.GetUIDClaim(r.Context())
-		todos := service.GetTodos(uid)
+		todos, err := service.GetTodos(uid)
+		if err != nil {
+			log.Print(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(todos)
 	}

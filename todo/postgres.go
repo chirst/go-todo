@@ -1,5 +1,4 @@
 // TODO: integration tests
-// TODO: return errors
 // TODO: filter gets by user
 package todo
 
@@ -14,27 +13,30 @@ type PostgresRepository struct {
 }
 
 // GetTodos gets all todos in storage for a user
-func (s *PostgresRepository) getTodos(userID int64) []*Todo {
-	// TODO: handle this error!
-	rows, _ := s.DB.Query(`
+func (s *PostgresRepository) getTodos(userID int64) ([]*Todo, error) {
+	rows, err := s.DB.Query(`
 		SELECT id, name, completed
 		FROM todo
 	`)
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
 	userTodos := make([]*Todo, 0)
 	for rows.Next() {
 		userTodo := new(Todo)
 		err := rows.Scan(&userTodo.ID, &userTodo.Name, &userTodo.Completed)
 		if err != nil {
 			log.Print(err)
-			return nil
+			return nil, err
 		}
 		userTodos = append(userTodos, userTodo)
 	}
-	return userTodos
+	return userTodos, nil
 }
 
 // AddTodo adds a single todo to storage
-func (s *PostgresRepository) addTodo(t Todo) *Todo {
+func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 	row := s.DB.QueryRow(`
 		INSERT INTO todo (name, completed)
 		VALUES ($1, $2)
@@ -44,7 +46,7 @@ func (s *PostgresRepository) addTodo(t Todo) *Todo {
 	err := row.Scan(&insertedTodo.ID, &insertedTodo.Name, &insertedTodo.Completed)
 	if err != nil {
 		log.Print(err)
-		return nil
+		return nil, err
 	}
-	return insertedTodo
+	return insertedTodo, nil
 }

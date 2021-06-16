@@ -6,7 +6,7 @@ type MemoryRepository struct {
 }
 
 // GetTodos gets all todos in storage
-func (s *MemoryRepository) getTodos(userID int64) []*Todo {
+func (s *MemoryRepository) getTodos(userID int64) ([]*Todo, error) {
 	var userTodos []*Todo
 	userTodos = []*Todo{}
 	for i := range s.todos {
@@ -14,12 +14,12 @@ func (s *MemoryRepository) getTodos(userID int64) []*Todo {
 			userTodos = append(userTodos, &s.todos[i])
 		}
 	}
-	return userTodos
+	return userTodos, nil
 }
 
 // AddTodo adds a single todo to storage
-func (s *MemoryRepository) addTodo(t Todo) *Todo {
+func (s *MemoryRepository) addTodo(t Todo) (*Todo, error) {
 	t.ID = int64(len(s.todos)) + 1
 	s.todos = append(s.todos, t)
-	return &t
+	return &t, nil
 }

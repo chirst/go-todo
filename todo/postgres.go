@@ -1,5 +1,4 @@
 // TODO: integration tests
-// TODO: filter gets by user
 // TODO: fix listing columns in query and scan
 package todo
 
@@ -18,14 +17,16 @@ type dbtodo struct {
 	id        int64
 	name      string
 	completed *time.Time
+	userID    int64
 }
 
 // GetTodos gets all todos in storage for a user
 func (s *PostgresRepository) getTodos(userID int64) ([]*Todo, error) {
 	rows, err := s.DB.Query(`
-		SELECT id, name, completed
+		SELECT id, name, completed, user_id
 		FROM todo
-	`)
+		WHERE user_id = $1
+	`, userID)
 	if err != nil {
 		log.Print(err)
 		return nil, err
@@ -33,12 +34,12 @@ func (s *PostgresRepository) getTodos(userID int64) ([]*Todo, error) {
 	userTodos := make([]*Todo, 0)
 	for rows.Next() {
 		dbt := new(dbtodo)
-		err := rows.Scan(&dbt.id, &dbt.name, &dbt.completed)
+		err := rows.Scan(&dbt.id, &dbt.name, &dbt.completed, &dbt.userID)
 		if err != nil {
 			log.Print(err)
 			return nil, err
 		}
-		t, err := NewTodo(dbt.id, dbt.name, dbt.completed, 0)
+		t, err := NewTodo(dbt.id, dbt.name, dbt.completed, dbt.userID)
 		if err != nil {
 			log.Print(err)
 			return nil, err
@@ -51,15 +52,15 @@ func (s *PostgresRepository) getTodos(userID int64) ([]*Todo, error) {
 // AddTodo adds a single todo to storage
 func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 	row := s.DB.QueryRow(`
-		INSERT INTO todo (name, completed)
-		VALUES ($1, $2)
-		RETURNING id, name, completed
-	`, t.Name(), t.Completed())
+		INSERT INTO todo (name, completed, user_id)
+		VALUES ($1, $2, $3)
+		RETURNING id, name, completed, user_id
+	`, t.Name(), t.Completed(), t.userID)
 	dbt := new(dbtodo)
-	err := row.Scan(&dbt.id, &dbt.name, &dbt.completed)
+	err := row.Scan(&dbt.id, &dbt.name, &dbt.completed, &dbt.userID)
 	if err != nil {
 		log.Print(err)
 		return nil, err
 	}
-	return NewTodo(dbt.id, dbt.name, dbt.completed, 0)
+	return NewTodo(dbt.id, dbt.name, dbt.completed, dbt.userID)
 }

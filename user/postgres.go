@@ -31,9 +31,13 @@ func (s *PostgresRepository) getUserByName(n string) (*User, error) {
 	row := s.DB.QueryRow(`
 		SELECT id, username, password
 		FROM public.user
-	`)
+		WHERE username = $1
+	`, n)
 	user := new(User)
 	err := row.Scan(&user.ID, &user.Username, &user.Password)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
 	if err != nil {
 		log.Print(err)
 		return nil, err

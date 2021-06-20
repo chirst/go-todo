@@ -31,11 +31,7 @@ func main() {
 		todosRepo = new(todo.MemoryRepository)
 		usersRepo = new(user.MemoryRepository)
 	} else {
-		// TODO: migrations
-		db, err := sql.Open("postgres", config.GetPostgresSourceName())
-		if err != nil {
-			panic(err.Error())
-		}
+		db := initDB()
 		defer db.Close()
 		todosRepo = &todo.PostgresRepository{DB: db}
 		usersRepo = &user.PostgresRepository{DB: db}
@@ -73,4 +69,31 @@ func main() {
 	address := config.GetAddress()
 	fmt.Printf("server listening on %s\n", address)
 	http.ListenAndServe(address, router)
+}
+
+// initDB opens a db connection, handles schema, and panics if anything goes wrong
+func initDB() *sql.DB {
+	db, err := sql.Open("postgres", config.GetPostgresSourceName())
+	if err != nil {
+		panic(err.Error())
+	}
+	if _, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS public.user(
+			id 			serial NOT NULL,
+			username 	varchar(256) UNIQUE NOT NULL,
+			password 	varchar(256) NOT NULL,
+			PRIMARY KEY (id)
+		);
+
+		CREATE TABLE IF NOT EXISTS todo(
+			id 			serial NOT NULL,
+			name 		varchar(256) NOT NULL,
+			completed 	date,
+			user_id		integer REFERENCES public.user NOT NULL,
+			PRIMARY KEY (id)
+		);
+	`); err != nil {
+		panic(err)
+	}
+	return db
 }

@@ -6,11 +6,18 @@ package todo
 import (
 	"database/sql"
 	"log"
+	"time"
 )
 
 // PostgresRepository persists todos
 type PostgresRepository struct {
 	DB *sql.DB
+}
+
+type dbtodo struct {
+	id        int64
+	name      string
+	completed *time.Time
 }
 
 // GetTodos gets all todos in storage for a user
@@ -25,13 +32,18 @@ func (s *PostgresRepository) getTodos(userID int64) ([]*Todo, error) {
 	}
 	userTodos := make([]*Todo, 0)
 	for rows.Next() {
-		userTodo := new(Todo)
-		err := rows.Scan(&userTodo.ID, &userTodo.Name, &userTodo.Completed)
+		dbt := new(dbtodo)
+		err := rows.Scan(&dbt.id, &dbt.name, &dbt.completed)
 		if err != nil {
 			log.Print(err)
 			return nil, err
 		}
-		userTodos = append(userTodos, userTodo)
+		t, err := NewTodo(dbt.id, dbt.name, dbt.completed, 0)
+		if err != nil {
+			log.Print(err)
+			return nil, err
+		}
+		userTodos = append(userTodos, t)
 	}
 	return userTodos, nil
 }
@@ -42,12 +54,12 @@ func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 		INSERT INTO todo (name, completed)
 		VALUES ($1, $2)
 		RETURNING id, name, completed
-	`, t.Name, t.Completed)
-	insertedTodo := new(Todo)
-	err := row.Scan(&insertedTodo.ID, &insertedTodo.Name, &insertedTodo.Completed)
+	`, t.Name(), t.Completed())
+	dbt := new(dbtodo)
+	err := row.Scan(&dbt.id, &dbt.name, &dbt.completed)
 	if err != nil {
 		log.Print(err)
 		return nil, err
 	}
-	return insertedTodo, nil
+	return NewTodo(dbt.id, dbt.name, dbt.completed, 0)
 }

@@ -22,9 +22,6 @@ func NewService(r Repository) *Service {
 
 // AddTodo is for creating, validating, and adding a new todo to persistence
 func (s *Service) AddTodo(t Todo) (*Todo, error) {
-	if t.Name == "" {
-		return nil, errNameRequired
-	}
 	return s.r.addTodo(t)
 }
 

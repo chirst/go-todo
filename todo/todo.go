@@ -7,8 +7,38 @@ import "time"
 // Completed is the time the todo has been completed or nil if the todo is incomplete
 // UserID is the user this todo belongs to
 type Todo struct {
-	ID        int64      `json:"id"`
-	Name      string     `json:"name"`
-	Completed *time.Time `json:"completed"`
-	UserID    int64      `json:"userId"`
+	id        int64      `json:"id"`
+	name      string     `json:"name"`
+	completed *time.Time `json:"completed"`
+	userID    int64      `json:"userId"`
+}
+
+// NewTodo provides a consistent way of creating a valid Todo
+func NewTodo(id int64, name string, completed *time.Time, userID int64) (*Todo, error) {
+	// TODO: test no name
+	if name == "" {
+		return nil, errNameRequired
+	}
+	return &Todo{
+		id,
+		name,
+		completed,
+		userID,
+	}, nil
+}
+
+// UserID is the related user id for this todo
+// probably a bad idea...
+func (t *Todo) UserID() int64 {
+	return t.userID
+}
+
+// Name is the name of the todo
+func (t *Todo) Name() string {
+	return t.name
+}
+
+// Completed is the time the todo was completed
+func (t *Todo) Completed() *time.Time {
+	return t.completed
 }

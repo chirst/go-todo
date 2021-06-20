@@ -42,10 +42,8 @@ func TestAddTodo(t *testing.T) {
 
 	token, _, _ := auth.GetTokenForUser(1)
 	ctx := context.WithValue(context.Background(), jwtauth.TokenCtxKey, token)
-	todoBody := todo.Todo{
-		ID:     1,
-		Name:   "gud name",
-		UserID: 1,
+	todoBody := bodyTodo{
+		name: "gud name",
 	}
 	buffer := new(bytes.Buffer)
 	json.NewEncoder(buffer).Encode(todoBody)

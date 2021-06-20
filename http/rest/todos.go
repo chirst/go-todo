@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 	"todo/auth"
 	"todo/todo"
 )
@@ -27,16 +28,20 @@ func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request
 func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
-		var bodyTodo todo.Todo
-		err := decoder.Decode(&bodyTodo)
+		var bt bodyTodo
+		err := decoder.Decode(&bt)
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		uid := auth.GetUIDClaim(r.Context())
-		bodyTodo.UserID = uid
-		newTodo, err := service.AddTodo(bodyTodo)
+		t, err := todo.NewTodo(0, bt.name, bt.completed, uid)
+		if err != nil {
+			log.Print(err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+		newTodo, err := service.AddTodo(*t)
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -45,4 +50,9 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(newTodo)
 	}
+}
+
+type bodyTodo struct {
+	name      string
+	completed *time.Time
 }

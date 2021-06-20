@@ -31,11 +31,7 @@ func main() {
 		todosRepo = new(todo.MemoryRepository)
 		usersRepo = new(user.MemoryRepository)
 	} else {
-		db, err := sql.Open("postgres", config.GetPostgresSourceName())
-		if err != nil {
-			panic(err.Error())
-		}
-		createSchema(db)
+		db := initDB()
 		defer db.Close()
 		todosRepo = &todo.PostgresRepository{DB: db}
 		usersRepo = &user.PostgresRepository{DB: db}
@@ -75,8 +71,13 @@ func main() {
 	http.ListenAndServe(address, router)
 }
 
-func createSchema(db *sql.DB) {
-	_, err := db.Exec(`
+// initDB opens a db connection, handles schema, and panics if anything goes wrong
+func initDB() *sql.DB {
+	db, err := sql.Open("postgres", config.GetPostgresSourceName())
+	if err != nil {
+		panic(err.Error())
+	}
+	if _, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS public.user(
 			id 			serial NOT NULL,
 			username 	varchar(256) UNIQUE NOT NULL,
@@ -91,8 +92,8 @@ func createSchema(db *sql.DB) {
 			user_id		integer REFERENCES public.user NOT NULL,
 			PRIMARY KEY (id)
 		);
-	`)
-	if err != nil {
+	`); err != nil {
 		panic(err)
 	}
+	return db
 }

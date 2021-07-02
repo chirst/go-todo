@@ -14,9 +14,9 @@ func (ts *Todos) ToJSON() ([]byte, error) {
 }
 
 // Todo models a single todo
-// name is a short description of the todo
-// completed is the time the todo has been completed or nil if the todo is incomplete
-// userID is the user this todo belongs to
+// Name is a short description of the todo
+// Completed is the time the todo has been completed or nil if the todo is incomplete
+// UserID is the user this todo belongs to
 type Todo struct {
 	ID        int64      `json:"id"`
 	Name      string     `json:"name"`

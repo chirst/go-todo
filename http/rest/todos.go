@@ -14,22 +14,6 @@ type bodyTodo struct {
 	Completed *time.Time
 }
 
-type responseTodo struct {
-	Id        int64      `json:"id"`
-	Name      string     `json:"name"`
-	Completed *time.Time `json:"completed"`
-	UserID    int64      `json:"userId"`
-}
-
-func toResponse(t *todo.Todo) *responseTodo {
-	return &responseTodo{
-		Id:        t.ID(),
-		Name:      t.Name(),
-		Completed: t.Completed(),
-		UserID:    t.UserID(),
-	}
-}
-
 // GetTodos returns all todos
 func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -40,12 +24,14 @@ func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		var todosResponse []responseTodo
-		for _, todo := range todos {
-			todosResponse = append(todosResponse, *toResponse(todo))
+		b, err := todos.ToJSON()
+		if err != nil {
+			log.Print(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
-		json.NewEncoder(w).Encode(todosResponse)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(b)
 	}
 }
 
@@ -65,6 +51,7 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 		newTodo, err := service.AddTodo(*t)
 		if err != nil {
@@ -72,7 +59,13 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		b, err := newTodo.ToJSON()
+		if err != nil {
+			log.Print(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(toResponse(newTodo))
+		w.Write(b)
 	}
 }

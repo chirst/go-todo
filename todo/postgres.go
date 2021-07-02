@@ -55,7 +55,7 @@ func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 		INSERT INTO todo (name, completed, user_id)
 		VALUES ($1, $2, $3)
 		RETURNING id, name, completed, user_id
-	`, t.name, t.completed, t.userID)
+	`, t.Name, t.Completed, t.UserID)
 	dbt := new(dbtodo)
 	err := row.Scan(&dbt.id, &dbt.name, &dbt.completed, &dbt.userID)
 	if err != nil {

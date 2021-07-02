@@ -12,7 +12,7 @@ func (s *MemoryRepository) getTodos(userID int64) ([]*Todo, error) {
 	var userTodos []*Todo
 	userTodos = []*Todo{}
 	for i := range s.todos {
-		if s.todos[i].userID == userID {
+		if s.todos[i].UserID == userID {
 			userTodos = append(userTodos, &s.todos[i])
 		}
 	}
@@ -23,7 +23,7 @@ func (s *MemoryRepository) getTodos(userID int64) ([]*Todo, error) {
 func (s *MemoryRepository) addTodo(t Todo) (*Todo, error) {
 	id := int64(len(s.todos)) + 1
 	s.todos = append(s.todos, t)
-	nt, err := NewTodo(id, t.name, t.completed, t.userID)
+	nt, err := NewTodo(id, t.Name, t.Completed, t.UserID)
 	if err != nil {
 		log.Print(err)
 		return nil, err

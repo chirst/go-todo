@@ -9,6 +9,27 @@ import (
 	"todo/todo"
 )
 
+type bodyTodo struct {
+	Name      string
+	Completed *time.Time
+}
+
+type responseTodo struct {
+	Id        int64      `json:"id"`
+	Name      string     `json:"name"`
+	Completed *time.Time `json:"completed"`
+	UserID    int64      `json:"userId"`
+}
+
+func toResponse(t *todo.Todo) *responseTodo {
+	return &responseTodo{
+		Id:        t.ID(),
+		Name:      t.Name(),
+		Completed: t.Completed(),
+		UserID:    t.UserID(),
+	}
+}
+
 // GetTodos returns all todos
 func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +41,11 @@ func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(todos)
+		var todosResponse []responseTodo
+		for _, todo := range todos {
+			todosResponse = append(todosResponse, *toResponse(todo))
+		}
+		json.NewEncoder(w).Encode(todosResponse)
 	}
 }
 
@@ -36,7 +61,7 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 			return
 		}
 		uid := auth.GetUIDClaim(r.Context())
-		t, err := todo.NewTodo(0, bt.name, bt.completed, uid)
+		t, err := todo.NewTodo(0, bt.Name, bt.Completed, uid)
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -48,11 +73,6 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(newTodo)
+		json.NewEncoder(w).Encode(toResponse(newTodo))
 	}
-}
-
-type bodyTodo struct {
-	name      string
-	completed *time.Time
 }

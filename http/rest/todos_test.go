@@ -43,7 +43,7 @@ func TestAddTodo(t *testing.T) {
 	token, _, _ := auth.GetTokenForUser(1)
 	ctx := context.WithValue(context.Background(), jwtauth.TokenCtxKey, token)
 	todoBody := bodyTodo{
-		name: "gud name",
+		Name: "gud name",
 	}
 	buffer := new(bytes.Buffer)
 	json.NewEncoder(buffer).Encode(todoBody)

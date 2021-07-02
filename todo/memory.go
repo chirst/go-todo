@@ -22,8 +22,8 @@ func (s *MemoryRepository) getTodos(userID int64) ([]*Todo, error) {
 // AddTodo adds a single todo to storage
 func (s *MemoryRepository) addTodo(t Todo) (*Todo, error) {
 	id := int64(len(s.todos)) + 1
-	s.todos = append(s.todos, t)
 	nt, err := NewTodo(id, t.Name, t.Completed, t.UserID)
+	s.todos = append(s.todos, *nt)
 	if err != nil {
 		log.Print(err)
 		return nil, err

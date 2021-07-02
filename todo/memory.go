@@ -12,7 +12,7 @@ func (s *MemoryRepository) getTodos(userID int64) ([]*Todo, error) {
 	var userTodos []*Todo
 	userTodos = []*Todo{}
 	for i := range s.todos {
-		if s.todos[i].UserID() == userID {
+		if s.todos[i].userID == userID {
 			userTodos = append(userTodos, &s.todos[i])
 		}
 	}

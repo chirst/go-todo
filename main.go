@@ -77,6 +77,7 @@ func initDB() *sql.DB {
 	if err != nil {
 		panic(err.Error())
 	}
+	// TODO: use files
 	if _, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS public.user(
 			id 			serial NOT NULL,

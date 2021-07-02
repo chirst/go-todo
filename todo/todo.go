@@ -25,6 +25,7 @@ type Todo struct {
 }
 
 // NewTodo provides a consistent way of creating a valid Todo
+// Prefer going through this method to always have a predictable object
 func NewTodo(id int64, name string, completed *time.Time, userID int64) (*Todo, error) {
 	// TODO: test no name
 	if name == "" {
@@ -38,6 +39,7 @@ func NewTodo(id int64, name string, completed *time.Time, userID int64) (*Todo, 
 	}, nil
 }
 
+// ToJSON converts a Todo to json
 func (t *Todo) ToJSON() ([]byte, error) {
 	return json.Marshal(t)
 }

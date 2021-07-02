@@ -9,11 +9,6 @@ import (
 	"todo/todo"
 )
 
-type bodyTodo struct {
-	Name      string
-	Completed *time.Time
-}
-
 // GetTodos returns all todos
 func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -35,13 +30,16 @@ func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request
 	}
 }
 
+type bodyTodo struct {
+	Name      string
+	Completed *time.Time
+}
+
 // AddTodo adds a todo
 func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		decoder := json.NewDecoder(r.Body)
-		var bt bodyTodo
-		err := decoder.Decode(&bt)
-		if err != nil {
+		bt := bodyTodo{}
+		if err := json.NewDecoder(r.Body).Decode(&bt); err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -53,13 +51,13 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		newTodo, err := service.AddTodo(*t)
+		addedTodo, err := service.AddTodo(*t)
 		if err != nil {
 			log.Print(err)
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		b, err := newTodo.ToJSON()
+		b, err := addedTodo.ToJSON()
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)

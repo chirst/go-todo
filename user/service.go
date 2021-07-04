@@ -30,27 +30,22 @@ func NewService(r Repository) *Service {
 }
 
 // AddUser validates, creates, and adds the user to persistence
-func (s *Service) AddUser(username, p string) (*User, error) {
-	// TODO: stricter validation on name and pass
-	if username == "" {
-		return nil, errUsernameRequired
-	}
-	if p == "" {
-		return nil, errPasswordRequired
-	}
-	u, err := s.r.getUserByName(username)
+func (s *Service) AddUser(u *User) (*User, error) {
+	storageUser, err := s.r.getUserByName(u.username)
 	if err != nil {
 		return nil, err
 	}
-	if u != nil { // TODO: read this and make sure it doesn't suck
+	if storageUser != nil {
 		return nil, errUserExists
 	}
-	hashedPassword, err := auth.GenerateFromPassword(p)
+	// TODO: test password != input password
+	hashedPassword, err := auth.GenerateFromPassword(u.password)
 	if err != nil {
 		log.Print(err)
 		return nil, err
 	}
-	return s.r.addUser(User{ID: 0, Username: username, Password: *hashedPassword})
+	u.password = *hashedPassword
+	return s.r.addUser(*u)
 }
 
 // GetUserTokenString returns an auth token string for the first user matching the
@@ -63,10 +58,10 @@ func (s *Service) GetUserTokenString(username, password string) (*string, error)
 	if u == nil { // TODO: this should probably just be an error from the repo
 		return nil, errUserNotFound
 	}
-	if auth.CompareHashAndPassword(u.Password, password) != nil {
+	if auth.CompareHashAndPassword(u.password, password) != nil {
 		return nil, errPasswordNotMatching
 	}
-	_, tokenString, err := auth.GetTokenForUser(u.ID)
+	_, tokenString, err := auth.GetTokenForUser(u.id)
 	if err != nil {
 		log.Print(err)
 		return nil, errTokenGeneration

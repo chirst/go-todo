@@ -19,18 +19,18 @@ func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		b, err := todos.ToJSON()
+		decodedTodos, err := todos.ToJSON()
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(b)
+		w.Write(decodedTodos)
 	}
 }
 
-type bodyTodo struct {
+type addTodoBody struct {
 	Name      string
 	Completed *time.Time
 }
@@ -38,7 +38,7 @@ type bodyTodo struct {
 // AddTodo adds a todo
 func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		bt := bodyTodo{}
+		bt := addTodoBody{}
 		if err := json.NewDecoder(r.Body).Decode(&bt); err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -57,13 +57,13 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		b, err := addedTodo.ToJSON()
+		decodedTodo, err := addedTodo.ToJSON()
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(b)
+		w.Write(decodedTodo)
 	}
 }

@@ -5,23 +5,15 @@ import (
 	"time"
 )
 
-// Todos is a list of Todo
-type Todos []*Todo
-
-// ToJSON converts Todos to json
-func (ts *Todos) ToJSON() ([]byte, error) {
-	return json.Marshal(ts)
-}
-
 // Todo models a single todo
 // Name is a short description of the todo
 // Completed is the time the todo has been completed or nil if the todo is incomplete
 // UserID is the user this todo belongs to
 type Todo struct {
-	ID        int64      `json:"id"`
-	Name      string     `json:"name"`
-	Completed *time.Time `json:"completed"`
-	UserID    int64      `json:"userId"`
+	id        int64
+	name      string
+	completed *time.Time
+	userId    int64
 }
 
 // NewTodo provides a consistent way of creating a valid Todo
@@ -39,7 +31,37 @@ func NewTodo(id int64, name string, completed *time.Time, userID int64) (*Todo, 
 	}, nil
 }
 
+// Todos is a list of Todo
+type Todos []*Todo
+
+// TodoJSON serializes a Todo to JSON for public viewing
+type TodoJSON struct {
+	ID        int64      `json:"id"`
+	Name      string     `json:"name"`
+	Completed *time.Time `json:"completed"`
+	UserID    int64      `json:"userId"`
+}
+
+// ToJSON converts Todos to json
+func (ts *Todos) ToJSON() ([]byte, error) {
+	jts := []*TodoJSON{}
+	for _, t := range *ts {
+		jts = append(jts, &TodoJSON{
+			t.id,
+			t.name,
+			t.completed,
+			t.userId,
+		})
+	}
+	return json.Marshal(jts)
+}
+
 // ToJSON converts a Todo to json
 func (t *Todo) ToJSON() ([]byte, error) {
-	return json.Marshal(t)
+	return json.Marshal(&TodoJSON{
+		t.id,
+		t.name,
+		t.completed,
+		t.userId,
+	})
 }

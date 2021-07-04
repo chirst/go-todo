@@ -67,7 +67,7 @@ func main() {
 	})
 
 	address := config.GetAddress()
-	fmt.Printf("server listening on %s\n", address)
+	fmt.Printf("server listening on %s\n", address) // TODO: might add warning when in memory db
 	http.ListenAndServe(address, router)
 }
 

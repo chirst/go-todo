@@ -13,7 +13,7 @@ type PostgresRepository struct {
 	DB *sql.DB
 }
 
-type dbtodo struct {
+type postgresTodo struct {
 	id        int64
 	name      string
 	completed *time.Time
@@ -33,13 +33,13 @@ func (s *PostgresRepository) getTodos(userID int64) ([]*Todo, error) {
 	}
 	userTodos := make([]*Todo, 0)
 	for rows.Next() {
-		dbt := new(dbtodo)
-		err := rows.Scan(&dbt.id, &dbt.name, &dbt.completed, &dbt.userID)
+		pgt := postgresTodo{}
+		err := rows.Scan(&pgt.id, &pgt.name, &pgt.completed, &pgt.userID)
 		if err != nil {
 			log.Print(err)
 			return nil, err
 		}
-		t, err := NewTodo(dbt.id, dbt.name, dbt.completed, dbt.userID)
+		t, err := NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID)
 		if err != nil {
 			log.Print(err)
 			return nil, err
@@ -55,12 +55,12 @@ func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 		INSERT INTO todo (name, completed, user_id)
 		VALUES ($1, $2, $3)
 		RETURNING id, name, completed, user_id
-	`, t.Name, t.Completed, t.UserID)
-	dbt := new(dbtodo)
-	err := row.Scan(&dbt.id, &dbt.name, &dbt.completed, &dbt.userID)
+	`, t.name, t.completed, t.userId)
+	pgt := postgresTodo{}
+	err := row.Scan(&pgt.id, &pgt.name, &pgt.completed, &pgt.userID)
 	if err != nil {
 		log.Print(err)
 		return nil, err
 	}
-	return NewTodo(dbt.id, dbt.name, dbt.completed, dbt.userID)
+	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID)
 }

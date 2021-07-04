@@ -14,10 +14,7 @@ func TestAddUser(t *testing.T) {
 	r := new(user.MemoryRepository)
 	s := user.NewService(r)
 
-	userBody := struct {
-		Username string
-		Password string
-	}{
+	userBody := addUserBody{
 		"guduser",
 		"1234",
 	}

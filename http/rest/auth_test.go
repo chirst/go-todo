@@ -18,7 +18,10 @@ func TestLogin(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error creating user")
 	}
-	s.AddUser(u)
+	_, err = s.AddUser(u)
+	if err != nil {
+		t.Fatalf("error adding user")
+	}
 
 	loginBody := loginBody{
 		"guduser",

@@ -12,30 +12,17 @@ func TestAddTodo(t *testing.T) {
 
 	now := time.Now()
 
+	exampleTodo, _ := NewTodo(1, "do stuff", &now, 1)
+
 	tests := map[string]struct {
 		input Todo
 		want  *Todo
 		want2 error
 	}{
 		"adds": {
-			input: Todo{
-				ID:        1,
-				Name:      "do stuff",
-				Completed: &now,
-				UserID:    1,
-			},
-			want: &Todo{
-				ID:        1,
-				Name:      "do stuff",
-				Completed: &now,
-				UserID:    1,
-			},
+			input: *exampleTodo,
+			want:  exampleTodo,
 			want2: nil,
-		},
-		"no name": {
-			input: Todo{Name: ""},
-			want:  nil,
-			want2: errNameRequired,
 		},
 	}
 
@@ -56,18 +43,12 @@ func TestGetTodos(t *testing.T) {
 	r := new(MemoryRepository)
 	s := NewService(r)
 
-	todo := Todo{
-		UserID: 1,
-		Name:   "do stuff",
-	}
-	nonUserTodo := Todo{
-		UserID: 2,
-		Name:   "gud todo",
-	}
-	s.AddTodo(todo)
-	s.AddTodo(todo)
-	s.AddTodo(todo)
-	s.AddTodo(nonUserTodo)
+	todo, _ := NewTodo(0, "do stuff", nil, 1)
+	nonUserTodo, _ := NewTodo(0, "gud todo", nil, 2)
+	s.AddTodo(*todo)
+	s.AddTodo(*todo)
+	s.AddTodo(*todo)
+	s.AddTodo(*nonUserTodo)
 
 	tests := map[string]struct {
 		userID         int64

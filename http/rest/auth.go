@@ -7,13 +7,15 @@ import (
 	"todo/user"
 )
 
+type loginBody struct {
+	Username string
+	Password string
+}
+
 // Login returns an auth token for a valid login
 func Login(userService *user.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		b := struct {
-			Username string `json:"username"`
-			Password string `json:"password"`
-		}{}
+		b := loginBody{}
 		err := json.NewDecoder(r.Body).Decode(&b)
 		if err != nil {
 			log.Print(err)
@@ -26,7 +28,7 @@ func Login(userService *user.Service) func(w http.ResponseWriter, r *http.Reques
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "text/plain")
 		json.NewEncoder(w).Encode(tokenString)
 	}
 }

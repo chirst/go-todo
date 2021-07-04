@@ -14,17 +14,21 @@ func TestLogin(t *testing.T) {
 	r := new(user.MemoryRepository)
 	s := user.NewService(r)
 
-	s.AddUser("guduser", "1234")
+	u, err := user.NewUser(0, "guduser", "1234")
+	if err != nil {
+		t.Fatalf("error creating user")
+	}
+	_, err = s.AddUser(u)
+	if err != nil {
+		t.Fatalf("error adding user")
+	}
 
-	userBody := struct {
-		Username string
-		Password string
-	}{
+	loginBody := loginBody{
 		"guduser",
 		"1234",
 	}
 	buffer := new(bytes.Buffer)
-	json.NewEncoder(buffer).Encode(userBody)
+	json.NewEncoder(buffer).Encode(loginBody)
 	req, err := http.NewRequest("POST", "/login", buffer)
 	if err != nil {
 		log.Fatal(err)

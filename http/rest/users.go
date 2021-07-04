@@ -7,21 +7,34 @@ import (
 	"todo/user"
 )
 
+type addUserBody struct {
+	Username string
+	Password string
+}
+
 // AddUser adds a user
 func AddUser(service *user.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		b := struct {
-			Username string `json:"username"`
-			Password string `json:"password"`
-		}{}
-		json.NewDecoder(r.Body).Decode(&b)
-		user, err := service.AddUser(b.Username, b.Password)
+		body := addUserBody{}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			log.Print(err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		newUser, err := user.NewUser(0, body.Username, body.Password)
+		addedUser, err := service.AddUser(newUser)
 		if err != nil {
 			log.Print(err)
-			http.Error(w, err.Error(), 400)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		jsonUser, err := addedUser.ToJSON()
+		if err != nil {
+			log.Print(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(user)
+		w.Write(jsonUser)
 	}
 }

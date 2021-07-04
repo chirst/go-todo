@@ -12,19 +12,30 @@ type PostgresRepository struct {
 	DB *sql.DB
 }
 
+type postgresUser struct {
+	ID       int64
+	Username string
+	Password string
+}
+
 func (s *PostgresRepository) addUser(u User) (*User, error) {
 	result := s.DB.QueryRow(`
 		INSERT INTO public.user (username, password)
 		VALUES ($1, $2)
 		RETURNING id, username, password
-	`, u.Username, u.Password)
-	insertedUser := new(User)
+	`, u.username, u.password)
+	insertedUser := postgresUser{}
 	err := result.Scan(&insertedUser.ID, &insertedUser.Username, &insertedUser.Password)
 	if err != nil {
 		log.Print(err)
 		return nil, err
 	}
-	return insertedUser, nil
+	domainUser, err := NewUser(insertedUser.ID, insertedUser.Username, insertedUser.Password)
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
+	return domainUser, nil
 }
 
 func (s *PostgresRepository) getUserByName(n string) (*User, error) {
@@ -33,14 +44,19 @@ func (s *PostgresRepository) getUserByName(n string) (*User, error) {
 		FROM public.user
 		WHERE username = $1
 	`, n)
-	user := new(User)
-	err := row.Scan(&user.ID, &user.Username, &user.Password)
+	pgUser := postgresUser{}
+	err := row.Scan(&pgUser.ID, &pgUser.Username, &pgUser.Password)
 	if err == sql.ErrNoRows {
-		return nil, nil
+		return nil, nil // Todo: find a way around this double nil
 	}
 	if err != nil {
 		log.Print(err)
 		return nil, err
 	}
-	return user, nil
+	domainUser, err := NewUser(pgUser.ID, pgUser.Username, pgUser.Password)
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
+	return domainUser, nil
 }

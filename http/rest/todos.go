@@ -19,14 +19,14 @@ func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		decodedTodos, err := todos.ToJSON()
+		jsonTodos, err := todos.ToJSON()
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(decodedTodos)
+		w.Write(jsonTodos)
 	}
 }
 
@@ -57,13 +57,13 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		decodedTodo, err := addedTodo.ToJSON()
+		jsonTodo, err := addedTodo.ToJSON()
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(decodedTodo)
+		w.Write(jsonTodo)
 	}
 }

@@ -28,13 +28,13 @@ func AddUser(service *user.Service) func(w http.ResponseWriter, r *http.Request)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		decodedUser, err := addedUser.ToJSON()
+		jsonUser, err := addedUser.ToJSON()
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(decodedUser)
+		w.Write(jsonUser)
 	}
 }

@@ -28,6 +28,7 @@ func main() {
 	var todosRepo todo.Repository
 	var usersRepo user.Repository
 	if *inMemoryFlag {
+		fmt.Println("using in memory db")
 		todosRepo = new(todo.MemoryRepository)
 		usersRepo = new(user.MemoryRepository)
 	} else {
@@ -67,7 +68,7 @@ func main() {
 	})
 
 	address := config.GetAddress()
-	fmt.Printf("server listening on %s\n", address) // TODO: might add warning when in memory db
+	fmt.Printf("server listening on %s\n", address)
 	http.ListenAndServe(address, router)
 }
 

@@ -34,7 +34,7 @@ func TestAddUser(t *testing.T) {
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			got, got2 := s.AddUser(tc.input)
-			if got != nil {
+			if got != nil && tc.want != nil {
 				if tc.want.id != got.id || tc.want.username != got.username {
 					t.Fatalf("expected %#v, got: %#v", tc.want, got)
 				}

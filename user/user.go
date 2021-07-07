@@ -9,6 +9,7 @@ type User struct {
 	password string
 }
 
+// NewUser is a way to create a valid User
 func NewUser(id int64, username string, password string) (*User, error) {
 	// TODO: stricter validation on name and pass
 	// TODO: test no username
@@ -26,13 +27,14 @@ func NewUser(id int64, username string, password string) (*User, error) {
 	}, nil
 }
 
-type UserJSON struct {
+type userJSON struct {
 	ID       int64  `json:"id"`
 	Username string `json:"username"`
 }
 
+// ToJSON converts a User to JSON
 func (u *User) ToJSON() ([]byte, error) {
-	uj := UserJSON{
+	uj := userJSON{
 		ID:       u.id,
 		Username: u.username,
 	}

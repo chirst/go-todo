@@ -1,6 +1,6 @@
-// TODO: integration tests
-// TODO: fix listing columns in query and scan
 package user
+
+// TODO: integration tests
 
 import (
 	"database/sql"

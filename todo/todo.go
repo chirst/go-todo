@@ -13,7 +13,7 @@ type Todo struct {
 	id        int64
 	name      string
 	completed *time.Time
-	userId    int64
+	userID    int64
 }
 
 // NewTodo provides a consistent way of creating a valid Todo
@@ -34,8 +34,7 @@ func NewTodo(id int64, name string, completed *time.Time, userID int64) (*Todo, 
 // Todos is a list of Todo
 type Todos []*Todo
 
-// TodoJSON serializes a Todo to JSON for public viewing
-type TodoJSON struct {
+type todoJSON struct {
 	ID        int64      `json:"id"`
 	Name      string     `json:"name"`
 	Completed *time.Time `json:"completed"`
@@ -44,13 +43,13 @@ type TodoJSON struct {
 
 // ToJSON converts Todos to json
 func (ts *Todos) ToJSON() ([]byte, error) {
-	jts := []*TodoJSON{}
+	jts := []*todoJSON{}
 	for _, t := range *ts {
-		jts = append(jts, &TodoJSON{
+		jts = append(jts, &todoJSON{
 			t.id,
 			t.name,
 			t.completed,
-			t.userId,
+			t.userID,
 		})
 	}
 	return json.Marshal(jts)
@@ -58,10 +57,10 @@ func (ts *Todos) ToJSON() ([]byte, error) {
 
 // ToJSON converts a Todo to json
 func (t *Todo) ToJSON() ([]byte, error) {
-	return json.Marshal(&TodoJSON{
+	return json.Marshal(&todoJSON{
 		t.id,
 		t.name,
 		t.completed,
-		t.userId,
+		t.userID,
 	})
 }

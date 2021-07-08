@@ -12,8 +12,6 @@ type User struct {
 // NewUser is a way to create a valid User
 func NewUser(id int64, username string, password string) (*User, error) {
 	// TODO: stricter validation on name and pass
-	// TODO: test no username
-	// TODO: test no password
 	if username == "" {
 		return nil, errUsernameRequired
 	}

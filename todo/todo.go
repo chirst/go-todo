@@ -19,7 +19,6 @@ type Todo struct {
 // NewTodo provides a consistent way of creating a valid Todo
 // Prefer going through this method to always have a predictable object
 func NewTodo(id int64, name string, completed *time.Time, userID int64) (*Todo, error) {
-	// TODO: test no name
 	if name == "" {
 		return nil, errNameRequired
 	}

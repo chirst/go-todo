@@ -27,7 +27,7 @@ func TestAddUser(t *testing.T) {
 		"add existing": {
 			input: u,
 			want:  nil,
-			want2: errUserExists,
+			want2: errUniqueUsername,
 		},
 	}
 

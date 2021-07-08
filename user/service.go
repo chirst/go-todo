@@ -9,9 +9,7 @@ import (
 var errUsernameRequired error = errors.New("username required")
 var errPasswordRequired error = errors.New("password required")
 var errPasswordNotMatching error = errors.New("password not matching")
-var errUserNotFound error = errors.New("user not found")
 var errTokenGeneration error = errors.New("token generation error")
-var errUserExists error = errors.New("user exists")
 
 // Repository for users
 type Repository interface {
@@ -31,13 +29,6 @@ func NewService(r Repository) *Service {
 
 // AddUser validates, creates, and adds the user to persistence
 func (s *Service) AddUser(u *User) (*User, error) {
-	storageUser, err := s.r.getUserByName(u.username)
-	if err != nil {
-		return nil, err
-	}
-	if storageUser != nil {
-		return nil, errUserExists
-	}
 	// TODO: test password != input password
 	hashedPassword, err := auth.GenerateFromPassword(u.password)
 	if err != nil {
@@ -54,9 +45,6 @@ func (s *Service) GetUserTokenString(username, password string) (*string, error)
 	u, err := s.r.getUserByName(username)
 	if err != nil {
 		return nil, err
-	}
-	if u == nil { // TODO: this should probably just be an error from the repo
-		return nil, errUserNotFound
 	}
 	if auth.CompareHashAndPassword(u.password, password) != nil {
 		return nil, errPasswordNotMatching

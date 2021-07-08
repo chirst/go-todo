@@ -46,9 +46,6 @@ func (s *PostgresRepository) getUserByName(n string) (*User, error) {
 	`, n)
 	pgUser := postgresUser{}
 	err := row.Scan(&pgUser.ID, &pgUser.Username, &pgUser.Password)
-	if err == sql.ErrNoRows {
-		return nil, nil // Todo: find a way around this double nil
-	}
 	if err != nil {
 		log.Print(err)
 		return nil, err

@@ -1,5 +1,6 @@
 # auth configs
 jwt_sign_key: 'secret'
+jwt_duration: '24h'
 
 # server configs
 server_address: 'localhost:3000'

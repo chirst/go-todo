@@ -74,7 +74,7 @@ func GetUIDClaim(ctx context.Context) int64 {
 func GetTokenForUser(userID int64) (*jwt.Token, string, error) {
 	return tokenAuth.Encode(jwt.MapClaims{
 		"userID":  userID,
-		"expires": time.Now().Add(time.Hour * 24).Unix(),
+		"expires": time.Now().Add(config.TokenDuration()).Unix(),
 	})
 }
 

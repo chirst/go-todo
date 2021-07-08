@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -26,6 +27,13 @@ func GetAddress() string {
 // GetSignKey returns a secret key to sign JSON Web Tokens
 func GetSignKey() string {
 	return viper.GetString("jwt_sign_key")
+}
+
+// TODO: remove "Get"
+
+// TokenDuration returns the duration a JSON Web Token will be valid from creation
+func TokenDuration() time.Duration {
+	return viper.GetDuration("jwt_duration")
 }
 
 // GetPostgresSourceName returns a string containing connection info

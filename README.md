@@ -1,7 +1,7 @@
 # :heavy_check_mark: Go Todo
 
 [![Go](https://github.com/chirst/go-todo/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/chirst/go-todo/actions/workflows/go.yml)
-[![gud](https://img.shields.io/badge/Gud-yes-success)]()
+[![gud](https://img.shields.io/badge/Gud-yes-success)](https://github.com/chirst/go-todo)
 
 Another todo project for learning and having a good time.
 

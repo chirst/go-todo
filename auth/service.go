@@ -18,7 +18,7 @@ import (
 var tokenAuth *jwtauth.JWTAuth
 
 func init() {
-	key := config.GetSignKey()
+	key := config.JWTSignKey()
 	tokenAuth = jwtauth.New("HS256", []byte(key), nil)
 }
 
@@ -74,7 +74,7 @@ func GetUIDClaim(ctx context.Context) int64 {
 func GetTokenForUser(userID int64) (*jwt.Token, string, error) {
 	return tokenAuth.Encode(jwt.MapClaims{
 		"userID":  userID,
-		"expires": time.Now().Add(config.TokenDuration()).Unix(),
+		"expires": time.Now().Add(config.JWTDuration()).Unix(),
 	})
 }
 

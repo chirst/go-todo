@@ -67,14 +67,14 @@ func main() {
 		r.Post("/login", rest.Login(usersService))
 	})
 
-	address := config.GetAddress()
+	address := config.ServerAddress()
 	fmt.Printf("server listening on %s\n", address)
 	http.ListenAndServe(address, router)
 }
 
 // initDB opens a db connection, handles schema, and panics if anything goes wrong
 func initDB() *sql.DB {
-	db, err := sql.Open("postgres", config.GetPostgresSourceName())
+	db, err := sql.Open("postgres", config.PostgresSourceName())
 	if err != nil {
 		panic(err.Error())
 	}

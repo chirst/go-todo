@@ -19,26 +19,24 @@ func InitConfig() {
 	}
 }
 
-// GetAddress returns a network address to listen for requests
-func GetAddress() string {
+// ServerAddress returns a network address to listen for requests
+func ServerAddress() string {
 	return viper.GetString("server_address")
 }
 
-// GetSignKey returns a secret key to sign JSON Web Tokens
-func GetSignKey() string {
+// JWTSignKey returns a secret key to sign JSON Web Tokens
+func JWTSignKey() string {
 	return viper.GetString("jwt_sign_key")
 }
 
-// TODO: remove "Get"
-
-// TokenDuration returns the duration a JSON Web Token will be valid from creation
-func TokenDuration() time.Duration {
+// JWTDuration returns the duration a JSON Web Token will be valid from creation
+func JWTDuration() time.Duration {
 	return viper.GetDuration("jwt_duration")
 }
 
-// GetPostgresSourceName returns a string containing connection info
+// PostgresSourceName returns a string containing connection info
 // specific to a Postgres database
-func GetPostgresSourceName() string {
+func PostgresSourceName() string {
 	return "host=" + viper.GetString("pg_host") + " " +
 		"port=" + viper.GetString("pg_port") + " " +
 		"user=" + viper.GetString("pg_user") + " " +

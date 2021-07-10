@@ -2,8 +2,10 @@ package user
 
 import "errors"
 
-var errUniqueUsername error = errors.New("user exists")
-var errUserNotFound error = errors.New("user not found")
+var (
+	errUniqueUsername = errors.New("user exists")
+	errUserNotFound   = errors.New("user not found")
+)
 
 // MemoryRepository persists users
 type MemoryRepository struct {

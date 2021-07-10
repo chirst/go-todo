@@ -13,7 +13,7 @@ type loginBody struct {
 }
 
 // Login returns an auth token for a valid login
-func Login(userService *user.Service) func(w http.ResponseWriter, r *http.Request) {
+func Login(s *user.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		b := loginBody{}
 		err := json.NewDecoder(r.Body).Decode(&b)
@@ -22,7 +22,7 @@ func Login(userService *user.Service) func(w http.ResponseWriter, r *http.Reques
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		tokenString, err := userService.GetUserTokenString(b.Username, b.Password)
+		tokenString, err := s.GetUserTokenString(b.Username, b.Password)
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusForbidden)

@@ -2,7 +2,9 @@ package user
 
 import "encoding/json"
 
-// User ...
+// User models a user who can login and interact with their own set of todos
+//
+// Each User has a unique username
 type User struct {
 	id       int64
 	username string

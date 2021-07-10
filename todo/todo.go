@@ -6,19 +6,26 @@ import (
 )
 
 // Todo models a single todo
-// Name is a short description of the todo
-// Completed is the time the todo has been completed or nil if the todo is incomplete
-// UserID is the user this todo belongs to
 type Todo struct {
-	id        int64
-	name      string
+	id int64
+
+	// name is a short description of the todo
+	name string
+
+	// completed is the time the todo has been completed or nil when incomplete
 	completed *time.Time
-	userID    int64
+
+	// userID is the user this todo belongs to
+	userID int64
 }
 
 // NewTodo provides a consistent way of creating a valid Todo
-// Prefer going through this method to always have a predictable object
-func NewTodo(id int64, name string, completed *time.Time, userID int64) (*Todo, error) {
+func NewTodo(
+	id int64,
+	name string,
+	completed *time.Time,
+	userID int64,
+) (*Todo, error) {
 	if name == "" {
 		return nil, errNameRequired
 	}

@@ -34,8 +34,8 @@ func JWTDuration() time.Duration {
 	return viper.GetDuration("jwt_duration")
 }
 
-// PostgresSourceName returns a string containing connection info
-// specific to a Postgres database
+// PostgresSourceName returns a string containing connection info specific to a
+// Postgres database
 func PostgresSourceName() string {
 	return "host=" + viper.GetString("pg_host") + " " +
 		"port=" + viper.GetString("pg_port") + " " +

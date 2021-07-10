@@ -9,11 +9,11 @@ import (
 	"todo/todo"
 )
 
-// GetTodos returns all todos
-func GetTodos(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
+// GetTodos returns all todos belonging to the current user
+func GetTodos(s *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uid := auth.GetUIDClaim(r.Context())
-		todos, err := service.GetTodos(uid)
+		todos, err := s.GetTodos(uid)
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -35,8 +35,8 @@ type addTodoBody struct {
 	Completed *time.Time
 }
 
-// AddTodo adds a todo
-func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request) {
+// AddTodo adds a todo for the current user
+func AddTodo(s *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		bt := addTodoBody{}
 		if err := json.NewDecoder(r.Body).Decode(&bt); err != nil {
@@ -51,7 +51,7 @@ func AddTodo(service *todo.Service) func(w http.ResponseWriter, r *http.Request)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		addedTodo, err := service.AddTodo(*t)
+		addedTodo, err := s.AddTodo(*t)
 		if err != nil {
 			log.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)

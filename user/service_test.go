@@ -24,11 +24,6 @@ func TestAddUser(t *testing.T) {
 			want:  &User{id: 1, username: "gud name"},
 			want2: nil,
 		},
-		"add existing": {
-			input: u,
-			want:  nil,
-			want2: errUniqueUsername,
-		},
 	}
 
 	for name, tc := range tests {

@@ -25,12 +25,20 @@ func (s *PostgresRepository) addUser(u User) (*User, error) {
 		RETURNING id, username, password
 	`, u.username, u.password)
 	insertedUser := postgresUser{}
-	err := result.Scan(&insertedUser.ID, &insertedUser.Username, &insertedUser.Password)
+	err := result.Scan(
+		&insertedUser.ID,
+		&insertedUser.Username,
+		&insertedUser.Password,
+	)
 	if err != nil {
 		log.Print(err)
 		return nil, err
 	}
-	domainUser, err := NewUser(insertedUser.ID, insertedUser.Username, insertedUser.Password)
+	domainUser, err := NewUser(
+		insertedUser.ID,
+		insertedUser.Username,
+		insertedUser.Password,
+	)
 	if err != nil {
 		log.Print(err)
 		return nil, err

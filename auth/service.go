@@ -1,7 +1,6 @@
 package auth
 
-// The following package is incomplete and no
-// where near an acceptable solution
+// The following package is incomplete and should not be trusted
 
 import (
 	"context"
@@ -27,8 +26,8 @@ func Verifier(h http.Handler) http.Handler {
 	return jwtauth.Verifier(tokenAuth)(h)
 }
 
-// Authenticator is middleware who sends a 401 response for requests with
-// bad tokens and accepts requests with good tokens. This implementation comes from
+// Authenticator is middleware who sends a 401 response for requests with bad
+// tokens and accepts requests with good tokens. This implementation comes from
 // jwtauth.Authenticator, but is enhanced to check for expired tokens.
 func Authenticator(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -89,8 +88,8 @@ func GenerateFromPassword(p string) (*string, error) {
 	return &sh, nil
 }
 
-// CompareHashAndPassword compares a hash and a password.
-// Returns nil on success, or an error on failure
+// CompareHashAndPassword compares a hash and a password returning an error when
+// the hash an password do not match
 func CompareHashAndPassword(h, p string) error {
 	return bcrypt.CompareHashAndPassword([]byte(h), []byte(p))
 }

@@ -4,7 +4,10 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"path"
 	"time"
 	"todo/auth"
 	"todo/config"
@@ -72,30 +75,26 @@ func main() {
 	http.ListenAndServe(address, router)
 }
 
-// initDB opens a db connection, handles schema, and panics if anything goes wrong
+// initDB opens a db connection, runs migrations, and panics if anything goes wrong
 func initDB() *sql.DB {
 	db, err := sql.Open("postgres", config.PostgresSourceName())
 	if err != nil {
 		panic(err.Error())
 	}
-	// TODO: use files
-	if _, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS public.user(
-			id 			serial NOT NULL,
-			username 	varchar(256) UNIQUE NOT NULL,
-			password 	varchar(256) NOT NULL,
-			PRIMARY KEY (id)
-		);
-
-		CREATE TABLE IF NOT EXISTS todo(
-			id 			serial NOT NULL,
-			name 		varchar(256) NOT NULL,
-			completed 	date,
-			user_id		integer REFERENCES public.user NOT NULL,
-			PRIMARY KEY (id)
-		);
-	`); err != nil {
+	files, err := ioutil.ReadDir(path.Join("migrations"))
+	if err != nil {
 		panic(err)
+	}
+	for _, f := range files {
+		log.Printf("starting migration: %s\n", f.Name())
+		q, err := ioutil.ReadFile(path.Join("migrations", f.Name()))
+		if err != nil {
+			panic(err)
+		}
+		if _, err = db.Exec(string(q)); err != nil {
+			panic(err)
+		}
+		log.Printf("finished migration: %s\n", f.Name())
 	}
 	return db
 }

@@ -13,6 +13,29 @@ tags:
   description: "User authentication and creation"
 - name: "Todo"
   description: "CRUD operations on Todos"
+
+definitions:
+  schemas:
+    Todo:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        completed:
+          type: string
+          format: date-time
+          description: "null if incomplete"
+        userId:
+          type: integer
+
+    User:
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+
 paths:
   /login:
     post:
@@ -35,9 +58,11 @@ paths:
           properties:
             username:
               type: "string"
+              example: "gud username"
               maxLength: 256
             password:
               type: "string"
+              example: "passwordy1234"
               maxLength: 256
           required:
             - username
@@ -52,30 +77,83 @@ paths:
           description: "Invalid login body"
         "403":
           description: "Invalid login credentials"
+
   /todos:
     get:
+      summary: "Get all todos for the current user"
       description: Returns a list of all todos belonging to the current user
       operationId: GetTodos
       produces:
       - application/json
       tags:
       - Todo
+      responses:
+        "200":
+          description: "list of todos"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/schemas/Todo'
     post:
-      consumes:
-      - application/json
+      summary: "Add a single Todo"
       description: Adds a todo belonging to the current user
       operationId: AddTodo
+      consumes:
+      - application/json
       produces:
       - application/json
       tags:
       - Todo
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Details of Todo to be added"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            name:
+              type: "string"
+            completed:
+              type: "string"
+              format: date-time
+              description: "null or exclude if incomplete"
+          required:
+            - name
+      responses:
+        "201":
+          description: "todo that was created"
+          schema:
+            $ref: '#/definitions/schemas/Todo'
+
   /users:
     post:
-      consumes:
-      - application/json
+      summary: "Create a new user"
       description: Provides a way of creating a new user who can own todos
       operationId: AddUser
+      consumes:
+      - application/json
       produces:
       - application/json
       tags:
       - User
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Details of the User to be added"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            username:
+              type: "string"
+            password:
+              type: "string"
+          required:
+            - username
+            - password
+      responses:
+        "201":
+          description: "user that was created"
+          schema:
+            $ref: '#/definitions/schemas/User'

@@ -5,6 +5,16 @@
 
 Another todo project for learning and having a good time.
 
+## :pencil: Documentation
+
+Run the server and navigate to `/docs`
+
+Edit the docs at `swagger.yaml`
+
+Inspired by:
+* https://github.com/docker/engine/tree/master/api
+* https://www.youtube.com/watch?v=07XhTqE-j8k
+
 ## :pray: Credit
 
 Here are some things that inspired this project in some way:

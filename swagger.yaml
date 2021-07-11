@@ -1,0 +1,81 @@
+swagger: "2.0"
+info:
+  description: |-
+    The purpose of this application is to model collections of todos owned by authenticated users
+  version: 1.0.0
+  title: Todo API
+host: localhost
+basePath: /
+schemes:
+- http
+tags:
+- name: "User"
+  description: "User authentication and creation"
+- name: "Todo"
+  description: "CRUD operations on Todos"
+paths:
+  /login:
+    post:
+      summary: "Login a User"
+      description: "This provides a way of gaining access to protected routes given valid credentials"
+      operationId: LoginUser
+      consumes:
+      - application/json
+      produces:
+      - text/plain
+      tags:
+      - User
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Login credentials"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            username:
+              type: "string"
+              maxLength: 256
+            password:
+              type: "string"
+              maxLength: 256
+          required:
+            - username
+            - password
+      responses:
+        "200":
+          description: "Successfully logged in"
+          schema:
+            type: string
+            description: "JSON web token valid for a limited time"
+        "400":
+          description: "Invalid login body"
+        "403":
+          description: "Invalid login credentials"
+  /todos:
+    get:
+      description: Returns a list of all todos belonging to the current user
+      operationId: GetTodos
+      produces:
+      - application/json
+      tags:
+      - Todo
+    post:
+      consumes:
+      - application/json
+      description: Adds a todo belonging to the current user
+      operationId: AddTodo
+      produces:
+      - application/json
+      tags:
+      - Todo
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Provides a way of creating a new user who can own todos
+      operationId: AddUser
+      produces:
+      - application/json
+      tags:
+      - User

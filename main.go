@@ -17,6 +17,8 @@ import (
 
 	_ "github.com/lib/pq"
 
+	redoc "github.com/go-openapi/runtime/middleware"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -68,6 +70,14 @@ func main() {
 	router.Group(func(r chi.Router) {
 		r.Post("/users", rest.AddUser(usersService))
 		r.Post("/login", rest.Login(usersService))
+
+		// docs
+		sh := redoc.Redoc(redoc.RedocOpts{
+			SpecURL: "/swagger.yaml",
+			Title:   "Todo API Documentation",
+		}, nil)
+		r.Handle("/docs", sh)
+		r.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 	})
 
 	address := config.ServerAddress()

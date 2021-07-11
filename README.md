@@ -17,3 +17,4 @@ Here are some things that inspired this project in some way:
 * https://threedots.tech/
 * https://dave.cheney.net/practical-go
 * https://www.reddit.com/r/golang/
+* https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design

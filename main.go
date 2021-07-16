@@ -85,24 +85,24 @@ func main() {
 	http.ListenAndServe(address, router)
 }
 
-// initDB opens a db connection, runs migrations, and panics if anything goes wrong
+// initDB opens a db connection, runs migrations, and exits if anything goes wrong
 func initDB() *sql.DB {
 	db, err := sql.Open("postgres", config.PostgresSourceName())
 	if err != nil {
-		panic(err.Error())
+		log.Fatalf(err.Error())
 	}
 	files, err := ioutil.ReadDir(path.Join("migrations"))
 	if err != nil {
-		panic(err)
+		log.Fatalf(err.Error())
 	}
 	for _, f := range files {
 		log.Printf("starting migration: %s\n", f.Name())
 		q, err := ioutil.ReadFile(path.Join("migrations", f.Name()))
 		if err != nil {
-			panic(err)
+			log.Fatalf(err.Error())
 		}
 		if _, err = db.Exec(string(q)); err != nil {
-			panic(err)
+			log.Fatalf(err.Error())
 		}
 		log.Printf("finished migration: %s\n", f.Name())
 	}

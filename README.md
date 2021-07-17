@@ -28,3 +28,5 @@ Here are some things that inspired this project in some way:
 * https://dave.cheney.net/practical-go
 * https://www.reddit.com/r/golang/
 * https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design
+* https://docs.docker.com/language/golang/
+* https://www.youtube.com/watch?v=poejKP1wTpc

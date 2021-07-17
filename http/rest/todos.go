@@ -5,8 +5,9 @@ import (
 	"log"
 	"net/http"
 	"time"
-	"todo/auth"
-	"todo/todo"
+
+	"github.com/chirst/go-todo/auth"
+	"github.com/chirst/go-todo/todo"
 )
 
 // GetTodos returns all todos belonging to the current user

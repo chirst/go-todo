@@ -3,7 +3,8 @@ package user
 import (
 	"errors"
 	"log"
-	"todo/auth"
+
+	"github.com/chirst/go-todo/auth"
 )
 
 var (

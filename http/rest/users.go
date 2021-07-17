@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"todo/user"
+
+	"github.com/chirst/go-todo/user"
 )
 
 type addUserBody struct {

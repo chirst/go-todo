@@ -7,7 +7,8 @@ import (
 	"log"
 	"net/http"
 	"time"
-	"todo/config"
+
+	"github.com/chirst/go-todo/config"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/jwtauth"

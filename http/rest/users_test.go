@@ -7,7 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"todo/user"
+
+	"github.com/chirst/go-todo/user"
 )
 
 func TestAddUser(t *testing.T) {

@@ -9,11 +9,12 @@ import (
 	"net/http"
 	"path"
 	"time"
-	"todo/auth"
-	"todo/config"
-	"todo/http/rest"
-	"todo/todo"
-	"todo/user"
+
+	"github.com/chirst/go-todo/auth"
+	"github.com/chirst/go-todo/config"
+	"github.com/chirst/go-todo/http/rest"
+	"github.com/chirst/go-todo/todo"
+	"github.com/chirst/go-todo/user"
 
 	_ "github.com/lib/pq"
 

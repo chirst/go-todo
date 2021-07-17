@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"todo/auth"
-	"todo/todo"
+	"github.com/chirst/go-todo/auth"
+	"github.com/chirst/go-todo/todo"
 
 	"github.com/go-chi/jwtauth"
 )

@@ -3,7 +3,7 @@ jwt_sign_key: 'secret'
 jwt_duration: '24h'
 
 # server configs
-server_address: 'localhost:3000'
+server_address: '0.0.0.0:3000'
 
 # postgres configs
 pg_host: '127.0.0.1'

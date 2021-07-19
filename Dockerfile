@@ -1,6 +1,6 @@
 FROM golang:1.16-alpine
 
-WORKDIR /go/src/github.com/chirst/go-todo
+WORKDIR /app
 
 COPY go.mod .
 COPY go.sum .
@@ -11,4 +11,6 @@ COPY . .
 
 RUN go build -o /go-todo
 
-CMD [ "/go-todo" ]
+EXPOSE 3000
+
+ENTRYPOINT [ "/go-todo", "-use-memory" ]

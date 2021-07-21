@@ -19,13 +19,13 @@ func Login(s *user.Service) func(w http.ResponseWriter, r *http.Request) {
 		b := loginBody{}
 		err := json.NewDecoder(r.Body).Decode(&b)
 		if err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		tokenString, err := s.GetUserTokenString(b.Username, b.Password)
 		if err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}

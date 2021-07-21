@@ -2,7 +2,6 @@ package user
 
 import (
 	"errors"
-	"log"
 
 	"github.com/chirst/go-todo/auth"
 )
@@ -35,7 +34,6 @@ func (s *Service) AddUser(u *User) (*User, error) {
 	// TODO: test password != input password
 	hashedPassword, err := auth.GenerateFromPassword(u.password)
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 	u.password = *hashedPassword
@@ -54,7 +52,6 @@ func (s *Service) GetUserTokenString(username, password string) (*string, error)
 	}
 	_, tokenString, err := auth.GetTokenForUser(u.id)
 	if err != nil {
-		log.Print(err)
 		return nil, errTokenGeneration
 	}
 	return &tokenString, nil

@@ -4,7 +4,6 @@ package user
 
 import (
 	"database/sql"
-	"log"
 )
 
 // PostgresRepository persists users
@@ -31,7 +30,6 @@ func (s *PostgresRepository) addUser(u User) (*User, error) {
 		&insertedUser.Password,
 	)
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 	domainUser, err := NewUser(
@@ -40,7 +38,6 @@ func (s *PostgresRepository) addUser(u User) (*User, error) {
 		insertedUser.Password,
 	)
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 	return domainUser, nil
@@ -55,12 +52,10 @@ func (s *PostgresRepository) getUserByName(n string) (*User, error) {
 	pgUser := postgresUser{}
 	err := row.Scan(&pgUser.ID, &pgUser.Username, &pgUser.Password)
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 	domainUser, err := NewUser(pgUser.ID, pgUser.Username, pgUser.Password)
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 	return domainUser, nil

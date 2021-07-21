@@ -16,13 +16,13 @@ func GetTodos(s *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 		uid := auth.GetUIDClaim(r.Context())
 		todos, err := s.GetTodos(uid)
 		if err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		jsonTodos, err := todos.ToJSON()
 		if err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -41,26 +41,26 @@ func AddTodo(s *todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		bt := addTodoBody{}
 		if err := json.NewDecoder(r.Body).Decode(&bt); err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		uid := auth.GetUIDClaim(r.Context())
 		t, err := todo.NewTodo(0, bt.Name, bt.Completed, uid)
 		if err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		addedTodo, err := s.AddTodo(*t)
 		if err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		jsonTodo, err := addedTodo.ToJSON()
 		if err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

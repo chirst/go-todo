@@ -4,7 +4,6 @@ package todo
 
 import (
 	"database/sql"
-	"log"
 	"time"
 )
 
@@ -28,7 +27,6 @@ func (s *PostgresRepository) getTodos(userID int64) ([]*Todo, error) {
 		WHERE user_id = $1
 	`, userID)
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 	userTodos := make([]*Todo, 0)
@@ -36,12 +34,10 @@ func (s *PostgresRepository) getTodos(userID int64) ([]*Todo, error) {
 		pgt := postgresTodo{}
 		err := rows.Scan(&pgt.id, &pgt.name, &pgt.completed, &pgt.userID)
 		if err != nil {
-			log.Print(err)
 			return nil, err
 		}
 		t, err := NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID)
 		if err != nil {
-			log.Print(err)
 			return nil, err
 		}
 		userTodos = append(userTodos, t)
@@ -59,7 +55,6 @@ func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 	pgt := postgresTodo{}
 	err := row.Scan(&pgt.id, &pgt.name, &pgt.completed, &pgt.userID)
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID)

@@ -1,7 +1,5 @@
 package todo
 
-import "log"
-
 // MemoryRepository persists todos
 type MemoryRepository struct {
 	todos []Todo
@@ -25,7 +23,6 @@ func (s *MemoryRepository) addTodo(t Todo) (*Todo, error) {
 	nt, err := NewTodo(id, t.name, t.completed, t.userID)
 	s.todos = append(s.todos, *nt)
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 	return nt, nil

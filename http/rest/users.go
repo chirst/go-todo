@@ -18,20 +18,20 @@ func AddUser(s *user.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := addUserBody{}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		newUser, err := user.NewUser(0, body.Username, body.Password)
 		addedUser, err := s.AddUser(newUser)
 		if err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		jsonUser, err := addedUser.ToJSON()
 		if err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

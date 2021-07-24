@@ -13,3 +13,13 @@ test:
 # lint entire project
 lint:
 	golint ./...
+
+# docker
+build-image:
+	docker build -t go-todo .
+
+run-image:
+	docker run -p 3000:3000 go-todo
+
+run-image-memory:
+	docker run -p 3000:3000 go-todo -use-memory

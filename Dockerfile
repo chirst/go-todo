@@ -13,4 +13,4 @@ RUN go build -o /go-todo
 
 EXPOSE 3000
 
-ENTRYPOINT [ "/go-todo", "-use-memory" ]
+ENTRYPOINT [ "/go-todo" ]

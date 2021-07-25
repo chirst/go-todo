@@ -6,7 +6,7 @@ jwt_duration: '24h'
 server_address: '0.0.0.0:3000'
 
 # postgres configs
-pg_host: '127.0.0.1'
+pg_host: '0.0.0.0'
 pg_port: '5432'
 pg_user: 'postgres'
 pg_password: '12345'

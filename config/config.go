@@ -37,10 +37,12 @@ func JWTDuration() time.Duration {
 // PostgresSourceName returns a string containing connection info specific to a
 // Postgres database
 func PostgresSourceName() string {
-	return "host=" + viper.GetString("pg_host") + " " +
-		"port=" + viper.GetString("pg_port") + " " +
-		"user=" + viper.GetString("pg_user") + " " +
-		"password=" + viper.GetString("pg_password") + " " +
-		"dbname=" + viper.GetString("pg_dbname") + " " +
-		"sslmode=" + viper.GetString("pg_sslmode")
+	return "postgres://postgres:12345@go-todo-database:5432/todo?sslmode=disable"
+
+	// return "host=" + viper.GetString("pg_host") + " " +
+	// 	"port=" + viper.GetString("pg_port") + " " +
+	// 	"user=" + viper.GetString("pg_user") + " " +
+	// 	"password=" + viper.GetString("pg_password") + " " +
+	// 	"dbname=" + viper.GetString("pg_dbname") + " " +
+	// 	"sslmode=" + viper.GetString("pg_sslmode")
 }

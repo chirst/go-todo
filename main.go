@@ -2,8 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -27,14 +25,10 @@ import (
 )
 
 func main() {
-	config.InitConfig()
-	inMemoryFlag := flag.Bool("use-memory", false, "use a temporary database")
-	flag.Parse()
-
 	var todosRepo todo.Repository
 	var usersRepo user.Repository
-	if *inMemoryFlag {
-		fmt.Println("using in memory db")
+	if config.UseMemoryDB() {
+		log.Println("using in memory db")
 		todosRepo = new(todo.MemoryRepository)
 		usersRepo = new(user.MemoryRepository)
 	} else {
@@ -82,7 +76,7 @@ func main() {
 	})
 
 	address := config.ServerAddress()
-	fmt.Printf("server listening on %s\n", address)
+	log.Printf("server listening on %s\n", address)
 	http.ListenAndServe(address, router)
 }
 

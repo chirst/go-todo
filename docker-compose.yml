@@ -3,6 +3,10 @@ version: '3.8'
 services:
     go-todo:
         container_name: go-todo
+        env_file:
+            - .env
+        environment:
+            - POSTGRES_HOST=go-todo-database
         build:
             context: .
             dockerfile: Dockerfile

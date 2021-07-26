@@ -2,47 +2,57 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"time"
-
-	"github.com/spf13/viper"
 )
-
-// InitConfig reads in config from a file or panics on failure
-func InitConfig() {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("config")
-
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("fatal error in config: %s", err))
-	}
-}
 
 // ServerAddress returns a network address to listen for requests
 func ServerAddress() string {
-	return viper.GetString("server_address")
+	return fmt.Sprintf("%v:%v",
+		mustDefineEnv("SERVER_ADDRESS"),
+		mustDefineEnv("SERVER_PORT"),
+	)
 }
 
 // JWTSignKey returns a secret key to sign JSON Web Tokens
 func JWTSignKey() string {
-	return viper.GetString("jwt_sign_key")
+	return mustDefineEnv("JWT_SIGN_KEY")
 }
 
 // JWTDuration returns the duration a JSON Web Token will be valid from creation
+// A duration of 0 will be returned in the event of an error
 func JWTDuration() time.Duration {
-	return viper.GetDuration("jwt_duration")
+	d, err := time.ParseDuration(mustDefineEnv("JWT_DURATION"))
+	if err != nil {
+		log.Printf("failed to parse JWTDuration")
+		return time.Duration(0)
+	}
+	return d
+}
+
+// UseMemoryDB returns true when the use memory db config can be found and is
+// set to true otherwise UseMemoryDB will return false.
+func UseMemoryDB() bool {
+	return mustDefineEnv("USE_MEMORY_DB") == "true"
 }
 
 // PostgresSourceName returns a string containing connection info specific to a
 // Postgres database
 func PostgresSourceName() string {
-	return "postgres://postgres:12345@go-todo-database:5432/todo?sslmode=disable"
+	return fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
+		mustDefineEnv("POSTGRES_USER"),
+		mustDefineEnv("POSTGRES_PASSWORD"),
+		mustDefineEnv("POSTGRES_HOST"),
+		mustDefineEnv("POSTGRES_PORT"),
+		mustDefineEnv("POSTGRES_DB"),
+	)
+}
 
-	// return "host=" + viper.GetString("pg_host") + " " +
-	// 	"port=" + viper.GetString("pg_port") + " " +
-	// 	"user=" + viper.GetString("pg_user") + " " +
-	// 	"password=" + viper.GetString("pg_password") + " " +
-	// 	"dbname=" + viper.GetString("pg_dbname") + " " +
-	// 	"sslmode=" + viper.GetString("pg_sslmode")
+func mustDefineEnv(key string) string {
+	v, found := os.LookupEnv(key)
+	if !found {
+		log.Panicf("environment variable with key %v is not found", key)
+	}
+	return v
 }

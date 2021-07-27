@@ -4,8 +4,16 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
+
+	"github.com/joho/godotenv"
 )
+
+// InitConfig reads in config from a file or panics on failure
+func InitConfig() {
+	if err := godotenv.Load(); err != nil {
+		panic(fmt.Errorf("fatal error in config: %s", err))
+	}
+}
 
 // ServerAddress returns a network address to listen for requests
 func ServerAddress() string {
@@ -13,22 +21,6 @@ func ServerAddress() string {
 		mustDefineEnv("SERVER_ADDRESS"),
 		mustDefineEnv("SERVER_PORT"),
 	)
-}
-
-// JWTSignKey returns a secret key to sign JSON Web Tokens
-func JWTSignKey() string {
-	return mustDefineEnv("JWT_SIGN_KEY")
-}
-
-// JWTDuration returns the duration a JSON Web Token will be valid from creation
-// A duration of 0 will be returned in the event of an error
-func JWTDuration() time.Duration {
-	d, err := time.ParseDuration(mustDefineEnv("JWT_DURATION"))
-	if err != nil {
-		log.Printf("failed to parse JWTDuration")
-		return time.Duration(0)
-	}
-	return d
 }
 
 // UseMemoryDB returns true when the use memory db config can be found and is

@@ -25,6 +25,8 @@ import (
 )
 
 func main() {
+	config.InitConfig()
+
 	var todosRepo todo.Repository
 	var usersRepo user.Repository
 	if config.UseMemoryDB() {
@@ -84,20 +86,20 @@ func main() {
 func initDB() *sql.DB {
 	db, err := sql.Open("postgres", config.PostgresSourceName())
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("failed to connect to db %s", err.Error())
 	}
 	files, err := ioutil.ReadDir(path.Join("migrations"))
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("failed to read migration directory %s", err.Error())
 	}
 	for _, f := range files {
 		log.Printf("starting migration: %s\n", f.Name())
 		q, err := ioutil.ReadFile(path.Join("migrations", f.Name()))
 		if err != nil {
-			log.Fatalf(err.Error())
+			log.Fatalf("failed to read migration file %s", err.Error())
 		}
 		if _, err = db.Exec(string(q)); err != nil {
-			log.Fatalf(err.Error())
+			log.Fatalf("failed to run migration %s", err.Error())
 		}
 		log.Printf("finished migration: %s\n", f.Name())
 	}

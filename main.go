@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -27,14 +26,13 @@ import (
 )
 
 func main() {
-	config.InitConfig()
 	inMemoryFlag := flag.Bool("use-memory", false, "use a temporary database")
 	flag.Parse()
 
 	var todosRepo todo.Repository
 	var usersRepo user.Repository
 	if *inMemoryFlag {
-		fmt.Println("using in memory db")
+		log.Println("using in memory db")
 		todosRepo = new(todo.MemoryRepository)
 		usersRepo = new(user.MemoryRepository)
 	} else {
@@ -82,7 +80,7 @@ func main() {
 	})
 
 	address := config.ServerAddress()
-	fmt.Printf("server listening on %s\n", address)
+	log.Printf("server listening on %s\n", address)
 	http.ListenAndServe(address, router)
 }
 
@@ -90,20 +88,20 @@ func main() {
 func initDB() *sql.DB {
 	db, err := sql.Open("postgres", config.PostgresSourceName())
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("failed to connect to db %s", err.Error())
 	}
 	files, err := ioutil.ReadDir(path.Join("migrations"))
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("failed to read migration directory %s", err.Error())
 	}
 	for _, f := range files {
 		log.Printf("starting migration: %s\n", f.Name())
 		q, err := ioutil.ReadFile(path.Join("migrations", f.Name()))
 		if err != nil {
-			log.Fatalf(err.Error())
+			log.Fatalf("failed to read migration file %s", err.Error())
 		}
 		if _, err = db.Exec(string(q)); err != nil {
-			log.Fatalf(err.Error())
+			log.Fatalf("failed to run migration %s", err.Error())
 		}
 		log.Printf("finished migration: %s\n", f.Name())
 	}

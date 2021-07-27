@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+    go-todo:
+        container_name: go-todo
+        env_file:
+            - .env
+        environment:
+            - POSTGRES_HOST=go-todo-database
+        build:
+            context: .
+            dockerfile: Dockerfile
+        networks:
+            - todonet
+        ports:
+            - 3000:3000
+        depends_on:
+            go-todo-database:
+                condition: service_healthy
+        links:
+            - go-todo-database
+    go-todo-database:
+        image: 'postgres'
+        container_name: go-todo-postgres
+        env_file:
+            - .env
+        networks:
+            - todonet
+        ports:
+            - 5432:5432
+        volumes:
+            - database-data:/var/lib/postgresql/data/
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 10s
+            timeout: 10s
+            retries: 5
+networks:
+    todonet:
+        driver: bridge
+volumes:
+    database-data:

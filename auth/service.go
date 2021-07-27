@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/chirst/go-todo/config"
-
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/jwtauth"
 	"golang.org/x/crypto/bcrypt"

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/chirst/go-todo/config"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/jwtauth"
 	"golang.org/x/crypto/bcrypt"
@@ -15,8 +16,7 @@ import (
 var tokenAuth *jwtauth.JWTAuth
 
 func init() {
-	// TODO: secret back to config
-	key := "secret"
+	key := config.JWTSignKey()
 	tokenAuth = jwtauth.New("HS256", []byte(key), nil)
 }
 
@@ -69,10 +69,9 @@ func GetUIDClaim(ctx context.Context) int64 {
 
 // GetTokenForUser returns a token with the given claims
 func GetTokenForUser(userID int64) (*jwt.Token, string, error) {
-	// TODO: duration back to config
 	return tokenAuth.Encode(jwt.MapClaims{
 		"userID":  userID,
-		"expires": time.Now().Add(time.Hour * 24).Unix(),
+		"expires": time.Now().Add(config.JWTDuration()).Unix(),
 	})
 }
 

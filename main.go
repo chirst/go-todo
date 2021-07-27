@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -25,11 +26,12 @@ import (
 )
 
 func main() {
-	config.InitConfig()
+	inMemoryFlag := flag.Bool("use-memory", false, "use a temporary database")
+	flag.Parse()
 
 	var todosRepo todo.Repository
 	var usersRepo user.Repository
-	if config.UseMemoryDB() {
+	if *inMemoryFlag {
 		log.Println("using in memory db")
 		todosRepo = new(todo.MemoryRepository)
 		usersRepo = new(user.MemoryRepository)

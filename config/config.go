@@ -4,47 +4,49 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	"github.com/joho/godotenv"
+	"time"
 )
 
-// InitConfig reads in config from a file or panics on failure
-func InitConfig() {
-	if err := godotenv.Load(); err != nil {
-		panic(fmt.Errorf("fatal error in config: %s", err))
+// JWTSignKey returns a secret key to sign JSON Web Tokens
+func JWTSignKey() string {
+	return getEnv("JWT_SIGN_KEY", "secret")
+}
+
+// JWTDuration returns the duration a JSON Web Token will be valid from creation
+// A duration of 0 will be returned in the event of an error
+func JWTDuration() time.Duration {
+	d, err := time.ParseDuration(getEnv("JWT_DURATION", "24h"))
+	if err != nil {
+		log.Printf("failed to parse JWTDuration")
+		return time.Duration(0)
 	}
+	return d
 }
 
 // ServerAddress returns a network address to listen for requests
 func ServerAddress() string {
 	return fmt.Sprintf("%v:%v",
-		mustDefineEnv("SERVER_ADDRESS"),
-		mustDefineEnv("SERVER_PORT"),
+		getEnv("SERVER_ADDRESS", "127.0.0.1"),
+		getEnv("SERVER_PORT", "3000"),
 	)
-}
-
-// UseMemoryDB returns true when the use memory db config can be found and is
-// set to true otherwise UseMemoryDB will return false.
-func UseMemoryDB() bool {
-	return mustDefineEnv("USE_MEMORY_DB") == "true"
 }
 
 // PostgresSourceName returns a string containing connection info specific to a
 // Postgres database
 func PostgresSourceName() string {
 	return fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
-		mustDefineEnv("POSTGRES_USER"),
-		mustDefineEnv("POSTGRES_PASSWORD"),
-		mustDefineEnv("POSTGRES_HOST"),
-		mustDefineEnv("POSTGRES_PORT"),
-		mustDefineEnv("POSTGRES_DB"),
+		getEnv("POSTGRES_USER", "postgres"),
+		getEnv("POSTGRES_PASSWORD", "12345"),
+		getEnv("POSTGRES_HOST", "127.0.0.1"),
+		getEnv("POSTGRES_PORT", "5432"),
+		getEnv("POSTGRES_DB", "todo"),
 	)
 }
 
-func mustDefineEnv(key string) string {
+func getEnv(key string, defaultVal string) string {
 	v, found := os.LookupEnv(key)
 	if !found {
-		log.Panicf("environment variable with key %v is not found", key)
+		return defaultVal
 	}
 	return v
 }

@@ -61,3 +61,34 @@ func TestAddTodo(t *testing.T) {
 		t.Fatalf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
 	}
 }
+
+// func TestCompleteTodo(t *testing.T) {
+// 	r := new(todo.MemoryRepository)
+// 	s := todo.NewService(r)
+
+// 	todo, err := todo.NewTodo(0, "incomplete todo", nil, 1)
+// 	if err != nil {
+// 		t.Fatalf("failed to create new todo")
+// 	}
+// 	_, err = s.AddTodo(*todo)
+// 	if err != nil {
+// 		t.Fatalf("failed to add todo")
+// 	}
+
+// 	token, _, _ := auth.GetTokenForUser(1)
+// 	ctx := context.WithValue(context.Background(), jwtauth.TokenCtxKey, token)
+// 	buffer := new(bytes.Buffer)
+// 	req, err := http.NewRequestWithContext(ctx, "PUT", "/todos/1/complete", buffer)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	w := httptest.NewRecorder()
+
+// 	CompleteTodo(s)(w, req)
+
+// 	resp := w.Result()
+
+// 	if resp.StatusCode != http.StatusOK {
+// 		t.Fatalf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
+// 	}
+// }

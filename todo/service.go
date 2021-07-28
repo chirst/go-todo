@@ -8,6 +8,7 @@ var errNameRequired = errors.New("name is required")
 type Repository interface {
 	addTodo(Todo) (*Todo, error)
 	getTodos(int64) ([]*Todo, error)
+	completeTodo(todoID int64) error
 }
 
 // Service for todos
@@ -30,11 +31,9 @@ func (s *Service) GetTodos(userID int64) (Todos, error) {
 	return s.r.getTodos(userID)
 }
 
-// TODO: grouping and sorting
-
 // CompleteTodo marks a todo as complete
-func (s *Service) CompleteTodo(todoId int64) {
-	// TODO:
+func (s *Service) CompleteTodo(todoID int64) error {
+	return s.r.completeTodo(todoID)
 }
 
 // IncompleteTodo marks a todo as incomplete
@@ -51,3 +50,5 @@ func (s *Service) DeleteTodo(todoId int64) {
 func (s *Service) ChangeTodoName(todoId int64, name string) {
 	// TODO:
 }
+
+// TODO: grouping and sorting

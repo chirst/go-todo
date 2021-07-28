@@ -63,6 +63,7 @@ func main() {
 
 		r.Get("/todos", rest.GetTodos(todoService))
 		r.Post("/todos", rest.AddTodo(todoService))
+		r.Put("/todos/{todoID}/complete", rest.CompleteTodo(todoService))
 	})
 
 	// unprotected routes

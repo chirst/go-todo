@@ -125,6 +125,15 @@ paths:
           description: "todo that was created"
           schema:
             $ref: '#/definitions/schemas/Todo'
+  /todos/{todoId}/complete:
+    patch:
+      summary: Complete Todo
+      description: Marks the Todo matching todoId as complete
+      operationId: CompleteTodo
+      produces:
+      - text/plain
+      tags:
+      - Todo
 
   /users:
     post:

@@ -3,41 +3,23 @@ package rest
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/chirst/go-todo/user"
 )
 
 func TestLogin(t *testing.T) {
-	r := new(user.MemoryRepository)
-	s := user.NewService(r)
-
-	u, err := user.NewUser(0, "guduser", "1234")
-	if err != nil {
-		t.Fatalf("error creating user")
-	}
-	_, err = s.AddUser(u)
-	if err != nil {
-		t.Fatalf("error adding user")
-	}
-
+	s := &mockUserService{}
 	loginBody := loginBody{
 		"guduser",
 		"1234",
 	}
 	buffer := new(bytes.Buffer)
 	json.NewEncoder(buffer).Encode(loginBody)
-	req, err := http.NewRequest("POST", "/login", buffer)
-	if err != nil {
-		log.Fatal(err)
-	}
 	w := httptest.NewRecorder()
+	r := httptest.NewRequest("POST", "/login", buffer)
 
-	Login(s)(w, req)
-
+	Login(s)(w, r)
 	resp := w.Result()
 
 	if resp.StatusCode != http.StatusOK {

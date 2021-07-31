@@ -14,7 +14,7 @@ type loginBody struct {
 }
 
 // Login returns an auth token for a valid login
-func Login(s *user.Service) func(w http.ResponseWriter, r *http.Request) {
+func Login(s user.UserService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		b := loginBody{}
 		err := json.NewDecoder(r.Body).Decode(&b)

@@ -19,18 +19,23 @@ type Repository interface {
 	getUserByName(string) (*User, error)
 }
 
-// Service for users
-type Service struct {
+// UserService for users
+type UserService interface {
+	AddUser(u *User) (*User, error)
+	GetUserTokenString(username, password string) (*string, error)
+}
+
+type service struct {
 	r Repository
 }
 
 // NewService creates an instance of this service
-func NewService(r Repository) *Service {
-	return &Service{r}
+func NewService(r Repository) UserService {
+	return &service{r}
 }
 
 // AddUser validates, creates, and adds the user to persistence
-func (s *Service) AddUser(u *User) (*User, error) {
+func (s *service) AddUser(u *User) (*User, error) {
 	// TODO: test password != input password
 	hashedPassword, err := auth.GenerateFromPassword(u.password)
 	if err != nil {
@@ -42,7 +47,7 @@ func (s *Service) AddUser(u *User) (*User, error) {
 
 // GetUserTokenString returns an auth token string for the first user matching
 // the given username and password. It returns nil for anything invalid.
-func (s *Service) GetUserTokenString(username, password string) (*string, error) {
+func (s *service) GetUserTokenString(username, password string) (*string, error) {
 	u, err := s.r.getUserByName(username)
 	if err != nil {
 		return nil, err

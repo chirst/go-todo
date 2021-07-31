@@ -36,16 +36,13 @@ func (s *mockTodoService) AddTodo(t todo.Todo) (*todo.Todo, error) {
 
 func TestGetTodos(t *testing.T) {
 	s := &mockTodoService{}
-
 	token, _, _ := auth.GetTokenForUser(1)
 	ctx := context.WithValue(context.Background(), jwtauth.TokenCtxKey, token)
-
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/todos", nil)
 	r = r.WithContext(ctx)
 
 	GetTodos(s)(w, r)
-
 	resp := w.Result()
 
 	if resp.StatusCode != http.StatusOK {
@@ -55,22 +52,18 @@ func TestGetTodos(t *testing.T) {
 
 func TestAddTodo(t *testing.T) {
 	s := &mockTodoService{}
-
 	token, _, _ := auth.GetTokenForUser(1)
 	ctx := context.WithValue(context.Background(), jwtauth.TokenCtxKey, token)
-
 	buffer := new(bytes.Buffer)
 	todoBody := addTodoBody{
 		Name: "gud name",
 	}
 	json.NewEncoder(buffer).Encode(todoBody)
-
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/todos", buffer)
 	r = r.WithContext(ctx)
 
 	AddTodo(s)(w, r)
-
 	resp := w.Result()
 
 	if resp.StatusCode != http.StatusOK {
@@ -80,7 +73,6 @@ func TestAddTodo(t *testing.T) {
 
 func TestCompleteTodo(t *testing.T) {
 	s := &mockTodoService{}
-
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("PUT", "/todos/1/complete", nil)
 	rctx := chi.NewRouteContext()
@@ -88,7 +80,6 @@ func TestCompleteTodo(t *testing.T) {
 	r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
 
 	CompleteTodo(s)(w, r)
-
 	resp := w.Result()
 
 	if resp.StatusCode != http.StatusOK {

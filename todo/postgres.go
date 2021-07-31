@@ -4,6 +4,7 @@ package todo
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -58,4 +59,25 @@ func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 		return nil, err
 	}
 	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID)
+}
+
+// Complete todo marks todo with the given id as complete and returns no error
+// on success
+func (s *PostgresRepository) completeTodo(todoID int64) error {
+	result, err := s.DB.Exec(`
+		UPDATE todo
+		SET completed = timezone('utc', now())
+		WHERE id = $1
+	`, todoID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected != 1 {
+		return errors.New("no rows affected")
+	}
+	return nil
 }

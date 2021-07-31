@@ -26,7 +26,7 @@ func JWTDuration() time.Duration {
 // ServerAddress returns a network address to listen for requests
 func ServerAddress() string {
 	return fmt.Sprintf("%v:%v",
-		getEnv("SERVER_ADDRESS", "127.0.0.1"),
+		getEnv("SERVER_ADDRESS", "0.0.0.0"),
 		getEnv("SERVER_PORT", "3000"),
 	)
 }

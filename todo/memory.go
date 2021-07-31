@@ -1,29 +1,55 @@
 package todo
 
+import (
+	"fmt"
+	"time"
+)
+
 // MemoryRepository persists todos
 type MemoryRepository struct {
 	todos []Todo
 }
 
 // GetTodos gets all todos in storage
-func (s *MemoryRepository) getTodos(userID int64) ([]*Todo, error) {
+func (r *MemoryRepository) getTodos(userID int64) ([]*Todo, error) {
 	var userTodos []*Todo
 	userTodos = []*Todo{}
-	for i := range s.todos {
-		if s.todos[i].userID == userID {
-			userTodos = append(userTodos, &s.todos[i])
+	for i := range r.todos {
+		if r.todos[i].userID == userID {
+			userTodos = append(userTodos, &r.todos[i])
 		}
 	}
 	return userTodos, nil
 }
 
 // AddTodo adds a single todo to storage
-func (s *MemoryRepository) addTodo(t Todo) (*Todo, error) {
-	id := int64(len(s.todos)) + 1
+func (r *MemoryRepository) addTodo(t Todo) (*Todo, error) {
+	id := int64(len(r.todos)) + 1
 	nt, err := NewTodo(id, t.name, t.completed, t.userID)
-	s.todos = append(s.todos, *nt)
+	r.todos = append(r.todos, *nt)
 	if err != nil {
 		return nil, err
 	}
 	return nt, nil
+}
+
+// Complete todo marks todo with the given id as complete and returns no error
+// on success
+func (r *MemoryRepository) completeTodo(todoID int64) error {
+	t, err := r.getTodo(todoID)
+	if err != nil {
+		return err
+	}
+	now := time.Now()
+	t.completed = &now
+	return nil
+}
+
+func (r *MemoryRepository) getTodo(id int64) (*Todo, error) {
+	for i := range r.todos {
+		if r.todos[i].id == id {
+			return &r.todos[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no todo found with id: %v", id)
 }

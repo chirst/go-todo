@@ -64,8 +64,36 @@ func TestGetTodos(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			got, _ := s.GetTodos(tc.userID)
 			if len(got) != tc.wantTodoLength {
-				t.Errorf("expected %#v, got: %#v", tc.wantTodoLength, len(got))
+				t.Fatalf("expected %#v, got: %#v", tc.wantTodoLength, len(got))
 			}
 		})
+	}
+}
+
+func TestCompleteTodo(t *testing.T) {
+	r := new(MemoryRepository)
+	s := NewService(r)
+
+	incompleteTodo, err := NewTodo(0, "todo1", nil, 1)
+	if err != nil {
+		t.Fatalf("error creating todo")
+	}
+	addedTodo, err := r.addTodo(*incompleteTodo)
+	if err != nil {
+		t.Fatalf("failed to add todo")
+	}
+
+	err = s.CompleteTodo(addedTodo.id)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	completedTodo, err := r.getTodo(addedTodo.id)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	if completedTodo.completed == nil {
+		t.Fatalf("expected completed todo, got incomplete todo")
 	}
 }

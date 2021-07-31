@@ -1,7 +1,8 @@
 swagger: "2.0"
 info:
   description: |-
-    The purpose of this application is to model collections of todos owned by authenticated users
+    The purpose of this application is to manage collections of todos owned by
+    authenticated users
   version: 1.0.0
   title: Todo API
 host: localhost
@@ -10,9 +11,14 @@ schemes:
 - http
 tags:
 - name: "User"
-  description: "User authentication and creation"
+  description: |-
+    The User API provides ways to login and sign up Users who can own
+    collections of Todos.
 - name: "Todo"
-  description: "CRUD operations on Todos"
+  description: |-
+    The Todo API enables you to create, read, update, and delete Todos.
+    Additionally, the Todo API offers actions to change the completion status of
+    Todos.
 
 definitions:
   schemas:
@@ -20,27 +26,36 @@ definitions:
       properties:
         id:
           type: integer
+          description: The primary key of the Todo
+          example: 1
         name:
           type: string
+          description: A short name or description of the Todo
+          example: "gud username"
         completed:
           type: string
           format: date-time
-          description: "null if incomplete"
+          description: Timestamp of when the Todo was completed or null if incomplete
         userId:
           type: integer
-
+          description: The primary key of the user who owns this Todo
+          example: 1
     User:
       properties:
         id:
           type: integer
+          description: The primary key of the User
+          example: 1
         username:
           type: string
+          description: A unique human friendly name identifying the User. This name is used for authentication.
+          example: "gud username"
 
 paths:
   /login:
     post:
-      summary: "Login a User"
-      description: "This provides a way of gaining access to protected routes given valid credentials"
+      summary: Login a User
+      description: Login provides a way of gaining access to protected routes given valid credentials
       operationId: LoginUser
       consumes:
       - application/json
@@ -60,10 +75,12 @@ paths:
               type: "string"
               example: "gud username"
               maxLength: 256
+              description: Unique human readable identifier for a User
             password:
               type: "string"
               example: "passwordy1234"
               maxLength: 256
+              description: Secret key for authenticating a User
           required:
             - username
             - password
@@ -72,16 +89,17 @@ paths:
           description: "Successfully logged in"
           schema:
             type: string
-            description: "JSON web token valid for a limited time"
+            description: JSON web token valid for a limited time. Used to access protected resources.
         "400":
-          description: "Invalid login body"
+          description: Invalid login body
         "403":
-          description: "Invalid login credentials"
+          description: Invalid login credentials
 
   /todos:
     get:
-      summary: "Get all todos for the current user"
-      description: Returns a list of all todos belonging to the current user
+      summary: Get all todos for the current User
+      description: |-
+        Returns a list of all todos belonging to the current authenticated user.
       operationId: GetTodos
       produces:
       - application/json
@@ -95,8 +113,8 @@ paths:
             items:
               $ref: '#/definitions/schemas/Todo'
     post:
-      summary: "Add a single Todo"
-      description: Adds a todo belonging to the current user
+      summary: Add a single Todo
+      description: Adds a todo belonging to the current authenticated user
       operationId: AddTodo
       consumes:
       - application/json
@@ -107,17 +125,19 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "Details of Todo to be added"
+        description: "Details of the Todo to be added"
         required: true
         schema:
           type: "object"
           properties:
             name:
               type: "string"
+              description: A short name or description of the Todo
+              example: "Do some things"
             completed:
               type: "string"
               format: date-time
-              description: "null or exclude if incomplete"
+              description: The time the Todo was completed. Pass null or exclude parameter if the Todo is incomplete
           required:
             - name
       responses:
@@ -127,8 +147,10 @@ paths:
             $ref: '#/definitions/schemas/Todo'
   /todos/{todoId}/complete:
     patch:
-      summary: Complete Todo
-      description: Marks the Todo matching todoId as complete
+      summary: Complete a single Todo
+      description: |-
+        Marks the Todo matching todoId as complete with a timestamp. The
+        timestamp represents what time the Todo was marked as completed
       operationId: CompleteTodo
       produces:
       - text/plain
@@ -137,7 +159,7 @@ paths:
 
   /users:
     post:
-      summary: "Create a new user"
+      summary: Create a new User
       description: Provides a way of creating a new user who can own todos
       operationId: AddUser
       consumes:
@@ -156,13 +178,19 @@ paths:
           properties:
             username:
               type: "string"
+              example: "gud username"
+              maxLength: 256
+              description: Unique human readable identifier for a User
             password:
               type: "string"
+              example: "passwordy1234"
+              maxLength: 256
+              description: Secret key for authenticating a User
           required:
             - username
             - password
       responses:
         "201":
-          description: "user that was created"
+          description: User that was created
           schema:
             $ref: '#/definitions/schemas/User'

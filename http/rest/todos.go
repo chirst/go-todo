@@ -73,6 +73,7 @@ func AddTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 
 func CompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Todo make sure the todo is owned by the current user
 		todoID := chi.URLParam(r, "todoID")
 		id, err := strconv.ParseInt(todoID, 10, 64)
 		if err != nil {

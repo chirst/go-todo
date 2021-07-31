@@ -66,7 +66,7 @@ func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 func (s *PostgresRepository) completeTodo(todoID int64) error {
 	result, err := s.DB.Exec(`
 		UPDATE todo
-		SET completed = now()
+		SET completed = timezone('utc', now())
 		WHERE id = $1
 	`, todoID)
 	if err != nil {

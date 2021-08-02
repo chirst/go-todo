@@ -35,8 +35,8 @@ func (r *MemoryRepository) addTodo(t Todo) (*Todo, error) {
 
 // Complete todo marks todo with the given id as complete and returns no error
 // on success
-func (r *MemoryRepository) completeTodo(todoID int64) error {
-	t, err := r.getTodo(todoID)
+func (r *MemoryRepository) completeTodo(userID, todoID int64) error {
+	t, err := r.getTodo(userID, todoID)
 	if err != nil {
 		return err
 	}
@@ -45,11 +45,11 @@ func (r *MemoryRepository) completeTodo(todoID int64) error {
 	return nil
 }
 
-func (r *MemoryRepository) getTodo(id int64) (*Todo, error) {
+func (r *MemoryRepository) getTodo(userID, id int64) (*Todo, error) {
 	for i := range r.todos {
-		if r.todos[i].id == id {
+		if r.todos[i].id == id && r.todos[i].userID == userID {
 			return &r.todos[i], nil
 		}
 	}
-	return nil, fmt.Errorf("no todo found with id: %v", id)
+	return nil, fmt.Errorf("no todo found with id: %v and userID: %v", id, userID)
 }

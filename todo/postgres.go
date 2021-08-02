@@ -63,12 +63,12 @@ func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 
 // Complete todo marks todo with the given id as complete and returns no error
 // on success
-func (s *PostgresRepository) completeTodo(todoID int64) error {
+func (s *PostgresRepository) completeTodo(userID, todoID int64) error {
 	result, err := s.DB.Exec(`
 		UPDATE todo
 		SET completed = timezone('utc', now())
-		WHERE id = $1
-	`, todoID)
+		WHERE id = $1 AND user_id = $2
+	`, todoID, userID)
 	if err != nil {
 		return err
 	}

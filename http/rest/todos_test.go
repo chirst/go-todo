@@ -17,7 +17,7 @@ import (
 
 type mockTodoService struct{}
 
-func (s *mockTodoService) CompleteTodo(todoID int64) error {
+func (s *mockTodoService) CompleteTodo(userID int64, todoID int64) error {
 	return nil
 }
 
@@ -78,6 +78,8 @@ func TestCompleteTodo(t *testing.T) {
 	rctx := chi.NewRouteContext()
 	rctx.URLParams.Add("todoID", "1")
 	r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
+	token, _, _ := auth.GetTokenForUser(1)
+	r = r.WithContext(context.WithValue(r.Context(), jwtauth.TokenCtxKey, token))
 
 	CompleteTodo(s)(w, r)
 	resp := w.Result()

@@ -74,7 +74,8 @@ func TestCompleteTodo(t *testing.T) {
 	r := new(MemoryRepository)
 	s := NewService(r)
 
-	incompleteTodo, err := NewTodo(0, "todo1", nil, 1)
+	var userID int64 = 1
+	incompleteTodo, err := NewTodo(0, "todo1", nil, userID)
 	if err != nil {
 		t.Fatalf("error creating todo")
 	}
@@ -83,12 +84,12 @@ func TestCompleteTodo(t *testing.T) {
 		t.Fatalf("failed to add todo")
 	}
 
-	err = s.CompleteTodo(addedTodo.id)
+	err = s.CompleteTodo(userID, addedTodo.id)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
 
-	completedTodo, err := r.getTodo(addedTodo.id)
+	completedTodo, err := r.getTodo(userID, addedTodo.id)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}

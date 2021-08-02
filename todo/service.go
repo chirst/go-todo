@@ -8,14 +8,14 @@ var errNameRequired = errors.New("name is required")
 type Repository interface {
 	addTodo(Todo) (*Todo, error)
 	getTodos(int64) ([]*Todo, error)
-	completeTodo(todoID int64) error
+	completeTodo(userID, todoID int64) error
 }
 
 // TodoService for todos
 type TodoService interface {
 	AddTodo(t Todo) (*Todo, error)
 	GetTodos(userID int64) (Todos, error)
-	CompleteTodo(todoID int64) error
+	CompleteTodo(userID, todoID int64) error
 }
 
 type service struct {
@@ -38,8 +38,8 @@ func (s *service) GetTodos(userID int64) (Todos, error) {
 }
 
 // CompleteTodo marks a todo as complete
-func (s *service) CompleteTodo(todoID int64) error {
-	return s.r.completeTodo(todoID)
+func (s *service) CompleteTodo(userID, todoID int64) error {
+	return s.r.completeTodo(userID, todoID)
 }
 
 // IncompleteTodo marks a todo as incomplete

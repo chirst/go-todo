@@ -73,7 +73,6 @@ func AddTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 
 func CompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Todo make sure the todo is owned by the current user
 		todoID := chi.URLParam(r, "todoID")
 		id, err := strconv.ParseInt(todoID, 10, 64)
 		if err != nil {
@@ -81,7 +80,8 @@ func CompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Reques
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		err = s.CompleteTodo(id)
+		uid := auth.GetUIDClaim(r.Context())
+		err = s.CompleteTodo(uid, id)
 		if err != nil {
 			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)

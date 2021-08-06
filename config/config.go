@@ -43,6 +43,12 @@ func PostgresSourceName() string {
 	)
 }
 
+// SkipPostgres is true if tests requiring postgres should be skipped
+func SkipPostgres() bool {
+	r := getEnv("POSTGRES_TEST", "")
+	return r == ""
+}
+
 func getEnv(key string, defaultVal string) string {
 	v, found := os.LookupEnv(key)
 	if !found {

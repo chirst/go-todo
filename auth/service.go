@@ -34,22 +34,34 @@ func Authenticator(next http.Handler) http.Handler {
 
 		// Checks from the jwt.Authenticator to see if the token is valid
 		if err != nil {
-			http.Error(w, http.StatusText(401), 401)
+			http.Error(
+				w,
+				http.StatusText(http.StatusUnauthorized),
+				http.StatusUnauthorized,
+			)
 			return
 		}
 		if token == nil || !token.Valid {
-			http.Error(w, http.StatusText(401), 401)
+			http.Error(
+				w,
+				http.StatusText(http.StatusUnauthorized),
+				http.StatusUnauthorized,
+			)
 			return
 		}
 
 		// Check if token is expired
 		e, ok := claims["expires"].(float64)
 		if !ok {
-			http.Error(w, "unauthorized failed to parse expiration", 401)
+			http.Error(
+				w,
+				"unauthorized failed to parse expiration",
+				http.StatusUnauthorized,
+			)
 			return
 		}
 		if int64(e) < time.Now().Unix() {
-			http.Error(w, "unauthorized token expired", 401)
+			http.Error(w, "unauthorized token expired", http.StatusUnauthorized)
 			return
 		}
 

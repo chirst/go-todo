@@ -12,7 +12,7 @@ import (
 
 type mockUserService struct{}
 
-func (s *mockUserService) AddUser(u *user.User) (*user.User, error) {
+func (s *mockUserService) AddUser(_ *user.User) (*user.User, error) {
 	u, err := user.NewUser(1, "guduser", "1234")
 	if err != nil {
 		panic(err.Error())

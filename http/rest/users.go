@@ -23,6 +23,11 @@ func AddUser(s user.UserService) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		newUser, err := user.NewUser(0, body.Username, body.Password)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 		addedUser, err := s.AddUser(newUser)
 		if err != nil {
 			log.Print(err.Error())

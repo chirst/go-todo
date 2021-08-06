@@ -61,7 +61,7 @@ func Authenticator(next http.Handler) http.Handler {
 			return
 		}
 		if int64(e) < time.Now().Unix() {
-			http.Error(w, "unauthorized token expired", 401)
+			http.Error(w, "unauthorized token expired", http.StatusUnauthorized)
 			return
 		}
 

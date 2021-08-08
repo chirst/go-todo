@@ -1,26 +1,55 @@
+// +build postgres
+
 package todo
 
 import (
+	"database/sql"
 	"testing"
 
-	"github.com/chirst/go-todo/config"
 	"github.com/chirst/go-todo/database"
 )
 
+func init() {
+	database.InitTestDB()
+}
+
 func TestPostgresGetTodos(t *testing.T) {
-	if config.SkipPostgres() {
-		t.Skip("skipped TestPostgresGetTodos")
-	}
-	db := database.InitDB()
+
+	db := database.OpenTestDB()
 	defer db.Close()
+
 	r := &PostgresRepository{DB: db}
 
-	todos, err := r.getTodos(1)
+	firstUserID := insertUser(db, "u1")
+	secondUserID := insertUser(db, "u2")
+	insertTodo(t, r, firstUserID)
+	insertTodo(t, r, secondUserID)
+
+	todos, err := r.getTodos(firstUserID)
 
 	if err != nil {
 		t.Errorf("getTodos(1) returned err: %v", err)
 	}
-	if len(todos) != 2 {
+	if len(todos) != 1 {
 		t.Errorf("getTodos(1) returned %v todos, want 1 todos", len(todos))
 	}
+}
+
+func insertUser(db *sql.DB, name string) int64 {
+	result := db.QueryRow(`
+		INSERT INTO public.user (username, password)
+		VALUES ($1, '12345')
+		RETURNING id
+	`, name)
+	var id int64
+	result.Scan(&id)
+	return id
+}
+
+func insertTodo(t *testing.T, r *PostgresRepository, userID int64) {
+	todo, err := NewTodo(0, "gud todo", nil, userID)
+	if err != nil {
+		t.Fatalf("unable to create todo")
+	}
+	r.addTodo(*todo)
 }

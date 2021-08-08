@@ -3,6 +3,7 @@ module github.com/chirst/go-todo
 go 1.16
 
 require (
+	github.com/DATA-DOG/go-txdb v0.1.4
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.2.0

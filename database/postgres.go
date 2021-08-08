@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/DATA-DOG/go-txdb"
 	_ "github.com/lib/pq"
 
 	"github.com/chirst/go-todo/config"
@@ -19,9 +20,29 @@ func InitDB() *sql.DB {
 	if err != nil {
 		log.Fatalf("failed to connect to db %s", err.Error())
 	}
+	runMigrations(db)
+	return db
+}
+
+// InitTestDB registers a transactional database used by OpenTestDB
+func InitTestDB() {
+	txdb.Register("txdb", "postgres", config.PostgresSourceName())
+}
+
+// OpenTestDB returns a transactional database rolled back when it is closed
+func OpenTestDB() *sql.DB {
+	db, err := sql.Open("txdb", "identifier")
+	if err != nil {
+		log.Fatal(err)
+	}
+	runMigrations(db)
+	return db
+}
+
+func runMigrations(db *sql.DB) {
 	_, b, _, ok := runtime.Caller(0)
 	if !ok {
-		log.Fatalf("unable to get root directory %s", err.Error())
+		log.Fatalf("unable to get root directory")
 	}
 	d := path.Join(path.Dir(b))
 	rootPath := filepath.Dir(d)
@@ -49,5 +70,4 @@ func InitDB() *sql.DB {
 		}
 		log.Printf("finished migration: %s\n", f.Name())
 	}
-	return db
 }

@@ -10,6 +10,10 @@ run-memory:
 test:
 	go test ./... -v
 
+# run all unit and integration tests
+test-integration:
+	docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit
+
 # lint entire project
 lint:
 	golint ./...

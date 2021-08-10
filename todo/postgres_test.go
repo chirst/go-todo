@@ -1,5 +1,3 @@
-// +build postgres
-
 package todo
 
 import (
@@ -9,13 +7,8 @@ import (
 	"github.com/chirst/go-todo/database"
 )
 
-func init() {
-	database.InitTestDB()
-}
-
 func TestPostgresGetTodos(t *testing.T) {
-
-	db := database.OpenTestDB()
+	db := database.OpenTestDB(t)
 	defer db.Close()
 
 	r := &PostgresRepository{DB: db}

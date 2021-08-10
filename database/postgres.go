@@ -4,9 +4,11 @@ import (
 	"database/sql"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
 	"path/filepath"
 	"runtime"
+	"testing"
 
 	"github.com/DATA-DOG/go-txdb"
 	_ "github.com/lib/pq"
@@ -24,13 +26,17 @@ func InitDB() *sql.DB {
 	return db
 }
 
-// InitTestDB registers a transactional database used by OpenTestDB
-func InitTestDB() {
-	txdb.Register("txdb", "postgres", config.PostgresSourceName())
-}
+var registered bool
 
 // OpenTestDB returns a transactional database rolled back when it is closed
-func OpenTestDB() *sql.DB {
+func OpenTestDB(t *testing.T) *sql.DB {
+	if os.Getenv("TEST_POSTGRES") == "" {
+		t.Skip("Skipped Postgres test. Define TEST_POSTGRES env variable to run postgres tests")
+	}
+	if !registered {
+		txdb.Register("txdb", "postgres", config.PostgresSourceName())
+		registered = true
+	}
 	db, err := sql.Open("txdb", "identifier")
 	if err != nil {
 		log.Fatal(err)

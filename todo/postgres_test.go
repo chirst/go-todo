@@ -28,6 +28,22 @@ func TestPostgresGetTodos(t *testing.T) {
 	}
 }
 
+func TestPostgresAddTodo(t *testing.T) {
+	db := database.OpenTestDB(t)
+	defer db.Close()
+
+	r := &PostgresRepository{DB: db}
+
+	firstUserID := insertUser(db, "u1")
+	todo, _ := NewTodo(0, "gud name", nil, firstUserID)
+
+	_, err := r.addTodo(*todo)
+
+	if err != nil {
+		t.Errorf("addTodo() err: %s", err.Error())
+	}
+}
+
 func insertUser(db *sql.DB, name string) int64 {
 	result := db.QueryRow(`
 		INSERT INTO public.user (username, password)

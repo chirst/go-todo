@@ -22,30 +22,6 @@ func InitDB() *sql.DB {
 	if err != nil {
 		log.Fatalf("failed to connect to db %s", err.Error())
 	}
-	runMigrations(db)
-	return db
-}
-
-var registered bool
-
-// OpenTestDB returns a transactional database rolled back when it is closed
-func OpenTestDB(t *testing.T) *sql.DB {
-	if os.Getenv("TEST_POSTGRES") == "" {
-		t.Skip("Skipped Postgres test. Define TEST_POSTGRES env variable to run postgres tests")
-	}
-	if !registered {
-		txdb.Register("txdb", "postgres", config.PostgresSourceName())
-		registered = true
-	}
-	db, err := sql.Open("txdb", "identifier")
-	if err != nil {
-		log.Fatal(err)
-	}
-	runMigrations(db)
-	return db
-}
-
-func runMigrations(db *sql.DB) {
 	_, b, _, ok := runtime.Caller(0)
 	if !ok {
 		log.Fatalf("unable to get root directory")
@@ -76,4 +52,25 @@ func runMigrations(db *sql.DB) {
 		}
 		log.Printf("finished migration: %s\n", f.Name())
 	}
+	return db
+}
+
+var registered bool
+
+// OpenTestDB returns a transactional database rolled back when it is closed
+func OpenTestDB(t *testing.T) *sql.DB {
+	if os.Getenv("TEST_POSTGRES") == "" {
+		t.Skip("Skipped Postgres test. Define TEST_POSTGRES env variable to run postgres tests")
+	}
+	if !registered {
+		db := InitDB()
+		db.Close()
+		txdb.Register("txdb", "postgres", config.PostgresSourceName())
+		registered = true
+	}
+	db, err := sql.Open("txdb", "identifier")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return db
 }

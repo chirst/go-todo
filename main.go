@@ -1,21 +1,17 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"path"
 	"time"
 
 	"github.com/chirst/go-todo/auth"
 	"github.com/chirst/go-todo/config"
+	"github.com/chirst/go-todo/database"
 	"github.com/chirst/go-todo/http/rest"
 	"github.com/chirst/go-todo/todo"
 	"github.com/chirst/go-todo/user"
-
-	_ "github.com/lib/pq"
 
 	redoc "github.com/go-openapi/runtime/middleware"
 
@@ -36,7 +32,7 @@ func main() {
 		todosRepo = new(todo.MemoryRepository)
 		usersRepo = new(user.MemoryRepository)
 	} else {
-		db := initDB()
+		db := database.InitDB()
 		defer db.Close()
 		todosRepo = &todo.PostgresRepository{DB: db}
 		usersRepo = &user.PostgresRepository{DB: db}
@@ -83,28 +79,4 @@ func main() {
 	address := config.ServerAddress()
 	log.Printf("server listening on %s\n", address)
 	http.ListenAndServe(address, router)
-}
-
-// initDB opens a db connection, runs migrations, and exits if anything goes wrong
-func initDB() *sql.DB {
-	db, err := sql.Open("postgres", config.PostgresSourceName())
-	if err != nil {
-		log.Fatalf("failed to connect to db %s", err.Error())
-	}
-	files, err := ioutil.ReadDir(path.Join("migrations"))
-	if err != nil {
-		log.Fatalf("failed to read migration directory %s", err.Error())
-	}
-	for _, f := range files {
-		log.Printf("starting migration: %s\n", f.Name())
-		q, err := ioutil.ReadFile(path.Join("migrations", f.Name()))
-		if err != nil {
-			log.Fatalf("failed to read migration file %s", err.Error())
-		}
-		if _, err = db.Exec(string(q)); err != nil {
-			log.Fatalf("failed to run migration %s", err.Error())
-		}
-		log.Printf("finished migration: %s\n", f.Name())
-	}
-	return db
 }

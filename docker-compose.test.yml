@@ -1,0 +1,31 @@
+version: '3.8'
+
+networks:
+  postgres-tests:
+    driver: bridge
+
+services:
+  postgres-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      - POSTGRES_HOST=db
+      - TEST_POSTGRES=1
+    depends_on:
+      - db
+    networks:
+      - postgres-tests
+  db:
+    image: postgres:11.1
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: todo
+    restart: on-failure
+    networks:
+      - postgres-tests

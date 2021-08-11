@@ -1,7 +1,5 @@
 package todo
 
-// TODO: integration tests
-
 import (
 	"database/sql"
 	"errors"

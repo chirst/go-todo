@@ -7,10 +7,10 @@ import (
 
 func TestNewTodo(t *testing.T) {
 	tests := map[string]struct {
-		id        int64
+		id        int
 		name      string
 		completed *time.Time
-		userID    int64
+		userID    int
 		want      error
 	}{
 		"blank name": {

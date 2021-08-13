@@ -12,14 +12,14 @@ type PostgresRepository struct {
 }
 
 type postgresTodo struct {
-	id        int64
+	id        int
 	name      string
 	completed *time.Time
-	userID    int64
+	userID    int
 }
 
 // GetTodos gets all todos in storage for a user
-func (s *PostgresRepository) getTodos(userID int64) ([]*Todo, error) {
+func (s *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 	rows, err := s.DB.Query(`
 		SELECT id, name, completed, user_id
 		FROM todo
@@ -61,7 +61,7 @@ func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 
 // Complete todo marks todo with the given id as complete and returns no error
 // on success
-func (s *PostgresRepository) completeTodo(userID, todoID int64) error {
+func (s *PostgresRepository) completeTodo(userID, todoID int) error {
 	result, err := s.DB.Exec(`
 		UPDATE todo
 		SET completed = timezone('utc', now())

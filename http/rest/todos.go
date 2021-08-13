@@ -74,7 +74,7 @@ func AddTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 func CompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todoID := chi.URLParam(r, "todoID")
-		id, err := strconv.ParseInt(todoID, 10, 64)
+		id, err := strconv.Atoi(todoID)
 		if err != nil {
 			log.Print(err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)

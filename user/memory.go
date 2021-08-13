@@ -18,7 +18,7 @@ func (s *MemoryRepository) addUser(u User) (*User, error) {
 			return nil, errUniqueUsername
 		}
 	}
-	u.id = int64(len(s.users)) + 1
+	u.id = int(len(s.users)) + 1
 	s.users = append(s.users, u)
 	return &u, nil
 }

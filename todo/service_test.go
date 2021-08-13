@@ -51,7 +51,7 @@ func TestGetTodos(t *testing.T) {
 	s.AddTodo(*nonUserTodo)
 
 	tests := map[string]struct {
-		userID         int64
+		userID         int
 		wantTodoLength int
 	}{
 		"gets": {
@@ -74,7 +74,7 @@ func TestCompleteTodo(t *testing.T) {
 	r := new(MemoryRepository)
 	s := NewService(r)
 
-	var userID int64 = 1
+	var userID int = 1
 	incompleteTodo, err := NewTodo(0, "todo1", nil, userID)
 	if err != nil {
 		t.Fatalf("error creating todo")

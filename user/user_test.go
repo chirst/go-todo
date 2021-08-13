@@ -6,7 +6,7 @@ import (
 
 func TestNewUser(t *testing.T) {
 	tests := map[string]struct {
-		id       int64
+		id       int
 		username string
 		password string
 		want     error

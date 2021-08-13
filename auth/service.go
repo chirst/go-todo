@@ -71,16 +71,16 @@ func Authenticator(next http.Handler) http.Handler {
 }
 
 // GetUIDClaim gets the userID from claims
-func GetUIDClaim(ctx context.Context) int64 {
+func GetUIDClaim(ctx context.Context) int {
 	_, claims, _ := jwtauth.FromContext(ctx)
 	if t, ok := claims["userID"].(float64); ok {
-		return int64(t)
+		return int(t)
 	}
-	return claims["userID"].(int64)
+	return claims["userID"].(int)
 }
 
 // GetTokenForUser returns a token with the given claims
-func GetTokenForUser(userID int64) (*jwt.Token, string, error) {
+func GetTokenForUser(userID int) (*jwt.Token, string, error) {
 	return tokenAuth.Encode(jwt.MapClaims{
 		"userID":  userID,
 		"expires": time.Now().Add(config.JWTDuration()).Unix(),

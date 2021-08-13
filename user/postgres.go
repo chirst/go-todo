@@ -12,7 +12,7 @@ type PostgresRepository struct {
 }
 
 type postgresUser struct {
-	ID       int64
+	ID       int
 	Username string
 	Password string
 }

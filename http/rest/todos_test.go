@@ -17,11 +17,11 @@ import (
 
 type mockTodoService struct{}
 
-func (s *mockTodoService) CompleteTodo(userID int64, todoID int64) error {
+func (s *mockTodoService) CompleteTodo(userID int, todoID int) error {
 	return nil
 }
 
-func (s *mockTodoService) GetTodos(userID int64) (todo.Todos, error) {
+func (s *mockTodoService) GetTodos(userID int) (todo.Todos, error) {
 	ts := todo.Todos{}
 	return ts, nil
 }

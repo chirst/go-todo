@@ -11,7 +11,7 @@ type MemoryRepository struct {
 }
 
 // GetTodos gets all todos in storage
-func (r *MemoryRepository) getTodos(userID int64) ([]*Todo, error) {
+func (r *MemoryRepository) getTodos(userID int) ([]*Todo, error) {
 	var userTodos []*Todo
 	userTodos = []*Todo{}
 	for i := range r.todos {
@@ -24,7 +24,7 @@ func (r *MemoryRepository) getTodos(userID int64) ([]*Todo, error) {
 
 // AddTodo adds a single todo to storage
 func (r *MemoryRepository) addTodo(t Todo) (*Todo, error) {
-	id := int64(len(r.todos)) + 1
+	id := int(len(r.todos)) + 1
 	nt, err := NewTodo(id, t.name, t.completed, t.userID)
 	r.todos = append(r.todos, *nt)
 	if err != nil {
@@ -35,7 +35,7 @@ func (r *MemoryRepository) addTodo(t Todo) (*Todo, error) {
 
 // Complete todo marks todo with the given id as complete and returns no error
 // on success
-func (r *MemoryRepository) completeTodo(userID, todoID int64) error {
+func (r *MemoryRepository) completeTodo(userID, todoID int) error {
 	t, err := r.getTodo(userID, todoID)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func (r *MemoryRepository) completeTodo(userID, todoID int64) error {
 	return nil
 }
 
-func (r *MemoryRepository) getTodo(userID, id int64) (*Todo, error) {
+func (r *MemoryRepository) getTodo(userID, id int) (*Todo, error) {
 	for i := range r.todos {
 		if r.todos[i].id == id && r.todos[i].userID == userID {
 			return &r.todos[i], nil

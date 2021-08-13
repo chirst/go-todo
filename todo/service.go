@@ -7,15 +7,15 @@ var errNameRequired = errors.New("name is required")
 // Repository for todos
 type Repository interface {
 	addTodo(Todo) (*Todo, error)
-	getTodos(int64) ([]*Todo, error)
-	completeTodo(userID, todoID int64) error
+	getTodos(int) ([]*Todo, error)
+	completeTodo(userID, todoID int) error
 }
 
 // TodoService for todos
 type TodoService interface {
 	AddTodo(t Todo) (*Todo, error)
-	GetTodos(userID int64) (Todos, error)
-	CompleteTodo(userID, todoID int64) error
+	GetTodos(userID int) (Todos, error)
+	CompleteTodo(userID, todoID int) error
 }
 
 type service struct {
@@ -33,27 +33,27 @@ func (s *service) AddTodo(t Todo) (*Todo, error) {
 }
 
 // GetTodos gets all todos for user from persistence
-func (s *service) GetTodos(userID int64) (Todos, error) {
+func (s *service) GetTodos(userID int) (Todos, error) {
 	return s.r.getTodos(userID)
 }
 
 // CompleteTodo marks a todo as complete
-func (s *service) CompleteTodo(userID, todoID int64) error {
+func (s *service) CompleteTodo(userID, todoID int) error {
 	return s.r.completeTodo(userID, todoID)
 }
 
 // IncompleteTodo marks a todo as incomplete
-func (s *service) IncompleteTodo(todoId int64) {
+func (s *service) IncompleteTodo(todoId int) {
 	// TODO:
 }
 
 // DeleteTodo marks a todo as deleted where it will remain but not be accessed
-func (s *service) DeleteTodo(todoId int64) {
+func (s *service) DeleteTodo(todoId int) {
 	// TODO:
 }
 
 // ChangeTodoName changes the name of a todo
-func (s *service) ChangeTodoName(todoId int64, name string) {
+func (s *service) ChangeTodoName(todoId int, name string) {
 	// TODO:
 }
 

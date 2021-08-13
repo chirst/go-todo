@@ -44,18 +44,18 @@ func TestPostgresAddTodo(t *testing.T) {
 	}
 }
 
-func insertUser(db *sql.DB, name string) int64 {
+func insertUser(db *sql.DB, name string) int {
 	result := db.QueryRow(`
 		INSERT INTO public.user (username, password)
 		VALUES ($1, '12345')
 		RETURNING id
 	`, name)
-	var id int64
+	var id int
 	result.Scan(&id)
 	return id
 }
 
-func insertTodo(t *testing.T, r *PostgresRepository, userID int64) {
+func insertTodo(t *testing.T, r *PostgresRepository, userID int) {
 	todo, err := NewTodo(0, "gud todo", nil, userID)
 	if err != nil {
 		t.Fatalf("unable to create todo")

@@ -6,13 +6,13 @@ import "encoding/json"
 //
 // Each User has a unique username
 type User struct {
-	id       int64
+	id       int
 	username string
 	password string
 }
 
 // NewUser is a way to create a valid User
-func NewUser(id int64, username string, password string) (*User, error) {
+func NewUser(id int, username string, password string) (*User, error) {
 	// TODO: stricter validation on name and pass
 	if username == "" {
 		return nil, errUsernameRequired
@@ -28,7 +28,7 @@ func NewUser(id int64, username string, password string) (*User, error) {
 }
 
 type userJSON struct {
-	ID       int64  `json:"id"`
+	ID       int    `json:"id"`
 	Username string `json:"username"`
 }
 

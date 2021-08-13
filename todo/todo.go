@@ -7,7 +7,7 @@ import (
 
 // Todo models a single todo
 type Todo struct {
-	id int64
+	id int
 
 	// name is a short description of the todo
 	name string
@@ -16,15 +16,15 @@ type Todo struct {
 	completed *time.Time
 
 	// userID is the user this todo belongs to
-	userID int64
+	userID int
 }
 
 // NewTodo provides a consistent way of creating a valid Todo
 func NewTodo(
-	id int64,
+	id int,
 	name string,
 	completed *time.Time,
-	userID int64,
+	userID int,
 ) (*Todo, error) {
 	if name == "" {
 		return nil, errNameRequired
@@ -41,10 +41,10 @@ func NewTodo(
 type Todos []*Todo
 
 type todoJSON struct {
-	ID        int64      `json:"id"`
+	ID        int        `json:"id"`
 	Name      string     `json:"name"`
 	Completed *time.Time `json:"completed"`
-	UserID    int64      `json:"userId"`
+	UserID    int        `json:"userId"`
 	// TODO: HATEOAS to single todo
 }
 

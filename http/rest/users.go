@@ -19,25 +19,25 @@ func AddUser(s user.UserService) func(w http.ResponseWriter, r *http.Request) {
 		body := addUserBody{}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			log.Print(err.Error())
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, "Unable to decode request body", http.StatusBadRequest)
 			return
 		}
 		newUser, err := user.NewUser(0, body.Username, body.Password)
 		if err != nil {
 			log.Print(err.Error())
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, "Unable to create user", http.StatusBadRequest)
 			return
 		}
 		addedUser, err := s.AddUser(newUser)
 		if err != nil {
 			log.Print(err.Error())
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Unable to add user", http.StatusInternalServerError)
 			return
 		}
 		jsonUser, err := addedUser.ToJSON()
 		if err != nil {
 			log.Print(err.Error())
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Unable to serialize added user", http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")

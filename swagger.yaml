@@ -156,6 +156,20 @@ paths:
       - text/plain
       tags:
       - Todo
+  /todos/{todoId}:
+    delete:
+      summary: Delete a single Todo
+      description: |-
+        Marks the Todo as deleted meaning the Todo will not be included on get
+        requests
+      operationId: DeleteTodo
+      produces:
+      - text/plain
+      tags:
+      - Todo
+      responses:
+        "204":
+          description: "todo was successfully deleted"
 
   /users:
     post:

@@ -7,7 +7,15 @@ import (
 
 // MemoryRepository persists todos
 type MemoryRepository struct {
-	todos []Todo
+	todos []memoryTodo
+}
+
+type memoryTodo struct {
+	id        int
+	name      string
+	completed *time.Time
+	deleted   *time.Time
+	userID    int
 }
 
 // GetTodos gets all todos in storage
@@ -16,7 +24,16 @@ func (r *MemoryRepository) getTodos(userID int) ([]*Todo, error) {
 	userTodos = []*Todo{}
 	for i := range r.todos {
 		if r.todos[i].userID == userID {
-			userTodos = append(userTodos, &r.todos[i])
+			userTodo, err := NewTodo(
+				r.todos[i].id,
+				r.todos[i].name,
+				r.todos[i].completed,
+				r.todos[i].userID,
+			)
+			if err != nil {
+				return nil, err
+			}
+			userTodos = append(userTodos, userTodo)
 		}
 	}
 	return userTodos, nil
@@ -25,12 +42,19 @@ func (r *MemoryRepository) getTodos(userID int) ([]*Todo, error) {
 // AddTodo adds a single todo to storage
 func (r *MemoryRepository) addTodo(t Todo) (*Todo, error) {
 	id := int(len(r.todos)) + 1
-	nt, err := NewTodo(id, t.name, t.completed, t.userID)
-	r.todos = append(r.todos, *nt)
+	mt := memoryTodo{
+		id:        id,
+		name:      t.name,
+		completed: t.completed,
+		deleted:   nil,
+		userID:    t.userID,
+	}
+	r.todos = append(r.todos, mt)
+	newTodo, err := NewTodo(id, mt.name, mt.completed, mt.userID)
 	if err != nil {
 		return nil, err
 	}
-	return nt, nil
+	return newTodo, nil
 }
 
 // Complete todo marks todo with the given id as complete and returns no error
@@ -45,7 +69,17 @@ func (r *MemoryRepository) completeTodo(userID, todoID int) error {
 	return nil
 }
 
-func (r *MemoryRepository) getTodo(userID, id int) (*Todo, error) {
+func (r *MemoryRepository) deleteTodo(userID, todoID int) error {
+	t, err := r.getTodo(userID, todoID)
+	if err != nil {
+		return err
+	}
+	now := time.Now()
+	t.deleted = &now
+	return nil
+}
+
+func (r *MemoryRepository) getTodo(userID, id int) (*memoryTodo, error) {
 	for i := range r.todos {
 		if r.todos[i].id == id && r.todos[i].userID == userID {
 			return &r.todos[i], nil

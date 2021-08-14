@@ -12,7 +12,10 @@ func TestAddTodo(t *testing.T) {
 
 	now := time.Now()
 
-	exampleTodo, _ := NewTodo(1, "do stuff", &now, 1)
+	exampleTodo, err := NewTodo(1, "do stuff", &now, 1)
+	if err != nil {
+		t.Errorf("unable to create todo")
+	}
 
 	tests := map[string]struct {
 		input Todo
@@ -43,8 +46,14 @@ func TestGetTodos(t *testing.T) {
 	r := new(MemoryRepository)
 	s := NewService(r)
 
-	todo, _ := NewTodo(0, "do stuff", nil, 1)
-	nonUserTodo, _ := NewTodo(0, "gud todo", nil, 2)
+	todo, err := NewTodo(0, "do stuff", nil, 1)
+	if err != nil {
+		t.Errorf("unable to create todo")
+	}
+	nonUserTodo, err := NewTodo(0, "gud todo", nil, 2)
+	if err != nil {
+		t.Errorf("unable to create todo")
+	}
 	s.AddTodo(*todo)
 	s.AddTodo(*todo)
 	s.AddTodo(*todo)

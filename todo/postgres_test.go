@@ -3,6 +3,7 @@ package todo
 import (
 	"database/sql"
 	"testing"
+	"time"
 
 	"github.com/chirst/go-todo/database"
 )
@@ -21,10 +22,10 @@ func TestPostgresGetTodos(t *testing.T) {
 	todos, err := r.getTodos(firstUserID)
 
 	if err != nil {
-		t.Errorf("getTodos(1) returned err: %v", err)
+		t.Errorf("getTodos(%v) returned err: %v", firstUserID, err)
 	}
 	if len(todos) != 1 {
-		t.Errorf("getTodos(1) returned %v todos, want 1 todos", len(todos))
+		t.Errorf("getTodos(%v) returned %v todos, want 1 todo", firstUserID, len(todos))
 	}
 }
 
@@ -35,13 +36,67 @@ func TestPostgresAddTodo(t *testing.T) {
 	r := &PostgresRepository{DB: db}
 
 	firstUserID := insertUser(db, "u1")
-	todo, _ := NewTodo(0, "gud name", nil, firstUserID)
+	todo, err := NewTodo(0, "gud name", nil, firstUserID)
+	if err != nil {
+		t.Errorf("unable to create todo")
+	}
 
-	_, err := r.addTodo(*todo)
+	_, err = r.addTodo(*todo)
 
 	if err != nil {
-		t.Errorf("addTodo() err: %s", err.Error())
+		t.Errorf("addTodo err: %s", err.Error())
 	}
+}
+
+func TestPostgresCompleteTodo(t *testing.T) {
+
+	t.Run("completes", func(t *testing.T) {
+		db := database.OpenTestDB(t)
+		defer db.Close()
+
+		r := &PostgresRepository{DB: db}
+
+		userID := insertUser(db, "u1")
+		todoID := insertTodo(t, r, userID)
+
+		err := r.completeTodo(userID, todoID)
+
+		if err != nil {
+			t.Errorf("completeTodo(%v, %v) err: %s", userID, todoID, err.Error())
+		}
+
+		time := getTodoTime(db, todoID)
+		if time == nil {
+			t.Errorf(
+				"completeTodo(%v, %v) expected completed not to be nil",
+				userID,
+				todoID,
+			)
+		}
+	})
+
+	t.Run("errs for wrong user", func(t *testing.T) {
+		db := database.OpenTestDB(t)
+		defer db.Close()
+
+		r := &PostgresRepository{DB: db}
+
+		firstUserID := insertUser(db, "u1")
+		secondUserID := insertUser(db, "u2")
+		todoID := insertTodo(t, r, firstUserID)
+
+		err := r.completeTodo(secondUserID, todoID)
+
+		if err == nil {
+			t.Errorf(
+				"completeTodo(%v, %v) expected err todo id: %v owned by user id: %v",
+				secondUserID,
+				todoID,
+				todoID,
+				firstUserID,
+			)
+		}
+	})
 }
 
 func insertUser(db *sql.DB, name string) int {
@@ -55,10 +110,21 @@ func insertUser(db *sql.DB, name string) int {
 	return id
 }
 
-func insertTodo(t *testing.T, r *PostgresRepository, userID int) {
+func insertTodo(t *testing.T, r *PostgresRepository, userID int) int {
 	todo, err := NewTodo(0, "gud todo", nil, userID)
 	if err != nil {
 		t.Fatalf("unable to create todo")
 	}
-	r.addTodo(*todo)
+	addedTodo, err := r.addTodo(*todo)
+	if err != nil {
+		t.Fatalf("unable to add todo")
+	}
+	return addedTodo.id
+}
+
+func getTodoTime(db *sql.DB, todoID int) *time.Time {
+	result := db.QueryRow("SELECT completed FROM todo WHERE id = $1", todoID)
+	var completed *time.Time
+	result.Scan(&completed)
+	return completed
 }

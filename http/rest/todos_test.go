@@ -27,11 +27,7 @@ func (s *mockTodoService) GetTodos(userID int) (todo.Todos, error) {
 }
 
 func (s *mockTodoService) AddTodo(t todo.Todo) (*todo.Todo, error) {
-	retTodo, err := todo.NewTodo(1, "gud todo", nil, 1)
-	if err != nil {
-		panic(err.Error())
-	}
-	return retTodo, nil
+	return todo.NewTodo(1, "gud todo", nil, 1)
 }
 
 func TestGetTodos(t *testing.T) {

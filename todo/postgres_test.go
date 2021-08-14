@@ -99,6 +99,57 @@ func TestPostgresCompleteTodo(t *testing.T) {
 	})
 }
 
+func TestPostgresDeleteTodo(t *testing.T) {
+
+	t.Run("deletes", func(t *testing.T) {
+		db := database.OpenTestDB(t)
+		defer db.Close()
+
+		r := &PostgresRepository{DB: db}
+
+		userID := insertUser(db, "u1")
+		todoID := insertTodo(t, r, userID)
+
+		err := r.deleteTodo(userID, todoID)
+
+		if err != nil {
+			t.Errorf("deleteTodo(%v, %v) err: %s", userID, todoID, err.Error())
+		}
+
+		time := getDeletedTime(db, todoID)
+		if time == nil {
+			t.Errorf(
+				"deleteTodo(%v, %v) expected deleted not to be nil",
+				userID,
+				todoID,
+			)
+		}
+	})
+
+	t.Run("errs for wrong user", func(t *testing.T) {
+		db := database.OpenTestDB(t)
+		defer db.Close()
+
+		r := &PostgresRepository{DB: db}
+
+		firstUserID := insertUser(db, "u1")
+		secondUserID := insertUser(db, "u2")
+		todoID := insertTodo(t, r, firstUserID)
+
+		err := r.deleteTodo(secondUserID, todoID)
+
+		if err == nil {
+			t.Errorf(
+				"deleteTodo(%v, %v) expected err todo id: %v owned by user id: %v",
+				secondUserID,
+				todoID,
+				todoID,
+				firstUserID,
+			)
+		}
+	})
+}
+
 func insertUser(db *sql.DB, name string) int {
 	result := db.QueryRow(`
 		INSERT INTO public.user (username, password)
@@ -127,4 +178,11 @@ func getTodoTime(db *sql.DB, todoID int) *time.Time {
 	var completed *time.Time
 	result.Scan(&completed)
 	return completed
+}
+
+func getDeletedTime(db *sql.DB, todoID int) *time.Time {
+	result := db.QueryRow("SELECT deleted FROM todo WHERE id = $1", todoID)
+	var deleted *time.Time
+	result.Scan(&deleted)
+	return deleted
 }

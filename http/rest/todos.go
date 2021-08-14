@@ -90,3 +90,24 @@ func CompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Reques
 		w.Header().Set("Content-Type", "text/plain")
 	}
 }
+
+func DeleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		todoID := chi.URLParam(r, "todoID")
+		id, err := strconv.Atoi(todoID)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "unable to delete todo", http.StatusBadRequest)
+			return
+		}
+		uid := auth.GetUIDClaim(r.Context())
+		err = s.DeleteTodo(uid, id)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "unable to delete todo", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+		w.Header().Set("Content-Type", "text/plain")
+	}
+}

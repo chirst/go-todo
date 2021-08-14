@@ -17,10 +17,6 @@ import (
 
 type mockTodoService struct{}
 
-func (s *mockTodoService) CompleteTodo(userID int, todoID int) error {
-	return nil
-}
-
 func (s *mockTodoService) GetTodos(userID int) (todo.Todos, error) {
 	ts := todo.Todos{}
 	return ts, nil
@@ -28,6 +24,14 @@ func (s *mockTodoService) GetTodos(userID int) (todo.Todos, error) {
 
 func (s *mockTodoService) AddTodo(t todo.Todo) (*todo.Todo, error) {
 	return todo.NewTodo(1, "gud todo", nil, 1)
+}
+
+func (s *mockTodoService) CompleteTodo(userID int, todoID int) error {
+	return nil
+}
+
+func (s *mockTodoService) DeleteTodo(userID, todoID int) error {
+	return nil
 }
 
 func TestGetTodos(t *testing.T) {
@@ -82,5 +86,23 @@ func TestCompleteTodo(t *testing.T) {
 
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
+	}
+}
+
+func TestDeleteTodo(t *testing.T) {
+	s := &mockTodoService{}
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("DELETE", "/todos/1", nil)
+	rctx := chi.NewRouteContext()
+	rctx.URLParams.Add("todoID", "1")
+	r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
+	token, _, _ := auth.GetTokenForUser(1)
+	r = r.WithContext(context.WithValue(r.Context(), jwtauth.TokenCtxKey, token))
+
+	DeleteTodo(s)(w, r)
+	resp := w.Result()
+
+	if resp.StatusCode != http.StatusNoContent {
+		t.Errorf("expected %#v, got: %#v", http.StatusNoContent, resp.StatusCode)
 	}
 }

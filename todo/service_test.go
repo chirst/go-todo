@@ -107,3 +107,32 @@ func TestCompleteTodo(t *testing.T) {
 		t.Fatalf("expected completed todo, got incomplete todo")
 	}
 }
+
+func TestDeleteTodo(t *testing.T) {
+	r := &MemoryRepository{}
+	s := NewService(r)
+
+	var userID int = 1
+	td, err := NewTodo(0, "todo1", nil, userID)
+	if err != nil {
+		t.Errorf("error creating todo")
+	}
+	addedTodo, err := r.addTodo(*td)
+	if err != nil {
+		t.Errorf("failed to add todo")
+	}
+
+	err = s.DeleteTodo(userID, addedTodo.id)
+	if err != nil {
+		t.Errorf("failed to delete todo with err: %v", err.Error())
+	}
+
+	deletedTodo, err := r.getTodo(userID, addedTodo.id)
+	if err != nil {
+		t.Errorf("failed to get deleted todo with err: %v", err.Error())
+	}
+
+	if deletedTodo.deleted == nil {
+		t.Errorf("expected deleted todo, got nil for deleted")
+	}
+}

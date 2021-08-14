@@ -23,7 +23,7 @@ func (s *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 	rows, err := s.DB.Query(`
 		SELECT id, name, completed, user_id
 		FROM todo
-		WHERE user_id = $1
+		WHERE user_id = $1 AND deleted IS NULL
 	`, userID)
 	if err != nil {
 		return nil, err

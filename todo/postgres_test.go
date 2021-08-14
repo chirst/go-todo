@@ -9,24 +9,49 @@ import (
 )
 
 func TestPostgresGetTodos(t *testing.T) {
-	db := database.OpenTestDB(t)
-	defer db.Close()
 
-	r := &PostgresRepository{DB: db}
+	t.Run("gets for user", func(t *testing.T) {
+		db := database.OpenTestDB(t)
+		defer db.Close()
 
-	firstUserID := insertUser(db, "u1")
-	secondUserID := insertUser(db, "u2")
-	insertTodo(t, r, firstUserID)
-	insertTodo(t, r, secondUserID)
+		r := &PostgresRepository{DB: db}
 
-	todos, err := r.getTodos(firstUserID)
+		firstUserID := insertUser(db, "u1")
+		secondUserID := insertUser(db, "u2")
+		insertTodo(t, r, firstUserID)
+		insertTodo(t, r, secondUserID)
+		insertTodo(t, r, secondUserID)
 
-	if err != nil {
-		t.Errorf("getTodos(%v) returned err: %v", firstUserID, err)
-	}
-	if len(todos) != 1 {
-		t.Errorf("getTodos(%v) returned %v todos, want 1 todo", firstUserID, len(todos))
-	}
+		todos, err := r.getTodos(firstUserID)
+
+		if err != nil {
+			t.Errorf("getTodos(%v) returned err: %v", firstUserID, err)
+		}
+		if len(todos) != 1 {
+			t.Errorf("getTodos(%v) returned %v todos, want 1 todo", firstUserID, len(todos))
+		}
+	})
+
+	t.Run("excludes deleted", func(t *testing.T) {
+		db := database.OpenTestDB(t)
+		defer db.Close()
+
+		r := &PostgresRepository{DB: db}
+
+		userID := insertUser(db, "u1")
+		insertTodo(t, r, userID)
+		insertTodo(t, r, userID)
+		toBeDeletedID := insertTodo(t, r, userID)
+		r.deleteTodo(userID, toBeDeletedID)
+
+		todos, err := r.getTodos(userID)
+		if err != nil {
+			t.Errorf("getTodos(%v) returned err: %v", userID, err)
+		}
+		if len(todos) != 2 {
+			t.Errorf("getTodos(%v) returned %v todos, want 2 todos", userID, len(todos))
+		}
+	})
 }
 
 func TestPostgresAddTodo(t *testing.T) {

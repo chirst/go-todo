@@ -60,3 +60,4 @@ func (s *service) ChangeTodoName(todoId int, name string) {
 }
 
 // TODO: grouping and sorting
+// TODO: searching

@@ -17,6 +17,7 @@ type TodoService interface {
 	AddTodo(t Todo) (*Todo, error)
 	GetTodos(userID int) (Todos, error)
 	CompleteTodo(userID, todoID int) error
+	IncompleteTodo(userID, todoID int) error
 	DeleteTodo(userID, todoID int) error
 }
 
@@ -45,8 +46,8 @@ func (s *service) CompleteTodo(userID, todoID int) error {
 }
 
 // IncompleteTodo marks a todo as incomplete
-func (s *service) IncompleteTodo(todoId int) {
-	// TODO:
+func (s *service) IncompleteTodo(userID, todoID int) error {
+	return nil
 }
 
 // DeleteTodo marks a todo as deleted where it will remain but not be accessed

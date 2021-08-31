@@ -91,6 +91,26 @@ func CompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+func IncompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		todoID := chi.URLParam(r, "todoID")
+		id, err := strconv.Atoi(todoID)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "Unable to incomplete todo", http.StatusBadRequest)
+			return
+		}
+		uid := auth.GetUIDClaim(r.Context())
+		err = s.IncompleteTodo(uid, id)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "Unable to incomplete todo", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "text/plain")
+	}
+}
+
 func DeleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todoID := chi.URLParam(r, "todoID")

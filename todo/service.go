@@ -9,6 +9,7 @@ type Repository interface {
 	addTodo(Todo) (*Todo, error)
 	getTodos(int) ([]*Todo, error)
 	completeTodo(userID, todoID int) error
+	incompleteTodo(userID, todoID int) error
 	deleteTodo(userID, todoID int) error
 }
 
@@ -17,6 +18,7 @@ type TodoService interface {
 	AddTodo(t Todo) (*Todo, error)
 	GetTodos(userID int) (Todos, error)
 	CompleteTodo(userID, todoID int) error
+	IncompleteTodo(userID, todoID int) error
 	DeleteTodo(userID, todoID int) error
 }
 
@@ -45,8 +47,8 @@ func (s *service) CompleteTodo(userID, todoID int) error {
 }
 
 // IncompleteTodo marks a todo as incomplete
-func (s *service) IncompleteTodo(todoId int) {
-	// TODO:
+func (s *service) IncompleteTodo(userID, todoID int) error {
+	return s.r.incompleteTodo(userID, todoID)
 }
 
 // DeleteTodo marks a todo as deleted where it will remain but not be accessed

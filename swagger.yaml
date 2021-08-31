@@ -156,6 +156,17 @@ paths:
       - text/plain
       tags:
       - Todo
+  /todos/{todoId}/incomplete:
+    patch:
+      summary: Incomplete a single Todo
+      description: |-
+        Marks the Todo matching todoId as incomplete. This means removing the
+        complete timestamp if there is one.
+      operationId: IncompleteTodo
+      produces:
+      - text/plain
+      tags:
+      - Todo
   /todos/{todoId}:
     delete:
       summary: Delete a single Todo

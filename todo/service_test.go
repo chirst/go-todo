@@ -108,6 +108,36 @@ func TestCompleteTodo(t *testing.T) {
 	}
 }
 
+func TestIncompleteTodo(t *testing.T) {
+	r := &MemoryRepository{}
+	s := NewService(r)
+
+	userID := 1
+	now := time.Now()
+	completeTodo, err := NewTodo(0, "complete todo", &now, userID)
+	if err != nil {
+		t.Fatalf("error creating todo")
+	}
+	addedTodo, err := r.addTodo(*completeTodo)
+	if err != nil {
+		t.Fatalf("failed to add todo")
+	}
+
+	err = s.IncompleteTodo(userID, addedTodo.id)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	incompletedTodo, err := r.getTodo(userID, addedTodo.id)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	if incompletedTodo.completed != nil {
+		t.Fatalf("expected incomplete todo, got completed todo")
+	}
+}
+
 func TestDeleteTodo(t *testing.T) {
 	r := &MemoryRepository{}
 	s := NewService(r)

@@ -69,6 +69,15 @@ func (r *MemoryRepository) completeTodo(userID, todoID int) error {
 	return nil
 }
 
+func (r *MemoryRepository) incompleteTodo(userID, todoID int) error {
+	t, err := r.getTodo(userID, todoID)
+	if err != nil {
+		return err
+	}
+	t.completed = nil
+	return nil
+}
+
 func (r *MemoryRepository) deleteTodo(userID, todoID int) error {
 	t, err := r.getTodo(userID, todoID)
 	if err != nil {

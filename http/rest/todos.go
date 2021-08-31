@@ -91,6 +91,12 @@ func CompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+func IncompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
 func DeleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todoID := chi.URLParam(r, "todoID")

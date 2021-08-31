@@ -60,6 +60,7 @@ func main() {
 		r.Get("/todos", rest.GetTodos(todoService))
 		r.Post("/todos", rest.AddTodo(todoService))
 		r.Patch("/todos/{todoID}/complete", rest.CompleteTodo(todoService))
+		r.Patch("/todos/{todoID}/incomplete", rest.IncompleteTodo(todoService))
 		r.Delete("/todos/{todoID}", rest.DeleteTodo(todoService))
 	})
 

@@ -19,6 +19,9 @@ lint:
 	golint ./...
 
 # docker
+run-services:
+	docker-compose up --build
+
 build-image:
 	docker build -t go-todo .
 

@@ -124,6 +124,57 @@ func TestPostgresCompleteTodo(t *testing.T) {
 	})
 }
 
+func TestPostgresIncompleteTodo(t *testing.T) {
+
+	t.Run("incompletes", func(t *testing.T) {
+		db := database.OpenTestDB(t)
+		defer db.Close()
+
+		r := &PostgresRepository{DB: db}
+
+		userID := insertUser(db, "u1")
+		todoID := insertCompleteTodo(t, r, userID)
+
+		err := r.incompleteTodo(userID, todoID)
+
+		if err != nil {
+			t.Errorf("incompleteTodo(%v, %v) err: %s", userID, todoID, err.Error())
+		}
+
+		time := getTodoTime(db, todoID)
+		if time != nil {
+			t.Errorf(
+				"incompleteTodo(%v, %v) expected complete to be nil",
+				userID,
+				todoID,
+			)
+		}
+	})
+
+	t.Run("errs for wrong user", func(t *testing.T) {
+		db := database.OpenTestDB(t)
+		defer db.Close()
+
+		r := &PostgresRepository{DB: db}
+
+		firstUserID := insertUser(db, "u1")
+		secondUserID := insertUser(db, "u2")
+		todoID := insertCompleteTodo(t, r, firstUserID)
+
+		err := r.incompleteTodo(secondUserID, todoID)
+
+		if err == nil {
+			t.Errorf(
+				"incompleteTodo(%v, %v) expected err todo id: %v owned by user id: %v",
+				secondUserID,
+				todoID,
+				todoID,
+				firstUserID,
+			)
+		}
+	})
+}
+
 func TestPostgresDeleteTodo(t *testing.T) {
 
 	t.Run("deletes", func(t *testing.T) {
@@ -188,6 +239,19 @@ func insertUser(db *sql.DB, name string) int {
 
 func insertTodo(t *testing.T, r *PostgresRepository, userID int) int {
 	todo, err := NewTodo(0, "gud todo", nil, userID)
+	if err != nil {
+		t.Fatalf("unable to create todo")
+	}
+	addedTodo, err := r.addTodo(*todo)
+	if err != nil {
+		t.Fatalf("unable to add todo")
+	}
+	return addedTodo.id
+}
+
+func insertCompleteTodo(t *testing.T, r *PostgresRepository, userID int) int {
+	now := time.Now()
+	todo, err := NewTodo(0, "complete todo", &now, userID)
 	if err != nil {
 		t.Fatalf("unable to create todo")
 	}

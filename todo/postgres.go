@@ -80,6 +80,25 @@ func (s *PostgresRepository) completeTodo(userID, todoID int) error {
 	return nil
 }
 
+func (s *PostgresRepository) incompleteTodo(userID, todoID int) error {
+	result, err := s.DB.Exec(`
+		UPDATE todo
+		SET completed = NULL
+		WHERE id = $1 AND user_id = $2
+	`, todoID, userID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected != 1 {
+		return errors.New("no rows affected")
+	}
+	return nil
+}
+
 func (s *PostgresRepository) deleteTodo(userID, todoID int) error {
 	result, err := s.DB.Exec(`
 		UPDATE todo

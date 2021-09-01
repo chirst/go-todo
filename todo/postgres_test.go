@@ -54,6 +54,28 @@ func TestPostgresGetTodos(t *testing.T) {
 	})
 }
 
+func TestPostgresGetTodo(t *testing.T) {
+	db := database.OpenTestDB(t)
+	defer db.Close()
+
+	r := &PostgresRepository{DB: db}
+
+	userID := insertUser(db, "u1")
+	todoID := insertTodo(t, r, userID)
+
+	todo, err := r.getTodo(userID, todoID)
+
+	if err != nil {
+		t.Fatalf("expected no error got error %s", err.Error())
+	}
+	if todo == nil {
+		t.Fatalf("expected todo got nil")
+	}
+	if todo.id != todoID {
+		t.Fatalf("expected todo with id: %v, got todo with id: %v", todoID, todo.id)
+	}
+}
+
 func TestPostgresAddTodo(t *testing.T) {
 	db := database.OpenTestDB(t)
 	defer db.Close()
@@ -173,6 +195,32 @@ func TestPostgresIncompleteTodo(t *testing.T) {
 			)
 		}
 	})
+}
+
+func TestPostgresUpdateName(t *testing.T) {
+	db := database.OpenTestDB(t)
+	defer db.Close()
+
+	r := &PostgresRepository{DB: db}
+
+	userID := insertUser(db, "u1")
+	todoID := insertTodo(t, r, userID)
+	newName := "guddest new name"
+
+	err := r.updateName(userID, todoID, newName)
+
+	if err != nil {
+		t.Fatalf("expected err to be nil got err: %s", err.Error())
+	}
+
+	updatedTodo, err := r.getTodo(userID, todoID)
+	if err != nil {
+		t.Fatalf("failed to lookup todo with userID: %v, todoID %v", userID, todoID)
+	}
+
+	if updatedTodo.name != newName {
+		t.Fatalf("expected todo to have name: %s, got: %s", newName, updatedTodo.name)
+	}
 }
 
 func TestPostgresDeleteTodo(t *testing.T) {

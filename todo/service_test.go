@@ -138,6 +138,56 @@ func TestIncompleteTodo(t *testing.T) {
 	}
 }
 
+func TestChangeTodoName(t *testing.T) {
+
+	t.Run("invalid name", func(t *testing.T) {
+		r := &MemoryRepository{}
+		s := NewService(r)
+
+		td, err := NewTodo(0, "gud name", nil, 1)
+		if err != nil {
+			t.Fatalf("error creating todo")
+		}
+		todo, err := r.addTodo(*td)
+		if err != nil {
+			t.Fatalf("error adding todo")
+		}
+
+		err = s.ChangeTodoName(todo.userID, todo.id, "")
+		if err == nil {
+			t.Fatalf("got nil error expected err")
+		}
+	})
+
+	t.Run("valid name", func(t *testing.T) {
+		r := &MemoryRepository{}
+		s := NewService(r)
+
+		td, err := NewTodo(0, "gud name", nil, 1)
+		if err != nil {
+			t.Fatalf("error creating todo")
+		}
+		todo, err := r.addTodo(*td)
+		if err != nil {
+			t.Fatalf("error adding todo")
+		}
+
+		newName := "gudder name"
+		err = s.ChangeTodoName(todo.userID, todo.id, newName)
+		if err != nil {
+			t.Fatalf("got error expected no err")
+		}
+
+		memoryTodo, err := r.getMemoryTodo(todo.userID, todo.id)
+		if err != nil {
+			t.Fatalf("unable to get memory todo")
+		}
+		if memoryTodo.name != newName {
+			t.Fatalf("got wrong name: %s, want: %s", memoryTodo.name, newName)
+		}
+	})
+}
+
 func TestDeleteTodo(t *testing.T) {
 	r := &MemoryRepository{}
 	s := NewService(r)
@@ -157,7 +207,7 @@ func TestDeleteTodo(t *testing.T) {
 		t.Errorf("failed to delete todo with err: %v", err.Error())
 	}
 
-	deletedTodo, err := r.getTodo(userID, addedTodo.id)
+	deletedTodo, err := r.getMemoryTodo(userID, addedTodo.id)
 	if err != nil {
 		t.Errorf("failed to get deleted todo with err: %v", err.Error())
 	}

@@ -1,7 +1,5 @@
 package user
 
-// TODO: integration tests
-
 import (
 	"database/sql"
 )

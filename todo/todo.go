@@ -45,7 +45,6 @@ type todoJSON struct {
 	Name      string     `json:"name"`
 	Completed *time.Time `json:"completed"`
 	UserID    int        `json:"userId"`
-	// TODO: HATEOAS to single todo
 }
 
 // ToJSON converts Todos to json

@@ -57,9 +57,6 @@ func (s *service) DeleteTodo(userID, todoID int) error {
 }
 
 // ChangeTodoName changes the name of a todo
-func (s *service) ChangeTodoName(todoId int, name string) {
-	// TODO:
+func (s *service) ChangeTodoName(userID int, todoID int, name string) error {
+	return nil
 }
-
-// TODO: grouping and sorting
-// TODO: searching

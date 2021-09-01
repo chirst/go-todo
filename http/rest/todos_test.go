@@ -78,7 +78,7 @@ func TestAddTodo(t *testing.T) {
 func TestCompleteTodo(t *testing.T) {
 	s := &mockTodoService{}
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest("PUT", "/todos/1/complete", nil)
+	r := httptest.NewRequest("PATCH", "/todos/1/complete", nil)
 	rctx := chi.NewRouteContext()
 	rctx.URLParams.Add("todoID", "1")
 	r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))

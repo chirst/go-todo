@@ -61,6 +61,7 @@ func main() {
 		r.Post("/todos", rest.AddTodo(todoService))
 		r.Patch("/todos/{todoID}/complete", rest.CompleteTodo(todoService))
 		r.Patch("/todos/{todoID}/incomplete", rest.IncompleteTodo(todoService))
+		r.Patch("/todos/{todoID}/name", rest.ChangeTodoName(todoService))
 		r.Delete("/todos/{todoID}", rest.DeleteTodo(todoService))
 	})
 

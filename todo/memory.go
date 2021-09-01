@@ -60,7 +60,7 @@ func (r *MemoryRepository) addTodo(t Todo) (*Todo, error) {
 // Complete todo marks todo with the given id as complete and returns no error
 // on success
 func (r *MemoryRepository) completeTodo(userID, todoID int) error {
-	t, err := r.getTodo(userID, todoID)
+	t, err := r.getMemoryTodo(userID, todoID)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (r *MemoryRepository) completeTodo(userID, todoID int) error {
 }
 
 func (r *MemoryRepository) incompleteTodo(userID, todoID int) error {
-	t, err := r.getTodo(userID, todoID)
+	t, err := r.getMemoryTodo(userID, todoID)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (r *MemoryRepository) incompleteTodo(userID, todoID int) error {
 }
 
 func (r *MemoryRepository) deleteTodo(userID, todoID int) error {
-	t, err := r.getTodo(userID, todoID)
+	t, err := r.getMemoryTodo(userID, todoID)
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,24 @@ func (r *MemoryRepository) deleteTodo(userID, todoID int) error {
 	return nil
 }
 
-func (r *MemoryRepository) getTodo(userID, id int) (*memoryTodo, error) {
+func (r *MemoryRepository) updateName(userID, todoID int, name string) error {
+	t, err := r.getMemoryTodo(userID, todoID)
+	if err != nil {
+		return err
+	}
+	t.name = name
+	return nil
+}
+
+func (r *MemoryRepository) getTodo(userID, id int) (*Todo, error) {
+	t, err := r.getMemoryTodo(userID, id)
+	if err != nil {
+		return nil, err
+	}
+	return NewTodo(t.id, t.name, t.completed, t.userID)
+}
+
+func (r *MemoryRepository) getMemoryTodo(userID, id int) (*memoryTodo, error) {
 	for i := range r.todos {
 		if r.todos[i].id == id && r.todos[i].userID == userID {
 			return &r.todos[i], nil

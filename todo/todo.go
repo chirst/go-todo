@@ -26,15 +26,24 @@ func NewTodo(
 	completed *time.Time,
 	userID int,
 ) (*Todo, error) {
-	if name == "" {
-		return nil, errNameRequired
+	t := &Todo{
+		id:        id,
+		completed: completed,
+		userID:    userID,
 	}
-	return &Todo{
-		id,
-		name,
-		completed,
-		userID,
-	}, nil
+	err := t.setName(name)
+	if err != nil {
+		return nil, err
+	}
+	return t, nil
+}
+
+func (t *Todo) setName(n string) error {
+	if n == "" {
+		return errNameRequired
+	}
+	t.name = n
+	return nil
 }
 
 // Todos is a list of Todo
@@ -45,7 +54,6 @@ type todoJSON struct {
 	Name      string     `json:"name"`
 	Completed *time.Time `json:"completed"`
 	UserID    int        `json:"userId"`
-	// TODO: HATEOAS to single todo
 }
 
 // ToJSON converts Todos to json

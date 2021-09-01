@@ -111,6 +111,36 @@ func IncompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+type changeTodoBody struct {
+	Name string
+}
+
+func ChangeTodoName(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		todoID := chi.URLParam(r, "todoID")
+		id, err := strconv.Atoi(todoID)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "Unable to change todo name", http.StatusBadRequest)
+			return
+		}
+		uid := auth.GetUIDClaim(r.Context())
+		ctb := changeTodoBody{}
+		if err := json.NewDecoder(r.Body).Decode(&ctb); err != nil {
+			log.Print(err.Error())
+			http.Error(w, "Unable to change todo name", http.StatusBadRequest)
+			return
+		}
+		err = s.ChangeTodoName(uid, id, ctb.Name)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "Unable to change todo name", http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "text/plain")
+	}
+}
+
 func DeleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todoID := chi.URLParam(r, "todoID")

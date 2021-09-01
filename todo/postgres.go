@@ -44,6 +44,20 @@ func (s *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 	return userTodos, nil
 }
 
+func (r *PostgresRepository) getTodo(userID, todoID int) (*Todo, error) {
+	row := r.DB.QueryRow(`
+		SELECT id, name, completed, user_id
+		FROM todo
+		WHERE user_id = $1 AND id = $2
+	`, userID, todoID)
+	pgt := postgresTodo{}
+	err := row.Scan(&pgt.id, &pgt.name, &pgt.completed, &pgt.userID)
+	if err != nil {
+		return nil, err
+	}
+	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID)
+}
+
 // AddTodo adds a single todo to storage
 func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 	row := s.DB.QueryRow(`
@@ -86,6 +100,25 @@ func (s *PostgresRepository) incompleteTodo(userID, todoID int) error {
 		SET completed = NULL
 		WHERE id = $1 AND user_id = $2
 	`, todoID, userID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected != 1 {
+		return errors.New("no rows affected")
+	}
+	return nil
+}
+
+func (r *PostgresRepository) updateName(userID, todoID int, name string) error {
+	result, err := r.DB.Exec(`
+		UPDATE todo
+		SET name = $3
+		WHERE id = $2 AND user_id = $1
+	`, userID, todoID, name)
 	if err != nil {
 		return err
 	}

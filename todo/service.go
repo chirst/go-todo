@@ -19,6 +19,7 @@ type TodoService interface {
 	GetTodos(userID int) (Todos, error)
 	CompleteTodo(userID, todoID int) error
 	IncompleteTodo(userID, todoID int) error
+	ChangeTodoName(userID, todoID int, name string) error
 	DeleteTodo(userID, todoID int) error
 }
 
@@ -51,12 +52,12 @@ func (s *service) IncompleteTodo(userID, todoID int) error {
 	return s.r.incompleteTodo(userID, todoID)
 }
 
-// DeleteTodo marks a todo as deleted where it will remain but not be accessed
-func (s *service) DeleteTodo(userID, todoID int) error {
-	return s.r.deleteTodo(userID, todoID)
-}
-
 // ChangeTodoName changes the name of a todo
 func (s *service) ChangeTodoName(userID int, todoID int, name string) error {
 	return nil
+}
+
+// DeleteTodo marks a todo as deleted where it will remain but not be accessed
+func (s *service) DeleteTodo(userID, todoID int) error {
+	return s.r.deleteTodo(userID, todoID)
 }

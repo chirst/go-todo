@@ -167,6 +167,16 @@ paths:
       - text/plain
       tags:
       - Todo
+  /todos/{todoId}/name:
+    patch:
+      summary: Change the name of a single Todo
+      description: |-
+        Validates and changes the name of the Todo to the given name
+      operationId: ChangeTodoName
+      produces:
+      - text/plain
+      tags:
+      - Todo
   /todos/{todoId}:
     delete:
       summary: Delete a single Todo

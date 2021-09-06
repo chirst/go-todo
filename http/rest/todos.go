@@ -71,76 +71,54 @@ func AddTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
+type patchTodoBody struct {
+	Complete *bool
+	Name     *string
+}
+
+// Patch todo updates the given optional fields of patchTodoBody
+func PatchTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		todoID := chi.URLParam(r, "todoID")
-		id, err := strconv.Atoi(todoID)
+		id := chi.URLParam(r, "todoID")
+		todoID, err := strconv.Atoi(id)
 		if err != nil {
 			log.Print(err.Error())
-			http.Error(w, "Unable to complete todo", http.StatusBadRequest)
+			http.Error(w, "Unable to read todo id", http.StatusBadRequest)
 			return
 		}
+
 		uid := auth.GetUIDClaim(r.Context())
-		err = s.CompleteTodo(uid, id)
-		if err != nil {
+
+		body := patchTodoBody{}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			log.Print(err.Error())
-			http.Error(w, "Unable to complete todo", http.StatusInternalServerError)
+			http.Error(w, "Unable to read body", http.StatusBadRequest)
 			return
 		}
-		w.Header().Set("Content-Type", "text/plain")
+
+		if body.Complete != nil {
+			if *body.Complete {
+				err = s.CompleteTodo(uid, todoID)
+			} else {
+				err = s.IncompleteTodo(uid, todoID)
+			}
+			if err != nil {
+				log.Print(err.Error())
+				http.Error(w, "Unable to change completion status", http.StatusInternalServerError)
+			}
+		}
+
+		if body.Name != nil {
+			err = s.ChangeTodoName(uid, todoID, *body.Name)
+			if err != nil {
+				log.Print(err.Error())
+				http.Error(w, "Unable to change todo name", http.StatusInternalServerError)
+			}
+		}
 	}
 }
 
-func IncompleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		todoID := chi.URLParam(r, "todoID")
-		id, err := strconv.Atoi(todoID)
-		if err != nil {
-			log.Print(err.Error())
-			http.Error(w, "Unable to incomplete todo", http.StatusBadRequest)
-			return
-		}
-		uid := auth.GetUIDClaim(r.Context())
-		err = s.IncompleteTodo(uid, id)
-		if err != nil {
-			log.Print(err.Error())
-			http.Error(w, "Unable to incomplete todo", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "text/plain")
-	}
-}
-
-type changeTodoBody struct {
-	Name string
-}
-
-func ChangeTodoName(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		todoID := chi.URLParam(r, "todoID")
-		id, err := strconv.Atoi(todoID)
-		if err != nil {
-			log.Print(err.Error())
-			http.Error(w, "Unable to change todo name", http.StatusBadRequest)
-			return
-		}
-		uid := auth.GetUIDClaim(r.Context())
-		ctb := changeTodoBody{}
-		if err := json.NewDecoder(r.Body).Decode(&ctb); err != nil {
-			log.Print(err.Error())
-			http.Error(w, "Unable to change todo name", http.StatusBadRequest)
-			return
-		}
-		err = s.ChangeTodoName(uid, id, ctb.Name)
-		if err != nil {
-			log.Print(err.Error())
-			http.Error(w, "Unable to change todo name", http.StatusBadRequest)
-			return
-		}
-		w.Header().Set("Content-Type", "text/plain")
-	}
-}
-
+// DeleteTodo deletes todo with the given id
 func DeleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todoID := chi.URLParam(r, "todoID")

@@ -79,63 +79,56 @@ func TestAddTodo(t *testing.T) {
 	}
 }
 
-func TestCompleteTodo(t *testing.T) {
-	s := &mockTodoService{}
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest("PATCH", "/todos/1/complete", nil)
-	rctx := chi.NewRouteContext()
-	rctx.URLParams.Add("todoID", "1")
-	r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
-	token, _, _ := auth.GetTokenForUser(1)
-	r = r.WithContext(context.WithValue(r.Context(), jwtauth.TokenCtxKey, token))
+func TestPatchTodo(t *testing.T) {
+	t.Run("all", func(t *testing.T) {
+		s := &mockTodoService{}
+		w := httptest.NewRecorder()
+		buffer := &bytes.Buffer{}
+		n := "new name"
+		c := true
+		ctb := patchTodoBody{
+			Complete: &c,
+			Name:     &n,
+		}
+		json.NewEncoder(buffer).Encode(ctb)
+		r := httptest.NewRequest("PATCH", "/todos/1", buffer)
+		rctx := chi.NewRouteContext()
+		rctx.URLParams.Add("todoID", "1")
+		r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
+		token, _, _ := auth.GetTokenForUser(1)
+		r = r.WithContext(context.WithValue(r.Context(), jwtauth.TokenCtxKey, token))
 
-	CompleteTodo(s)(w, r)
-	resp := w.Result()
+		PatchTodo(s)(w, r)
+		resp := w.Result()
 
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
-	}
-}
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
+		}
+	})
 
-func TestIncompleteTodo(t *testing.T) {
-	s := &mockTodoService{}
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest("PATCH", "/todos/1/incomplete", nil)
-	rctx := chi.NewRouteContext()
-	rctx.URLParams.Add("todoID", "1")
-	r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
-	token, _, _ := auth.GetTokenForUser(1)
-	r = r.WithContext(context.WithValue(r.Context(), jwtauth.TokenCtxKey, token))
+	t.Run("without a key", func(t *testing.T) {
+		s := &mockTodoService{}
+		w := httptest.NewRecorder()
+		buffer := &bytes.Buffer{}
+		n := "new name"
+		ctb := patchTodoBody{
+			Name: &n,
+		}
+		json.NewEncoder(buffer).Encode(ctb)
+		r := httptest.NewRequest("PATCH", "/todos/1/complete", buffer)
+		rctx := chi.NewRouteContext()
+		rctx.URLParams.Add("todoID", "1")
+		r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
+		token, _, _ := auth.GetTokenForUser(1)
+		r = r.WithContext(context.WithValue(r.Context(), jwtauth.TokenCtxKey, token))
 
-	IncompleteTodo(s)(w, r)
-	resp := w.Result()
+		PatchTodo(s)(w, r)
+		resp := w.Result()
 
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
-	}
-}
-
-func TestChangeTodoName(t *testing.T) {
-	s := &mockTodoService{}
-	w := httptest.NewRecorder()
-	buffer := new(bytes.Buffer)
-	ctb := changeTodoBody{
-		Name: "new name",
-	}
-	json.NewEncoder(buffer).Encode(ctb)
-	r := httptest.NewRequest("PATCH", "/todos/1/name", buffer)
-	rctx := chi.NewRouteContext()
-	rctx.URLParams.Add("todoID", "1")
-	r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
-	token, _, _ := auth.GetTokenForUser(1)
-	r = r.WithContext(context.WithValue(r.Context(), jwtauth.TokenCtxKey, token))
-
-	ChangeTodoName(s)(w, r)
-	resp := w.Result()
-
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
-	}
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
+		}
+	})
 }
 
 func TestDeleteTodo(t *testing.T) {

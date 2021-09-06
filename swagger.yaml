@@ -112,6 +112,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/schemas/Todo'
+  /todos/{todoId}:
     post:
       summary: Add a single Todo
       description: Adds a todo belonging to the current authenticated user
@@ -145,39 +146,35 @@ paths:
           description: "todo that was created"
           schema:
             $ref: '#/definitions/schemas/Todo'
-  /todos/{todoId}/complete:
     patch:
-      summary: Complete a single Todo
+      summary: Update a single existing Todo
       description: |-
-        Marks the Todo matching todoId as complete with a timestamp. The
-        timestamp represents what time the Todo was marked as completed
-      operationId: CompleteTodo
+        User owning the given Todo can optionally update one or many different
+        properties of a single Todo matching the given todoId. Properties
+        include completion status and the name.
+      operationId: UpdateTodo
+      consumes:
+      - application/json
       produces:
       - text/plain
       tags:
       - Todo
-  /todos/{todoId}/incomplete:
-    patch:
-      summary: Incomplete a single Todo
-      description: |-
-        Marks the Todo matching todoId as incomplete. This means removing the
-        complete timestamp if there is one.
-      operationId: IncompleteTodo
-      produces:
-      - text/plain
-      tags:
-      - Todo
-  /todos/{todoId}/name:
-    patch:
-      summary: Change the name of a single Todo
-      description: |-
-        Validates and changes the name of the Todo to the given name
-      operationId: ChangeTodoName
-      produces:
-      - text/plain
-      tags:
-      - Todo
-  /todos/{todoId}:
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "What properties to be updated"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            complete:
+              type: "bool"
+              description: "true to complete, false to incomplete, and omit to leave status alone."
+              example: true
+            name:
+              type: "string"
+              format: "string"
+              description: "A short description of what the todo is. Omit to leave the name alone."
     delete:
       summary: Delete a single Todo
       description: |-

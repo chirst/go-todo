@@ -8,8 +8,9 @@ import (
 	"time"
 
 	"github.com/chirst/go-todo/config"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/jwtauth"
+	"github.com/lestrrat-go/jwx/jwt"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -41,7 +42,7 @@ func Authenticator(next http.Handler) http.Handler {
 			)
 			return
 		}
-		if token == nil || !token.Valid {
+		if token == nil || jwt.Validate(token) != nil {
 			http.Error(
 				w,
 				http.StatusText(http.StatusUnauthorized),
@@ -80,8 +81,8 @@ func GetUIDClaim(ctx context.Context) int {
 }
 
 // GetTokenForUser returns a token with the given claims
-func GetTokenForUser(userID int) (*jwt.Token, string, error) {
-	return tokenAuth.Encode(jwt.MapClaims{
+func GetTokenForUser(userID int) (jwt.Token, string, error) {
+	return tokenAuth.Encode(map[string]interface{}{
 		"userID":  userID,
 		"expires": time.Now().Add(config.JWTDuration()).Unix(),
 	})

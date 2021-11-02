@@ -274,6 +274,22 @@ func TestPostgresDeleteTodo(t *testing.T) {
 	})
 }
 
+func TestPostgresGetPriorities(t *testing.T) {
+	db := database.OpenTestDB(t)
+	defer db.Close()
+
+	r := &PostgresRepository{DB: db}
+
+	ps, err := r.getPriorities()
+
+	if err != nil {
+		t.Errorf("got error: %#v, want no error", err.Error())
+	}
+	if psLen := len(ps); psLen < 1 {
+		t.Errorf("got %#v priorities, want more than 1", psLen)
+	}
+}
+
 func insertUser(db *sql.DB, name string) int {
 	result := db.QueryRow(`
 		INSERT INTO public.user (username, password)

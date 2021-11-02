@@ -150,3 +150,20 @@ func (s *PostgresRepository) deleteTodo(userID, todoID int) error {
 	}
 	return nil
 }
+
+func (s *PostgresRepository) getPriorities() (Priorities, error) {
+	rows, err := s.DB.Query("SELECT id, name, weight FROM priority")
+	if err != nil {
+		return nil, err
+	}
+	ps := Priorities{}
+	for rows.Next() {
+		p := &Priority{}
+		err := rows.Scan(&p.id, &p.name, &p.weight)
+		if err != nil {
+			return nil, err
+		}
+		ps = append(ps, p)
+	}
+	return ps, nil
+}

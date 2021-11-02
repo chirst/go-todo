@@ -88,6 +88,26 @@ func (r *MemoryRepository) deleteTodo(userID, todoID int) error {
 	return nil
 }
 
+func (r *MemoryRepository) getPriorities() (Priorities, error) {
+	return []*Priority{
+		{
+			id:     1,
+			name:   "Low",
+			weight: 1,
+		},
+		{
+			id:     2,
+			name:   "Normal",
+			weight: 2,
+		},
+		{
+			id:     3,
+			name:   "High",
+			weight: 3,
+		},
+	}, nil
+}
+
 func (r *MemoryRepository) updateName(userID, todoID int, name string) error {
 	t, err := r.getMemoryTodo(userID, todoID)
 	if err != nil {

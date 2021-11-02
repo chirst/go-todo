@@ -79,3 +79,29 @@ func (t *Todo) ToJSON() ([]byte, error) {
 		t.userID,
 	})
 }
+
+type Priorities []*Priority
+
+type Priority struct {
+	id     int
+	name   string
+	weight int
+}
+
+type priorityJSON struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Weight int    `json:"weight"`
+}
+
+func (p *Priorities) ToJSON() ([]byte, error) {
+	ps := []*priorityJSON{}
+	for _, priority := range *p {
+		ps = append(ps, &priorityJSON{
+			ID:     priority.id,
+			Name:   priority.name,
+			Weight: priority.weight,
+		})
+	}
+	return json.Marshal(ps)
+}

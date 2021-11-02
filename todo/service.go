@@ -13,6 +13,7 @@ type Repository interface {
 	incompleteTodo(userID, todoID int) error
 	updateName(userID, todoID int, name string) error
 	deleteTodo(userID, todoID int) error
+	getPriorities() (Priorities, error)
 }
 
 // TodoService for todos
@@ -23,6 +24,7 @@ type TodoService interface {
 	IncompleteTodo(userID, todoID int) error
 	ChangeTodoName(userID, todoID int, name string) error
 	DeleteTodo(userID, todoID int) error
+	GetPriorities() (Priorities, error)
 }
 
 type service struct {
@@ -70,4 +72,9 @@ func (s *service) ChangeTodoName(userID int, todoID int, name string) error {
 // DeleteTodo marks a todo as deleted where it will remain but not be accessed
 func (s *service) DeleteTodo(userID, todoID int) error {
 	return s.r.deleteTodo(userID, todoID)
+}
+
+// GetPriorities gets all priorities
+func (s *service) GetPriorities() (Priorities, error) {
+	return s.r.getPriorities()
 }

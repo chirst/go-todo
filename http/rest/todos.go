@@ -139,3 +139,22 @@ func DeleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request)
 		w.Header().Set("Content-Type", "text/plain")
 	}
 }
+
+func GetPriorities(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ps, err := s.GetPriorities()
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "unable to get priorities", http.StatusInternalServerError)
+			return
+		}
+		jsonPriorities, err := ps.ToJSON()
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "unable to serialize priorities", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonPriorities)
+	}
+}

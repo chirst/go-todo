@@ -216,3 +216,17 @@ func TestDeleteTodo(t *testing.T) {
 		t.Errorf("expected deleted todo, got nil for deleted")
 	}
 }
+
+func TestGetPriorities(t *testing.T) {
+	r := &MemoryRepository{}
+	s := NewService(r)
+
+	ps, err := s.GetPriorities()
+
+	if err != nil {
+		t.Errorf("got error: %#v, want no error", err.Error())
+	}
+	if psLen := len(ps); psLen != 3 {
+		t.Errorf("expected %#v priorities, got %#v", 3, psLen)
+	}
+}

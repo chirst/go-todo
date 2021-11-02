@@ -42,6 +42,10 @@ func (s *mockTodoService) ChangeTodoName(userID, todoID int, name string) error 
 	return nil
 }
 
+func (s *mockTodoService) GetPriorities() (todo.Priorities, error) {
+	return todo.Priorities{}, nil
+}
+
 func TestGetTodos(t *testing.T) {
 	s := &mockTodoService{}
 	token, _, _ := auth.GetTokenForUser(1)
@@ -146,5 +150,18 @@ func TestDeleteTodo(t *testing.T) {
 
 	if resp.StatusCode != http.StatusNoContent {
 		t.Errorf("expected %#v, got: %#v", http.StatusNoContent, resp.StatusCode)
+	}
+}
+
+func TestGetPriorities(t *testing.T) {
+	s := &mockTodoService{}
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/priorities", nil)
+
+	GetPriorities(s)(w, r)
+	resp := w.Result()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
 	}
 }

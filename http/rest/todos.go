@@ -36,6 +36,7 @@ func GetTodos(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 type addTodoBody struct {
 	Name      string
 	Completed *time.Time
+	Priority  *int
 }
 
 // AddTodo adds a todo for the current user
@@ -48,7 +49,7 @@ func AddTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		uid := auth.GetUIDClaim(r.Context())
-		t, err := todo.NewTodo(0, bt.Name, bt.Completed, uid)
+		t, err := todo.NewTodo(0, bt.Name, bt.Completed, uid, bt.Priority)
 		if err != nil {
 			log.Print(err.Error())
 			http.Error(w, "Unable to create todo", http.StatusBadRequest)

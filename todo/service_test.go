@@ -12,7 +12,7 @@ func TestAddTodo(t *testing.T) {
 
 	now := time.Now()
 
-	exampleTodo, err := NewTodo(1, "do stuff", &now, 1)
+	exampleTodo, err := NewTodo(1, "do stuff", &now, 1, nil)
 	if err != nil {
 		t.Errorf("unable to create todo")
 	}
@@ -46,11 +46,11 @@ func TestGetTodos(t *testing.T) {
 	r := new(MemoryRepository)
 	s := NewService(r)
 
-	todo, err := NewTodo(0, "do stuff", nil, 1)
+	todo, err := NewTodo(0, "do stuff", nil, 1, nil)
 	if err != nil {
 		t.Errorf("unable to create todo")
 	}
-	nonUserTodo, err := NewTodo(0, "gud todo", nil, 2)
+	nonUserTodo, err := NewTodo(0, "gud todo", nil, 2, nil)
 	if err != nil {
 		t.Errorf("unable to create todo")
 	}
@@ -84,7 +84,7 @@ func TestCompleteTodo(t *testing.T) {
 	s := NewService(r)
 
 	var userID int = 1
-	incompleteTodo, err := NewTodo(0, "todo1", nil, userID)
+	incompleteTodo, err := NewTodo(0, "todo1", nil, userID, nil)
 	if err != nil {
 		t.Fatalf("error creating todo")
 	}
@@ -114,7 +114,7 @@ func TestIncompleteTodo(t *testing.T) {
 
 	userID := 1
 	now := time.Now()
-	completeTodo, err := NewTodo(0, "complete todo", &now, userID)
+	completeTodo, err := NewTodo(0, "complete todo", &now, userID, nil)
 	if err != nil {
 		t.Fatalf("error creating todo")
 	}
@@ -144,7 +144,7 @@ func TestChangeTodoName(t *testing.T) {
 		r := &MemoryRepository{}
 		s := NewService(r)
 
-		td, err := NewTodo(0, "gud name", nil, 1)
+		td, err := NewTodo(0, "gud name", nil, 1, nil)
 		if err != nil {
 			t.Fatalf("error creating todo")
 		}
@@ -163,7 +163,7 @@ func TestChangeTodoName(t *testing.T) {
 		r := &MemoryRepository{}
 		s := NewService(r)
 
-		td, err := NewTodo(0, "gud name", nil, 1)
+		td, err := NewTodo(0, "gud name", nil, 1, nil)
 		if err != nil {
 			t.Fatalf("error creating todo")
 		}
@@ -193,7 +193,7 @@ func TestDeleteTodo(t *testing.T) {
 	s := NewService(r)
 
 	var userID int = 1
-	td, err := NewTodo(0, "todo1", nil, userID)
+	td, err := NewTodo(0, "todo1", nil, userID, nil)
 	if err != nil {
 		t.Errorf("error creating todo")
 	}

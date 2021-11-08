@@ -12,10 +12,11 @@ type PostgresRepository struct {
 }
 
 type postgresTodo struct {
-	id        int
-	name      string
-	completed *time.Time
-	userID    int
+	id         int
+	name       string
+	completed  *time.Time
+	userID     int
+	priorityID int
 }
 
 // GetTodos gets all todos in storage for a user
@@ -35,7 +36,7 @@ func (s *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 		if err != nil {
 			return nil, err
 		}
-		t, err := NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID)
+		t, err := NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, &pgt.priorityID)
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +56,7 @@ func (r *PostgresRepository) getTodo(userID, todoID int) (*Todo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID)
+	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, &pgt.priorityID)
 }
 
 // AddTodo adds a single todo to storage
@@ -70,7 +71,7 @@ func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID)
+	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, &pgt.priorityID)
 }
 
 // Complete todo marks todo with the given id as complete and returns no error

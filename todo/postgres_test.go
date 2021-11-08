@@ -83,7 +83,7 @@ func TestPostgresAddTodo(t *testing.T) {
 	r := &PostgresRepository{DB: db}
 
 	firstUserID := insertUser(db, "u1")
-	todo, err := NewTodo(0, "gud name", nil, firstUserID)
+	todo, err := NewTodo(0, "gud name", nil, firstUserID, nil)
 	if err != nil {
 		t.Errorf("unable to create todo")
 	}
@@ -302,7 +302,7 @@ func insertUser(db *sql.DB, name string) int {
 }
 
 func insertTodo(t *testing.T, r *PostgresRepository, userID int) int {
-	todo, err := NewTodo(0, "gud todo", nil, userID)
+	todo, err := NewTodo(0, "gud todo", nil, userID, nil)
 	if err != nil {
 		t.Fatalf("unable to create todo")
 	}
@@ -315,7 +315,7 @@ func insertTodo(t *testing.T, r *PostgresRepository, userID int) int {
 
 func insertCompleteTodo(t *testing.T, r *PostgresRepository, userID int) int {
 	now := time.Now()
-	todo, err := NewTodo(0, "complete todo", &now, userID)
+	todo, err := NewTodo(0, "complete todo", &now, userID, nil)
 	if err != nil {
 		t.Fatalf("unable to create todo")
 	}

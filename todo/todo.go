@@ -17,19 +17,33 @@ type Todo struct {
 
 	// userID is the user this todo belongs to
 	userID int
+
+	// priorityID is the priority this todo has assigned to it. A priorityID of
+	// 2 (normal) is the default.
+	priorityID int
 }
 
-// NewTodo provides a consistent way of creating a valid Todo
+// NewTodo provides a consistent way of creating a valid Todo.
+//
+// Providing nil for priorityID results in a Todo with the default normal
+// priority.
 func NewTodo(
 	id int,
 	name string,
 	completed *time.Time,
 	userID int,
+	priorityID *int,
 ) (*Todo, error) {
+	// 2 or normal is the default priority
+	pid := 2
+	if priorityID != nil {
+		pid = *priorityID
+	}
 	t := &Todo{
-		id:        id,
-		completed: completed,
-		userID:    userID,
+		id:         id,
+		completed:  completed,
+		userID:     userID,
+		priorityID: pid,
 	}
 	err := t.setName(name)
 	if err != nil {

@@ -23,7 +23,7 @@ func (s *mockTodoService) GetTodos(userID int) (todo.Todos, error) {
 }
 
 func (s *mockTodoService) AddTodo(t todo.Todo) (*todo.Todo, error) {
-	return todo.NewTodo(1, "gud todo", nil, 1)
+	return todo.NewTodo(1, "gud todo", nil, 1, nil)
 }
 
 func (s *mockTodoService) CompleteTodo(userID int, todoID int) error {

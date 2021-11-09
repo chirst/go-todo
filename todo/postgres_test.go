@@ -74,6 +74,9 @@ func TestPostgresGetTodo(t *testing.T) {
 	if todo.id != todoID {
 		t.Fatalf("expected todo with id: %v, got todo with id: %v", todoID, todo.id)
 	}
+	if todo.priorityID != 2 {
+		t.Fatalf("expected todo with default priorityID of 2, got priorityID: %v", todo.priorityID)
+	}
 }
 
 func TestPostgresAddTodo(t *testing.T) {
@@ -220,6 +223,36 @@ func TestPostgresUpdateName(t *testing.T) {
 
 	if updatedTodo.name != newName {
 		t.Fatalf("expected todo to have name: %s, got: %s", newName, updatedTodo.name)
+	}
+}
+
+func TestPostgresUpdatePriority(t *testing.T) {
+	db := database.OpenTestDB(t)
+	defer db.Close()
+
+	r := &PostgresRepository{DB: db}
+
+	userID := insertUser(db, "u1")
+	todoID := insertTodo(t, r, userID)
+	newPriorityID := 1
+
+	err := r.updatePriority(userID, todoID, newPriorityID)
+
+	if err != nil {
+		t.Fatalf("expected err to be nil got err: %s", err.Error())
+	}
+
+	updatedTodo, err := r.getTodo(userID, todoID)
+	if err != nil {
+		t.Fatalf("failed to lookup todo with userID: %v, todoID %v", userID, todoID)
+	}
+
+	if updatedTodo.priorityID != newPriorityID {
+		t.Fatalf(
+			"expected todo to have priorityID: %v, got: %v",
+			newPriorityID,
+			updatedTodo.priorityID,
+		)
 	}
 }
 

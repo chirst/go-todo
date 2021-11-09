@@ -14,6 +14,7 @@ type Repository interface {
 	updateName(userID, todoID int, name string) error
 	deleteTodo(userID, todoID int) error
 	getPriorities() (Priorities, error)
+	updatePriority(userID, todoID, priorityID int) error
 }
 
 // TodoService for todos
@@ -25,6 +26,7 @@ type TodoService interface {
 	ChangeTodoName(userID, todoID int, name string) error
 	DeleteTodo(userID, todoID int) error
 	GetPriorities() (Priorities, error)
+	UpdatePriority(userID, todoID, priorityID int) error
 }
 
 type service struct {
@@ -77,4 +79,9 @@ func (s *service) DeleteTodo(userID, todoID int) error {
 // GetPriorities gets all priorities
 func (s *service) GetPriorities() (Priorities, error) {
 	return s.r.getPriorities()
+}
+
+// UpdatePriority changes the given todos priority
+func (s *service) UpdatePriority(userID, todoID, priorityID int) error {
+	return s.r.updatePriority(userID, todoID, priorityID)
 }

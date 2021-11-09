@@ -230,3 +230,36 @@ func TestGetPriorities(t *testing.T) {
 		t.Errorf("expected %#v priorities, got %#v", 3, psLen)
 	}
 }
+
+func TestUpdatePriority(t *testing.T) {
+	r := &MemoryRepository{}
+	s := NewService(r)
+
+	uid := 1
+	newPriorityId := 1
+	td, err := NewTodo(0, "todo1", nil, uid, nil)
+	if err != nil {
+		t.Errorf("error creating todo")
+	}
+	addedTodo, err := r.addTodo(*td)
+	if err != nil {
+		t.Errorf("failed to add todo")
+	}
+
+	err = s.UpdatePriority(uid, addedTodo.id, newPriorityId)
+
+	if err != nil {
+		t.Errorf("got error: %#v, want no error", err.Error())
+	}
+	savedTd, err := r.getTodo(uid, addedTodo.id)
+	if err != nil {
+		t.Errorf("error getting saved todo")
+	}
+	if savedTd.priorityID != newPriorityId {
+		t.Errorf(
+			"saved priorityID %#v, want priorityID %#v",
+			savedTd.priorityID,
+			newPriorityId,
+		)
+	}
+}

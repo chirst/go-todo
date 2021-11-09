@@ -120,6 +120,15 @@ func (r *MemoryRepository) updateName(userID, todoID int, name string) error {
 	return nil
 }
 
+func (r *MemoryRepository) updatePriority(userID, todoID, priorityID int) error {
+	t, err := r.getMemoryTodo(userID, todoID)
+	if err != nil {
+		return err
+	}
+	t.priorityID = priorityID
+	return nil
+}
+
 func (r *MemoryRepository) getTodo(userID, id int) (*Todo, error) {
 	t, err := r.getMemoryTodo(userID, id)
 	if err != nil {

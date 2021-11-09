@@ -47,12 +47,12 @@ func (s *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 
 func (r *PostgresRepository) getTodo(userID, todoID int) (*Todo, error) {
 	row := r.DB.QueryRow(`
-		SELECT id, name, completed, user_id
+		SELECT id, name, completed, user_id, priority_id
 		FROM todo
 		WHERE user_id = $1 AND id = $2
 	`, userID, todoID)
 	pgt := postgresTodo{}
-	err := row.Scan(&pgt.id, &pgt.name, &pgt.completed, &pgt.userID)
+	err := row.Scan(&pgt.id, &pgt.name, &pgt.completed, &pgt.userID, &pgt.priorityID)
 	if err != nil {
 		return nil, err
 	}
@@ -120,6 +120,25 @@ func (r *PostgresRepository) updateName(userID, todoID int, name string) error {
 		SET name = $3
 		WHERE id = $2 AND user_id = $1
 	`, userID, todoID, name)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected != 1 {
+		return errors.New("no rows affected")
+	}
+	return nil
+}
+
+func (r *PostgresRepository) updatePriority(userID, todoID, priorityID int) error {
+	result, err := r.DB.Exec(`
+		UPDATE todo
+		SET priority_id = $3
+		WHERE id = $2 AND user_id = $1
+	`, userID, todoID, priorityID)
 	if err != nil {
 		return err
 	}

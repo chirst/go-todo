@@ -73,8 +73,9 @@ func AddTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 }
 
 type patchTodoBody struct {
-	Complete *bool
-	Name     *string
+	Complete   *bool
+	Name       *string
+	PriorityID *int
 }
 
 // Patch todo updates the given optional fields of patchTodoBody
@@ -114,6 +115,14 @@ func PatchTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) 
 			if err != nil {
 				log.Print(err.Error())
 				http.Error(w, "Unable to change todo name", http.StatusInternalServerError)
+			}
+		}
+
+		if body.PriorityID != nil {
+			err = s.UpdatePriority(uid, todoID, *body.PriorityID)
+			if err != nil {
+				log.Print(err.Error())
+				http.Error(w, "Unable to change todo priority", http.StatusInternalServerError)
 			}
 		}
 	}

@@ -46,6 +46,10 @@ func (s *mockTodoService) GetPriorities() (todo.Priorities, error) {
 	return todo.Priorities{}, nil
 }
 
+func (s *mockTodoService) UpdatePriority(userID, todoID, priorityID int) error {
+	return nil
+}
+
 func TestGetTodos(t *testing.T) {
 	s := &mockTodoService{}
 	token, _, _ := auth.GetTokenForUser(1)
@@ -90,9 +94,11 @@ func TestPatchTodo(t *testing.T) {
 		buffer := &bytes.Buffer{}
 		n := "new name"
 		c := true
+		p := 2
 		ctb := patchTodoBody{
-			Complete: &c,
-			Name:     &n,
+			Complete:   &c,
+			Name:       &n,
+			PriorityID: &p,
 		}
 		json.NewEncoder(buffer).Encode(ctb)
 		r := httptest.NewRequest("PATCH", "/todos/1", buffer)

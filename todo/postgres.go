@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+// TODO: fix wrongly named recievers `s` to be `r`
+
 // PostgresRepository persists todos
 type PostgresRepository struct {
 	DB *sql.DB
@@ -19,12 +21,26 @@ type postgresTodo struct {
 	priorityID int
 }
 
+type postgresPriority struct {
+	id     int
+	name   string
+	weight int
+}
+
 // GetTodos gets all todos in storage for a user
 func (s *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 	rows, err := s.DB.Query(`
-		SELECT id, name, completed, user_id
-		FROM todo
-		WHERE user_id = $1 AND deleted IS NULL
+		SELECT
+			t.id,
+			t.name,
+			t.completed,
+			t.user_id,
+			p.id,
+			p.name,
+			p.weight
+		FROM todo t
+			JOIN priority p ON p.id = t.priority_id
+		WHERE t.user_id = $1 AND t.deleted IS NULL
 	`, userID)
 	if err != nil {
 		return nil, err
@@ -32,11 +48,21 @@ func (s *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 	userTodos := make([]*Todo, 0)
 	for rows.Next() {
 		pgt := postgresTodo{}
-		err := rows.Scan(&pgt.id, &pgt.name, &pgt.completed, &pgt.userID)
+		pgp := postgresPriority{}
+		err := rows.Scan(
+			&pgt.id,
+			&pgt.name,
+			&pgt.completed,
+			&pgt.userID,
+			&pgp.id,
+			&pgp.name,
+			&pgp.weight,
+		)
 		if err != nil {
 			return nil, err
 		}
-		t, err := NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, &pgt.priorityID)
+		priority := Priority(pgp)
+		t, err := NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, priority)
 		if err != nil {
 			return nil, err
 		}
@@ -47,31 +73,56 @@ func (s *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 
 func (r *PostgresRepository) getTodo(userID, todoID int) (*Todo, error) {
 	row := r.DB.QueryRow(`
-		SELECT id, name, completed, user_id, priority_id
-		FROM todo
-		WHERE user_id = $1 AND id = $2
+		SELECT
+			t.id,
+			t.name,
+			t.completed,
+			t.user_id,
+			t.priority_id,
+			p.id,
+			p.name,
+			p.weight
+		FROM todo t
+			JOIN priority p ON p.id = t.priority_id
+		WHERE t.user_id = $1 AND t.id = $2
 	`, userID, todoID)
 	pgt := postgresTodo{}
-	err := row.Scan(&pgt.id, &pgt.name, &pgt.completed, &pgt.userID, &pgt.priorityID)
+	pgp := postgresPriority{}
+	err := row.Scan(
+		&pgt.id,
+		&pgt.name,
+		&pgt.completed,
+		&pgt.userID,
+		&pgt.priorityID,
+		&pgp.id,
+		&pgp.name,
+		&pgp.weight,
+	)
 	if err != nil {
 		return nil, err
 	}
-	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, &pgt.priorityID)
+	priority := Priority(pgp)
+	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, priority)
 }
 
 // AddTodo adds a single todo to storage
-func (s *PostgresRepository) addTodo(t Todo) (*Todo, error) {
+func (s *PostgresRepository) addTodo(
+	name string,
+	completed *time.Time,
+	userID int,
+	priority Priority,
+) (*Todo, error) {
 	row := s.DB.QueryRow(`
 		INSERT INTO todo (name, completed, user_id)
 		VALUES ($1, $2, $3)
 		RETURNING id, name, completed, user_id
-	`, t.name, t.completed, t.userID)
+	`, name, completed, userID)
 	pgt := postgresTodo{}
 	err := row.Scan(&pgt.id, &pgt.name, &pgt.completed, &pgt.userID)
 	if err != nil {
 		return nil, err
 	}
-	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, &pgt.priorityID)
+	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, priority)
 }
 
 // Complete todo marks todo with the given id as complete and returns no error
@@ -186,4 +237,22 @@ func (s *PostgresRepository) getPriorities() (Priorities, error) {
 		ps = append(ps, p)
 	}
 	return ps, nil
+}
+
+func (r *PostgresRepository) getPriority(priorityID int) (*Priority, error) {
+	row := r.DB.QueryRow(`
+		SELECT id, name, weight
+		FROM priority
+		WHERE id = $1
+	`, priorityID)
+	pgp := &postgresPriority{}
+	err := row.Scan(&pgp.id, &pgp.name, &pgp.weight)
+	if err != nil {
+		return nil, err
+	}
+	return &Priority{
+		id:     pgp.id,
+		name:   pgp.name,
+		weight: pgp.weight,
+	}, nil
 }

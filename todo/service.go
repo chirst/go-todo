@@ -1,12 +1,20 @@
 package todo
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 var errNameRequired = errors.New("name is required")
 
 // Repository for todos
 type Repository interface {
-	addTodo(Todo) (*Todo, error)
+	addTodo(
+		name string,
+		completed *time.Time,
+		userID int,
+		priority Priority,
+	) (*Todo, error)
 	getTodos(int) ([]*Todo, error)
 	getTodo(userID, todoID int) (*Todo, error)
 	completeTodo(userID, todoID int) error
@@ -14,12 +22,18 @@ type Repository interface {
 	updateName(userID, todoID int, name string) error
 	deleteTodo(userID, todoID int) error
 	getPriorities() (Priorities, error)
+	getPriority(priorityID int) (*Priority, error)
 	updatePriority(userID, todoID, priorityID int) error
 }
 
 // TodoService for todos
 type TodoService interface {
-	AddTodo(t Todo) (*Todo, error)
+	AddTodo(
+		name string,
+		completed *time.Time,
+		userID int,
+		priorityID *int,
+	) (*Todo, error)
 	GetTodos(userID int) (Todos, error)
 	CompleteTodo(userID, todoID int) error
 	IncompleteTodo(userID, todoID int) error
@@ -39,8 +53,21 @@ func NewService(r Repository) TodoService {
 }
 
 // AddTodo is for creating, validating, and adding a new todo to persistence
-func (s *service) AddTodo(t Todo) (*Todo, error) {
-	return s.r.addTodo(t)
+func (s *service) AddTodo(
+	name string,
+	completed *time.Time,
+	userID int,
+	priorityID *int,
+) (*Todo, error) {
+	priority := DefaultPriority()
+	if priorityID != nil {
+		p, err := s.r.getPriority(*priorityID)
+		if err != nil {
+			return nil, err
+		}
+		priority = *p
+	}
+	return s.r.addTodo(name, completed, userID, priority)
 }
 
 // GetTodos gets all todos for user from persistence

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/chirst/go-todo/auth"
 	"github.com/chirst/go-todo/todo"
@@ -22,8 +23,13 @@ func (s *mockTodoService) GetTodos(userID int) (todo.Todos, error) {
 	return ts, nil
 }
 
-func (s *mockTodoService) AddTodo(t todo.Todo) (*todo.Todo, error) {
-	return todo.NewTodo(1, "gud todo", nil, 1, nil)
+func (s *mockTodoService) AddTodo(
+	name string,
+	completed *time.Time,
+	userID int,
+	priorityID *int,
+) (*todo.Todo, error) {
+	return todo.NewTodo(1, "gud todo", nil, 1, todo.DefaultPriority())
 }
 
 func (s *mockTodoService) CompleteTodo(userID int, todoID int) error {

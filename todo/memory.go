@@ -25,12 +25,16 @@ func (r *MemoryRepository) getTodos(userID int) ([]*Todo, error) {
 	userTodos = []*Todo{}
 	for i := range r.todos {
 		if r.todos[i].userID == userID {
+			priority, err := r.getPriority(r.todos[i].priorityID)
+			if err != nil {
+				return nil, err
+			}
 			userTodo, err := NewTodo(
 				r.todos[i].id,
 				r.todos[i].name,
 				r.todos[i].completed,
 				r.todos[i].userID,
-				&r.todos[i].priorityID,
+				*priority,
 			)
 			if err != nil {
 				return nil, err
@@ -42,18 +46,23 @@ func (r *MemoryRepository) getTodos(userID int) ([]*Todo, error) {
 }
 
 // AddTodo adds a single todo to storage
-func (r *MemoryRepository) addTodo(t Todo) (*Todo, error) {
+func (r *MemoryRepository) addTodo(
+	name string,
+	completed *time.Time,
+	userID int,
+	priority Priority,
+) (*Todo, error) {
 	id := int(len(r.todos)) + 1
 	mt := memoryTodo{
 		id:         id,
-		name:       t.name,
-		completed:  t.completed,
+		name:       name,
+		completed:  completed,
 		deleted:    nil,
-		userID:     t.userID,
-		priorityID: t.priorityID,
+		userID:     userID,
+		priorityID: priority.id,
 	}
 	r.todos = append(r.todos, mt)
-	newTodo, err := NewTodo(id, mt.name, mt.completed, mt.userID, &mt.priorityID)
+	newTodo, err := NewTodo(id, mt.name, mt.completed, mt.userID, priority)
 	if err != nil {
 		return nil, err
 	}
@@ -111,6 +120,31 @@ func (r *MemoryRepository) getPriorities() (Priorities, error) {
 	}, nil
 }
 
+func (r *MemoryRepository) getPriority(priorityID int) (*Priority, error) {
+	switch priorityID {
+	case 1:
+		return &Priority{
+			id:     1,
+			name:   "Low",
+			weight: 1,
+		}, nil
+	case 2:
+		return &Priority{
+			id:     2,
+			name:   "Normal",
+			weight: 2,
+		}, nil
+	case 3:
+		return &Priority{
+			id:     3,
+			name:   "High",
+			weight: 3,
+		}, nil
+	default:
+		return nil, fmt.Errorf("priority with id %#v not found", priorityID)
+	}
+}
+
 func (r *MemoryRepository) updateName(userID, todoID int, name string) error {
 	t, err := r.getMemoryTodo(userID, todoID)
 	if err != nil {
@@ -134,7 +168,11 @@ func (r *MemoryRepository) getTodo(userID, id int) (*Todo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewTodo(t.id, t.name, t.completed, t.userID, &t.priorityID)
+	priority, err := r.getPriority(t.priorityID)
+	if err != nil {
+		return nil, err
+	}
+	return NewTodo(t.id, t.name, t.completed, t.userID, *priority)
 }
 
 func (r *MemoryRepository) getMemoryTodo(userID, id int) (*memoryTodo, error) {

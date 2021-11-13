@@ -12,7 +12,7 @@ func TestAddTodo(t *testing.T) {
 
 	now := time.Now()
 
-	exampleTodo, err := NewTodo(1, "do stuff", &now, 1, nil)
+	exampleTodo, err := NewTodo(1, "do stuff", &now, 1, DefaultPriority())
 	if err != nil {
 		t.Errorf("unable to create todo")
 	}
@@ -31,7 +31,12 @@ func TestAddTodo(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			got, got2 := s.AddTodo(tc.input)
+			got, got2 := s.AddTodo(
+				tc.input.name,
+				tc.input.completed,
+				tc.input.userID,
+				&tc.input.priority.id,
+			)
 			if !reflect.DeepEqual(tc.want, got) {
 				t.Fatalf("expected %#v, got: %#v", tc.want, got)
 			}
@@ -46,18 +51,11 @@ func TestGetTodos(t *testing.T) {
 	r := new(MemoryRepository)
 	s := NewService(r)
 
-	todo, err := NewTodo(0, "do stuff", nil, 1, nil)
-	if err != nil {
-		t.Errorf("unable to create todo")
-	}
-	nonUserTodo, err := NewTodo(0, "gud todo", nil, 2, nil)
-	if err != nil {
-		t.Errorf("unable to create todo")
-	}
-	s.AddTodo(*todo)
-	s.AddTodo(*todo)
-	s.AddTodo(*todo)
-	s.AddTodo(*nonUserTodo)
+	defaultPriorityID := DefaultPriority().id
+	s.AddTodo("do stuff", nil, 1, &defaultPriorityID)
+	s.AddTodo("do stuff", nil, 1, &defaultPriorityID)
+	s.AddTodo("do stuff", nil, 1, &defaultPriorityID)
+	s.AddTodo("gud todo", nil, 2, &defaultPriorityID)
 
 	tests := map[string]struct {
 		userID         int
@@ -84,11 +82,7 @@ func TestCompleteTodo(t *testing.T) {
 	s := NewService(r)
 
 	var userID int = 1
-	incompleteTodo, err := NewTodo(0, "todo1", nil, userID, nil)
-	if err != nil {
-		t.Fatalf("error creating todo")
-	}
-	addedTodo, err := r.addTodo(*incompleteTodo)
+	addedTodo, err := r.addTodo("todo1", nil, userID, DefaultPriority())
 	if err != nil {
 		t.Fatalf("failed to add todo")
 	}
@@ -114,11 +108,7 @@ func TestIncompleteTodo(t *testing.T) {
 
 	userID := 1
 	now := time.Now()
-	completeTodo, err := NewTodo(0, "complete todo", &now, userID, nil)
-	if err != nil {
-		t.Fatalf("error creating todo")
-	}
-	addedTodo, err := r.addTodo(*completeTodo)
+	addedTodo, err := r.addTodo("complete todo", &now, userID, DefaultPriority())
 	if err != nil {
 		t.Fatalf("failed to add todo")
 	}
@@ -144,11 +134,7 @@ func TestChangeTodoName(t *testing.T) {
 		r := &MemoryRepository{}
 		s := NewService(r)
 
-		td, err := NewTodo(0, "gud name", nil, 1, nil)
-		if err != nil {
-			t.Fatalf("error creating todo")
-		}
-		todo, err := r.addTodo(*td)
+		todo, err := r.addTodo("gud name", nil, 1, DefaultPriority())
 		if err != nil {
 			t.Fatalf("error adding todo")
 		}
@@ -163,11 +149,7 @@ func TestChangeTodoName(t *testing.T) {
 		r := &MemoryRepository{}
 		s := NewService(r)
 
-		td, err := NewTodo(0, "gud name", nil, 1, nil)
-		if err != nil {
-			t.Fatalf("error creating todo")
-		}
-		todo, err := r.addTodo(*td)
+		todo, err := r.addTodo("gud name", nil, 1, DefaultPriority())
 		if err != nil {
 			t.Fatalf("error adding todo")
 		}
@@ -193,11 +175,7 @@ func TestDeleteTodo(t *testing.T) {
 	s := NewService(r)
 
 	var userID int = 1
-	td, err := NewTodo(0, "todo1", nil, userID, nil)
-	if err != nil {
-		t.Errorf("error creating todo")
-	}
-	addedTodo, err := r.addTodo(*td)
+	addedTodo, err := r.addTodo("todo1", nil, userID, DefaultPriority())
 	if err != nil {
 		t.Errorf("failed to add todo")
 	}
@@ -237,11 +215,7 @@ func TestUpdatePriority(t *testing.T) {
 
 	uid := 1
 	newPriorityId := 1
-	td, err := NewTodo(0, "todo1", nil, uid, nil)
-	if err != nil {
-		t.Errorf("error creating todo")
-	}
-	addedTodo, err := r.addTodo(*td)
+	addedTodo, err := r.addTodo("todo1", nil, uid, DefaultPriority())
 	if err != nil {
 		t.Errorf("failed to add todo")
 	}
@@ -255,10 +229,10 @@ func TestUpdatePriority(t *testing.T) {
 	if err != nil {
 		t.Errorf("error getting saved todo")
 	}
-	if savedTd.priorityID != newPriorityId {
+	if savedTd.priority.id != newPriorityId {
 		t.Errorf(
 			"saved priorityID %#v, want priorityID %#v",
-			savedTd.priorityID,
+			savedTd.priority.id,
 			newPriorityId,
 		)
 	}

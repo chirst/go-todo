@@ -74,8 +74,8 @@ func TestPostgresGetTodo(t *testing.T) {
 	if todo.id != todoID {
 		t.Fatalf("expected todo with id: %v, got todo with id: %v", todoID, todo.id)
 	}
-	if todo.priorityID != 2 {
-		t.Fatalf("expected todo with default priorityID of 2, got priorityID: %v", todo.priorityID)
+	if todo.priority.id != 2 {
+		t.Fatalf("expected todo with default priorityID of 2, got priorityID: %v", todo.priority.id)
 	}
 }
 
@@ -86,12 +86,8 @@ func TestPostgresAddTodo(t *testing.T) {
 	r := &PostgresRepository{DB: db}
 
 	firstUserID := insertUser(db, "u1")
-	todo, err := NewTodo(0, "gud name", nil, firstUserID, nil)
-	if err != nil {
-		t.Errorf("unable to create todo")
-	}
 
-	_, err = r.addTodo(*todo)
+	_, err := r.addTodo("gud name", nil, firstUserID, DefaultPriority())
 
 	if err != nil {
 		t.Errorf("addTodo err: %s", err.Error())
@@ -247,11 +243,11 @@ func TestPostgresUpdatePriority(t *testing.T) {
 		t.Fatalf("failed to lookup todo with userID: %v, todoID %v", userID, todoID)
 	}
 
-	if updatedTodo.priorityID != newPriorityID {
+	if updatedTodo.priority.id != newPriorityID {
 		t.Fatalf(
 			"expected todo to have priorityID: %v, got: %v",
 			newPriorityID,
-			updatedTodo.priorityID,
+			updatedTodo.priority.id,
 		)
 	}
 }
@@ -323,6 +319,23 @@ func TestPostgresGetPriorities(t *testing.T) {
 	}
 }
 
+func TestPostgresGetPriority(t *testing.T) {
+	db := database.OpenTestDB(t)
+	defer db.Close()
+
+	r := &PostgresRepository{DB: db}
+
+	queryID := 1
+	p, err := r.getPriority(queryID)
+
+	if err != nil {
+		t.Errorf("got err: %#v, want no error", err.Error())
+	}
+	if p.id != queryID {
+		t.Errorf("got id: %#v, want %#v", p.id, queryID)
+	}
+}
+
 func insertUser(db *sql.DB, name string) int {
 	result := db.QueryRow(`
 		INSERT INTO public.user (username, password)
@@ -335,11 +348,7 @@ func insertUser(db *sql.DB, name string) int {
 }
 
 func insertTodo(t *testing.T, r *PostgresRepository, userID int) int {
-	todo, err := NewTodo(0, "gud todo", nil, userID, nil)
-	if err != nil {
-		t.Fatalf("unable to create todo")
-	}
-	addedTodo, err := r.addTodo(*todo)
+	addedTodo, err := r.addTodo("gud todo", nil, userID, DefaultPriority())
 	if err != nil {
 		t.Fatalf("unable to add todo")
 	}
@@ -348,11 +357,7 @@ func insertTodo(t *testing.T, r *PostgresRepository, userID int) int {
 
 func insertCompleteTodo(t *testing.T, r *PostgresRepository, userID int) int {
 	now := time.Now()
-	todo, err := NewTodo(0, "complete todo", &now, userID, nil)
-	if err != nil {
-		t.Fatalf("unable to create todo")
-	}
-	addedTodo, err := r.addTodo(*todo)
+	addedTodo, err := r.addTodo("complete todo", &now, userID, DefaultPriority())
 	if err != nil {
 		t.Fatalf("unable to add todo")
 	}

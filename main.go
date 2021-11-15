@@ -61,6 +61,7 @@ func main() {
 		r.Post("/todos", rest.AddTodo(todoService))
 		r.Patch("/todos/{todoID}", rest.PatchTodo(todoService))
 		r.Delete("/todos/{todoID}", rest.DeleteTodo(todoService))
+		r.Get("/priorities", rest.GetPriorities(todoService))
 	})
 
 	// unprotected routes

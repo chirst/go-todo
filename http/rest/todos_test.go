@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/chirst/go-todo/auth"
 	"github.com/chirst/go-todo/todo"
@@ -22,8 +23,13 @@ func (s *mockTodoService) GetTodos(userID int) (todo.Todos, error) {
 	return ts, nil
 }
 
-func (s *mockTodoService) AddTodo(t todo.Todo) (*todo.Todo, error) {
-	return todo.NewTodo(1, "gud todo", nil, 1)
+func (s *mockTodoService) AddTodo(
+	name string,
+	completed *time.Time,
+	userID int,
+	priorityID *int,
+) (*todo.Todo, error) {
+	return todo.NewTodo(1, "gud todo", nil, 1, todo.DefaultPriority())
 }
 
 func (s *mockTodoService) CompleteTodo(userID int, todoID int) error {
@@ -39,6 +45,14 @@ func (s *mockTodoService) DeleteTodo(userID, todoID int) error {
 }
 
 func (s *mockTodoService) ChangeTodoName(userID, todoID int, name string) error {
+	return nil
+}
+
+func (s *mockTodoService) GetPriorities() (todo.Priorities, error) {
+	return todo.Priorities{}, nil
+}
+
+func (s *mockTodoService) UpdatePriority(userID, todoID, priorityID int) error {
 	return nil
 }
 
@@ -86,9 +100,11 @@ func TestPatchTodo(t *testing.T) {
 		buffer := &bytes.Buffer{}
 		n := "new name"
 		c := true
+		p := 2
 		ctb := patchTodoBody{
-			Complete: &c,
-			Name:     &n,
+			Complete:   &c,
+			Name:       &n,
+			PriorityID: &p,
 		}
 		json.NewEncoder(buffer).Encode(ctb)
 		r := httptest.NewRequest("PATCH", "/todos/1", buffer)
@@ -146,5 +162,18 @@ func TestDeleteTodo(t *testing.T) {
 
 	if resp.StatusCode != http.StatusNoContent {
 		t.Errorf("expected %#v, got: %#v", http.StatusNoContent, resp.StatusCode)
+	}
+}
+
+func TestGetPriorities(t *testing.T) {
+	s := &mockTodoService{}
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/priorities", nil)
+
+	GetPriorities(s)(w, r)
+	resp := w.Result()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
 	}
 }

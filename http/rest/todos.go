@@ -36,6 +36,7 @@ func GetTodos(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 type addTodoBody struct {
 	Name      string
 	Completed *time.Time
+	Priority  *int
 }
 
 // AddTodo adds a todo for the current user
@@ -48,13 +49,7 @@ func AddTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		uid := auth.GetUIDClaim(r.Context())
-		t, err := todo.NewTodo(0, bt.Name, bt.Completed, uid)
-		if err != nil {
-			log.Print(err.Error())
-			http.Error(w, "Unable to create todo", http.StatusBadRequest)
-			return
-		}
-		addedTodo, err := s.AddTodo(*t)
+		addedTodo, err := s.AddTodo(bt.Name, bt.Completed, uid, bt.Priority)
 		if err != nil {
 			log.Print(err.Error())
 			http.Error(w, "Unable to add todo", http.StatusInternalServerError)
@@ -72,8 +67,9 @@ func AddTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 }
 
 type patchTodoBody struct {
-	Complete *bool
-	Name     *string
+	Complete   *bool
+	Name       *string
+	PriorityID *int
 }
 
 // Patch todo updates the given optional fields of patchTodoBody
@@ -115,6 +111,14 @@ func PatchTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) 
 				http.Error(w, "Unable to change todo name", http.StatusInternalServerError)
 			}
 		}
+
+		if body.PriorityID != nil {
+			err = s.UpdatePriority(uid, todoID, *body.PriorityID)
+			if err != nil {
+				log.Print(err.Error())
+				http.Error(w, "Unable to change todo priority", http.StatusInternalServerError)
+			}
+		}
 	}
 }
 
@@ -137,5 +141,24 @@ func DeleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request)
 		}
 		w.WriteHeader(http.StatusNoContent)
 		w.Header().Set("Content-Type", "text/plain")
+	}
+}
+
+func GetPriorities(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ps, err := s.GetPriorities()
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "unable to get priorities", http.StatusInternalServerError)
+			return
+		}
+		jsonPriorities, err := ps.ToJSON()
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "unable to serialize priorities", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonPriorities)
 	}
 }

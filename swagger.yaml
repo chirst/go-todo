@@ -40,6 +40,21 @@ definitions:
           type: integer
           description: The primary key of the user who owns this Todo
           example: 1
+    Priority:
+      properties:
+        id:
+          type: integer
+          description: The primary key of the Priority
+          example: 1
+        name:
+          type: string
+          description: The friendly name of the Priority
+          example: Normal
+        weight:
+          type: integer
+          description: An number to compare two priorities to each other. The
+            higher the number the more priority.
+          example: 2
     User:
       properties:
         id:
@@ -139,6 +154,12 @@ paths:
               type: "string"
               format: date-time
               description: The time the Todo was completed. Pass null or exclude parameter if the Todo is incomplete
+            priorityId:
+              type: integer
+              description: The ID of the priority. The default is ID 2 or
+                "normal" priority.
+              default: 2
+              example: 1
           required:
             - name
       responses:
@@ -175,6 +196,11 @@ paths:
               type: "string"
               format: "string"
               description: "A short description of what the todo is. Omit to leave the name alone."
+            priorityId:
+              type: integer
+              description: The ID of the priority to change to. Omit to leave
+                the priority alone.
+              example: 1
     delete:
       summary: Delete a single Todo
       description: |-
@@ -188,6 +214,23 @@ paths:
       responses:
         "204":
           description: "todo was successfully deleted"
+  /priorities:
+    get:
+      summary: Get all priorities
+      description: |-
+        Returns a list of all the priorities.
+      operationId: GetPriorities
+      produces:
+      - application/json
+      tags:
+      - Todo
+      responses:
+        "200":
+          description: "list of priorities"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/schemas/Priority'
 
   /users:
     post:

@@ -101,7 +101,6 @@ func (t *Todo) ToJSON() ([]byte, error) {
 	})
 }
 
-// TODO: possibly split priority stuff into a priority.go file
 type Priorities []*Priority
 
 type Priority struct {

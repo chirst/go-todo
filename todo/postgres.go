@@ -6,8 +6,6 @@ import (
 	"time"
 )
 
-// TODO: fix wrongly named recievers `s` to be `r`
-
 // PostgresRepository persists todos
 type PostgresRepository struct {
 	DB *sql.DB
@@ -28,8 +26,8 @@ type postgresPriority struct {
 }
 
 // GetTodos gets all todos in storage for a user
-func (s *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
-	rows, err := s.DB.Query(`
+func (r *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
+	rows, err := r.DB.Query(`
 		SELECT
 			t.id,
 			t.name,
@@ -106,13 +104,13 @@ func (r *PostgresRepository) getTodo(userID, todoID int) (*Todo, error) {
 }
 
 // AddTodo adds a single todo to storage
-func (s *PostgresRepository) addTodo(
+func (r *PostgresRepository) addTodo(
 	name string,
 	completed *time.Time,
 	userID int,
 	priority Priority,
 ) (*Todo, error) {
-	row := s.DB.QueryRow(`
+	row := r.DB.QueryRow(`
 		INSERT INTO todo (name, completed, user_id)
 		VALUES ($1, $2, $3)
 		RETURNING id, name, completed, user_id
@@ -127,8 +125,8 @@ func (s *PostgresRepository) addTodo(
 
 // Complete todo marks todo with the given id as complete and returns no error
 // on success
-func (s *PostgresRepository) completeTodo(userID, todoID int) error {
-	result, err := s.DB.Exec(`
+func (r *PostgresRepository) completeTodo(userID, todoID int) error {
+	result, err := r.DB.Exec(`
 		UPDATE todo
 		SET completed = timezone('utc', now())
 		WHERE id = $1 AND user_id = $2
@@ -146,8 +144,8 @@ func (s *PostgresRepository) completeTodo(userID, todoID int) error {
 	return nil
 }
 
-func (s *PostgresRepository) incompleteTodo(userID, todoID int) error {
-	result, err := s.DB.Exec(`
+func (r *PostgresRepository) incompleteTodo(userID, todoID int) error {
+	result, err := r.DB.Exec(`
 		UPDATE todo
 		SET completed = NULL
 		WHERE id = $1 AND user_id = $2
@@ -203,8 +201,8 @@ func (r *PostgresRepository) updatePriority(userID, todoID, priorityID int) erro
 	return nil
 }
 
-func (s *PostgresRepository) deleteTodo(userID, todoID int) error {
-	result, err := s.DB.Exec(`
+func (r *PostgresRepository) deleteTodo(userID, todoID int) error {
+	result, err := r.DB.Exec(`
 		UPDATE todo
 		SET deleted = timezone('utc', now())
 		WHERE id = $1 AND user_id = $2
@@ -222,8 +220,8 @@ func (s *PostgresRepository) deleteTodo(userID, todoID int) error {
 	return nil
 }
 
-func (s *PostgresRepository) getPriorities() (Priorities, error) {
-	rows, err := s.DB.Query("SELECT id, name, weight FROM priority")
+func (r *PostgresRepository) getPriorities() (Priorities, error) {
+	rows, err := r.DB.Query("SELECT id, name, weight FROM priority")
 	if err != nil {
 		return nil, err
 	}

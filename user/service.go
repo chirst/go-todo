@@ -36,7 +36,6 @@ func NewService(r Repository) UserService {
 
 // AddUser validates, creates, and adds the user to persistence
 func (s *service) AddUser(u *User) (*User, error) {
-	// TODO: test password != input password
 	hashedPassword, err := auth.GenerateFromPassword(u.password)
 	if err != nil {
 		return nil, err

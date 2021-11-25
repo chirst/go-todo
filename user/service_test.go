@@ -41,6 +41,27 @@ func TestAddUser(t *testing.T) {
 	}
 }
 
+func TestAddUserHashesPassword(t *testing.T) {
+	userStorage := new(MemoryRepository)
+	s := NewService(userStorage)
+
+	username := "guduser"
+	password := "wordpass"
+	nu, err := NewUser(0, username, password)
+	if err != nil {
+		t.Errorf("unable to create user")
+	}
+	s.AddUser(nu)
+
+	u, err := userStorage.getUserByName(username)
+	if err != nil {
+		t.Errorf("unable to retrieve user by name")
+	}
+	if u.password == password {
+		t.Errorf("expected %s to be hashed and not match %s", u.password, password)
+	}
+}
+
 func TestGetUserTokenString(t *testing.T) {
 	userStorage := new(MemoryRepository)
 	s := NewService(userStorage)

@@ -51,8 +51,9 @@ func TestTodoToJSON(t *testing.T) {
 	if err != nil {
 		t.Errorf("got err: %#v want no err", err.Error())
 	}
-	// TODO: long line
-	expectedJSON := `{"id":1,"name":"gud todo","completed":null,"userId":2,"priority":{"id":2,"name":"Normal","weight":2}}`
+
+	expectedJSON := `{"id":1,"name":"gud todo","completed":null,"userId":2,` +
+		`"priority":{"id":2,"name":"Normal","weight":2}}`
 	if string(j) != expectedJSON {
 		t.Errorf("got %s\nwant %s", string(j), expectedJSON)
 	}
@@ -70,8 +71,9 @@ func TestTodosToJSON(t *testing.T) {
 	if err != nil {
 		t.Errorf("got err: %#v want no err", err.Error())
 	}
-	// TODO: long line
-	expectedJSON := `[{"id":1,"name":"gud todo","completed":null,"userId":2,"priority":{"id":2,"name":"Normal","weight":2}}]`
+
+	expectedJSON := `[{"id":1,"name":"gud todo","completed":null,"userId":2,` +
+		`"priority":{"id":2,"name":"Normal","weight":2}}]`
 	if string(j) != expectedJSON {
 		t.Errorf("got %s\nwant %s", string(j), expectedJSON)
 	}

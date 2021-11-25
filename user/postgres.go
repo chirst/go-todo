@@ -4,7 +4,7 @@ import (
 	"database/sql"
 )
 
-// PostgresRepository persists users
+// PostgresRepository persists users.
 type PostgresRepository struct {
 	DB *sql.DB
 }

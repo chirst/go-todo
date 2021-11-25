@@ -7,7 +7,7 @@ import (
 
 var errNameRequired = errors.New("name is required")
 
-// Repository for todos
+// Repository defines a way to persist todos.
 type Repository interface {
 	addTodo(
 		name string,
@@ -26,7 +26,7 @@ type Repository interface {
 	updatePriority(userID, todoID, priorityID int) error
 }
 
-// TodoService for todos
+// TodoService defines a way to manage todos.
 type TodoService interface {
 	AddTodo(
 		name string,
@@ -47,12 +47,12 @@ type service struct {
 	r Repository
 }
 
-// NewService creates an instance of the todo service
+// NewService creates an instance of the TodoService.
 func NewService(r Repository) TodoService {
 	return &service{r}
 }
 
-// AddTodo is for creating, validating, and adding a new todo to persistence
+// AddTodo is for creating, validating, and adding a new todo to persistence.
 func (s *service) AddTodo(
 	name string,
 	completed *time.Time,
@@ -70,22 +70,22 @@ func (s *service) AddTodo(
 	return s.r.addTodo(name, completed, userID, priority)
 }
 
-// GetTodos gets all todos for user from persistence
+// GetTodos gets all todos for the given user from persistence.
 func (s *service) GetTodos(userID int) (Todos, error) {
 	return s.r.getTodos(userID)
 }
 
-// CompleteTodo marks a todo as complete
+// CompleteTodo marks the given todo as complete.
 func (s *service) CompleteTodo(userID, todoID int) error {
 	return s.r.completeTodo(userID, todoID)
 }
 
-// IncompleteTodo marks a todo as incomplete
+// IncompleteTodo marks the given todo as incomplete.
 func (s *service) IncompleteTodo(userID, todoID int) error {
 	return s.r.incompleteTodo(userID, todoID)
 }
 
-// ChangeTodoName changes the name of a todo
+// ChangeTodoName changes the name of the given todo to the given name.
 func (s *service) ChangeTodoName(userID int, todoID int, name string) error {
 	t, err := s.r.getTodo(userID, todoID)
 	if err != nil {
@@ -98,17 +98,18 @@ func (s *service) ChangeTodoName(userID int, todoID int, name string) error {
 	return s.r.updateName(userID, todoID, name)
 }
 
-// DeleteTodo marks a todo as deleted where it will remain but not be accessed
+// DeleteTodo marks a todo as deleted where it will remain in persistence, but
+// not be able to be accessed.
 func (s *service) DeleteTodo(userID, todoID int) error {
 	return s.r.deleteTodo(userID, todoID)
 }
 
-// GetPriorities gets all priorities
+// GetPriorities gets all priorities.
 func (s *service) GetPriorities() (Priorities, error) {
 	return s.r.getPriorities()
 }
 
-// UpdatePriority changes the given todos priority
+// UpdatePriority changes the priority of the given todo.
 func (s *service) UpdatePriority(userID, todoID, priorityID int) error {
 	return s.r.updatePriority(userID, todoID, priorityID)
 }

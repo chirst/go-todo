@@ -81,7 +81,6 @@ type todoJSON struct {
 	Priority  priorityJSON `json:"priority"`
 }
 
-// ToJSON converts Todos to json
 func (ts *Todos) ToJSON() ([]byte, error) {
 	jts := []*todoJSON{}
 	for _, t := range *ts {
@@ -101,7 +100,6 @@ func (ts *Todos) ToJSON() ([]byte, error) {
 	return json.Marshal(jts)
 }
 
-// ToJSON converts a Todo to json
 func (t *Todo) ToJSON() ([]byte, error) {
 	p := priorityJSON{
 		ID:     t.priority.id,
@@ -127,7 +125,7 @@ type priorityModel struct {
 	weight int
 }
 
-// defaultPriority skips the DB and returns the default priority for a Todo
+// defaultPriority skips the DB and returns the default priority for a Todo.
 func defaultPriority() priorityModel {
 	return priorityModel{
 		id:     2,

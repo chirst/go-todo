@@ -7,7 +7,7 @@ var (
 	errUserNotFound   = errors.New("user not found")
 )
 
-// MemoryRepository persists users
+// MemoryRepository persists users in memory.
 type MemoryRepository struct {
 	users []User
 }

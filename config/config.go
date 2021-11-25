@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-// JWTSignKey returns a secret key to sign JSON Web Tokens
+// JWTSignKey returns a secret key to sign JSON Web Tokens.
 func JWTSignKey() string {
 	return getEnv("JWT_SIGN_KEY", "secret")
 }
 
-// JWTDuration returns the duration a JSON Web Token will be valid from creation
-// A duration of 0 will be returned in the event of an error
+// JWTDuration returns the duration a JSON Web Token will be valid from
+// creation. A duration of 0 will be returned in the event of an error.
 func JWTDuration() time.Duration {
 	d, err := time.ParseDuration(getEnv("JWT_DURATION", "24h"))
 	if err != nil {
@@ -23,7 +23,7 @@ func JWTDuration() time.Duration {
 	return d
 }
 
-// ServerAddress returns a network address to listen for requests
+// ServerAddress returns a network address to listen for requests.
 func ServerAddress() string {
 	return fmt.Sprintf("%v:%v",
 		getEnv("SERVER_ADDRESS", "0.0.0.0"),
@@ -32,7 +32,7 @@ func ServerAddress() string {
 }
 
 // PostgresSourceName returns a string containing connection info specific to a
-// Postgres database
+// Postgres database.
 func PostgresSourceName() string {
 	return fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 		getEnv("POSTGRES_USER", "postgres"),

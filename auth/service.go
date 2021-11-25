@@ -21,16 +21,17 @@ func init() {
 	tokenAuth = jwtauth.New("HS256", []byte(key), nil)
 }
 
-// Verifier is middleware for seeking, verifying and validating JWT tokens
+// Verifier is middleware for seeking, verifying and validating JWT tokens.
 func Verifier(h http.Handler) http.Handler {
 	return jwtauth.Verifier(tokenAuth)(h)
 }
 
 // Authenticator is middleware who sends a 401 response for requests with bad
-// tokens and accepts requests with good tokens. This implementation comes from
-// jwtauth.Authenticator, but is enhanced to check for expired tokens.
+// tokens and accepts requests with good tokens.
 func Authenticator(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The following implementation comes from jwtauth.Authenticator, but is
+		// enhanced to check for expired tokens.
 		token, claims, err := jwtauth.FromContext(r.Context())
 
 		// Checks from the jwt.Authenticator to see if the token is valid
@@ -51,7 +52,7 @@ func Authenticator(next http.Handler) http.Handler {
 			return
 		}
 
-		// Check if token is expired
+		// Check if token is expired.
 		e, ok := claims["expires"].(float64)
 		if !ok {
 			http.Error(
@@ -66,12 +67,12 @@ func Authenticator(next http.Handler) http.Handler {
 			return
 		}
 
-		// Token is authenticated, pass it through
+		// Token is authenticated, pass it through.
 		next.ServeHTTP(w, r)
 	})
 }
 
-// GetUIDClaim gets the userID from claims
+// GetUIDClaim gets the userID from claims.
 func GetUIDClaim(ctx context.Context) int {
 	_, claims, _ := jwtauth.FromContext(ctx)
 	if t, ok := claims["userID"].(float64); ok {
@@ -80,7 +81,7 @@ func GetUIDClaim(ctx context.Context) int {
 	return claims["userID"].(int)
 }
 
-// GetTokenForUser returns a token with the given claims
+// GetTokenForUser returns a token with the given claims.
 func GetTokenForUser(userID int) (jwt.Token, string, error) {
 	return tokenAuth.Encode(map[string]interface{}{
 		"userID":  userID,
@@ -88,7 +89,7 @@ func GetTokenForUser(userID int) (jwt.Token, string, error) {
 	})
 }
 
-// GenerateFromPassword returns a hashed version of the given string
+// GenerateFromPassword returns a hashed version of the given string.
 func GenerateFromPassword(p string) (*string, error) {
 	h, err := bcrypt.GenerateFromPassword([]byte(p), 6)
 	if err != nil {
@@ -99,7 +100,7 @@ func GenerateFromPassword(p string) (*string, error) {
 }
 
 // CompareHashAndPassword compares a hash and a password returning an error when
-// the hash an password do not match
+// the hash an password do not match.
 func CompareHashAndPassword(h, p string) error {
 	return bcrypt.CompareHashAndPassword([]byte(h), []byte(p))
 }

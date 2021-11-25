@@ -32,7 +32,6 @@ type userJSON struct {
 	Username string `json:"username"`
 }
 
-// ToJSON converts a User to JSON
 func (u *User) ToJSON() ([]byte, error) {
 	uj := userJSON{
 		ID:       u.id,

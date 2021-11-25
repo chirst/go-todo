@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// MemoryRepository persists todos
+// MemoryRepository persists todos in memory.
 type MemoryRepository struct {
 	todos []memoryTodo
 }
@@ -19,7 +19,6 @@ type memoryTodo struct {
 	priorityID int
 }
 
-// GetTodos gets all todos in storage
 func (r *MemoryRepository) getTodos(userID int) ([]*Todo, error) {
 	var userTodos []*Todo
 	userTodos = []*Todo{}
@@ -45,7 +44,6 @@ func (r *MemoryRepository) getTodos(userID int) ([]*Todo, error) {
 	return userTodos, nil
 }
 
-// AddTodo adds a single todo to storage
 func (r *MemoryRepository) addTodo(
 	name string,
 	completed *time.Time,
@@ -69,8 +67,6 @@ func (r *MemoryRepository) addTodo(
 	return newTodo, nil
 }
 
-// Complete todo marks todo with the given id as complete and returns no error
-// on success
 func (r *MemoryRepository) completeTodo(userID, todoID int) error {
 	t, err := r.getMemoryTodo(userID, todoID)
 	if err != nil {

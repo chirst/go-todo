@@ -25,7 +25,6 @@ type postgresPriority struct {
 	weight int
 }
 
-// GetTodos gets all todos in storage for a user
 func (r *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 	rows, err := r.DB.Query(`
 		SELECT
@@ -103,7 +102,6 @@ func (r *PostgresRepository) getTodo(userID, todoID int) (*Todo, error) {
 	return newTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, priority)
 }
 
-// AddTodo adds a single todo to storage
 func (r *PostgresRepository) addTodo(
 	name string,
 	completed *time.Time,
@@ -123,8 +121,6 @@ func (r *PostgresRepository) addTodo(
 	return newTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, priority)
 }
 
-// Complete todo marks todo with the given id as complete and returns no error
-// on success
 func (r *PostgresRepository) completeTodo(userID, todoID int) error {
 	result, err := r.DB.Exec(`
 		UPDATE todo

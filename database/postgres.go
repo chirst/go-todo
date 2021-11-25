@@ -16,7 +16,8 @@ import (
 	"github.com/chirst/go-todo/config"
 )
 
-// InitDB opens a db connection, runs migrations, and exits if anything goes wrong
+// InitDB opens a db connection, runs migrations, and exits if anything goes
+// wrong.
 func InitDB() *sql.DB {
 	db, err := sql.Open("postgres", config.PostgresSourceName())
 	if err != nil {
@@ -57,7 +58,7 @@ func InitDB() *sql.DB {
 
 var registered bool
 
-// OpenTestDB returns a transactional database rolled back when it is closed
+// OpenTestDB returns a transactional database rolled back when it is closed.
 func OpenTestDB(t *testing.T) *sql.DB {
 	if os.Getenv("TEST_POSTGRES") == "" {
 		t.Skip("Skipped Postgres test. Define TEST_POSTGRES env variable to run postgres tests")

@@ -52,7 +52,7 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	// protected routes
+	// Protected routes
 	router.Group(func(r chi.Router) {
 		r.Use(auth.Verifier)
 		r.Use(auth.Authenticator)
@@ -64,12 +64,12 @@ func main() {
 		r.Get("/priorities", rest.GetPriorities(todoService))
 	})
 
-	// unprotected routes
+	// Unprotected routes
 	router.Group(func(r chi.Router) {
 		r.Post("/users", rest.AddUser(usersService))
 		r.Post("/login", rest.Login(usersService))
 
-		// docs
+		// Docs
 		sh := redoc.Redoc(redoc.RedocOpts{
 			SpecURL: "/swagger.yaml",
 			Title:   "Todo API Documentation",

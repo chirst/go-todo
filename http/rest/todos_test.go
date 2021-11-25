@@ -29,7 +29,7 @@ func (s *mockTodoService) AddTodo(
 	userID int,
 	priorityID *int,
 ) (*todo.Todo, error) {
-	return todo.NewTodo(1, "gud todo", nil, 1, todo.DefaultPriority())
+	return todo.MustNewTodo(1, "gud todo", nil, 1), nil
 }
 
 func (s *mockTodoService) CompleteTodo(userID int, todoID int) error {

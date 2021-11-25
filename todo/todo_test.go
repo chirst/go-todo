@@ -11,7 +11,7 @@ func TestNewTodo(t *testing.T) {
 		name      string
 		completed *time.Time
 		userID    int
-		priority  Priority
+		priority  priorityModel
 		want      error
 	}{
 		"blank name": {
@@ -19,14 +19,14 @@ func TestNewTodo(t *testing.T) {
 			name:      "",
 			completed: nil,
 			userID:    0,
-			priority:  DefaultPriority(),
+			priority:  defaultPriority(),
 			want:      errNameRequired,
 		},
 	}
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			_, got := NewTodo(
+			_, got := newTodo(
 				tc.id,
 				tc.name,
 				tc.completed,
@@ -41,10 +41,7 @@ func TestNewTodo(t *testing.T) {
 }
 
 func TestTodoToJSON(t *testing.T) {
-	nt, err := NewTodo(1, "gud todo", nil, 2, DefaultPriority())
-	if err != nil {
-		t.Errorf("got err: %#v want no err", err.Error())
-	}
+	nt := MustNewTodo(1, "gud todo", nil, 2)
 
 	j, err := nt.ToJSON()
 
@@ -60,10 +57,7 @@ func TestTodoToJSON(t *testing.T) {
 }
 
 func TestTodosToJSON(t *testing.T) {
-	nt, err := NewTodo(1, "gud todo", nil, 2, DefaultPriority())
-	if err != nil {
-		t.Errorf("got err: %#v want no err", err.Error())
-	}
+	nt := MustNewTodo(1, "gud todo", nil, 2)
 	var ts Todos = Todos{nt}
 
 	j, err := ts.ToJSON()

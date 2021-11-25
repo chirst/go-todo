@@ -13,7 +13,7 @@ type Repository interface {
 		name string,
 		completed *time.Time,
 		userID int,
-		priority Priority,
+		priority priorityModel,
 	) (*Todo, error)
 	getTodos(int) ([]*Todo, error)
 	getTodo(userID, todoID int) (*Todo, error)
@@ -22,7 +22,7 @@ type Repository interface {
 	updateName(userID, todoID int, name string) error
 	deleteTodo(userID, todoID int) error
 	getPriorities() (Priorities, error)
-	getPriority(priorityID int) (*Priority, error)
+	getPriority(priorityID int) (*priorityModel, error)
 	updatePriority(userID, todoID, priorityID int) error
 }
 
@@ -59,7 +59,7 @@ func (s *service) AddTodo(
 	userID int,
 	priorityID *int,
 ) (*Todo, error) {
-	priority := DefaultPriority()
+	priority := defaultPriority()
 	if priorityID != nil {
 		p, err := s.r.getPriority(*priorityID)
 		if err != nil {

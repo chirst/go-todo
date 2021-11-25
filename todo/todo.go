@@ -5,11 +5,14 @@ import (
 	"time"
 )
 
-// TODO: possibly make `Todo`, `DefaultPriority`, `Priority`, etc private by
-// creating `Must` prefixed constructors for testing purposes.
-
 // Todo models a single todo
-type Todo struct {
+type Todo todoModel
+
+// Todos is a list of Todo
+type Todos []*Todo
+
+// todoModel should only be created by calling `newTodo`
+type todoModel struct {
 	id int
 
 	// name is a short description of the todo
@@ -22,16 +25,16 @@ type Todo struct {
 	userID int
 
 	// priority is the priority this todo has assigned to it
-	priority Priority
+	priority priorityModel
 }
 
-// NewTodo provides a consistent way of creating a valid Todo.
-func NewTodo(
+// newTodo provides a consistent way of creating a valid Todo.
+func newTodo(
 	id int,
 	name string,
 	completed *time.Time,
 	userID int,
-	priority Priority,
+	priority priorityModel,
 ) (*Todo, error) {
 	t := &Todo{
 		id:        id,
@@ -46,6 +49,22 @@ func NewTodo(
 	return t, nil
 }
 
+// MustNewTodo provides a way to create a todo for testing purposes. If an error
+// occurs creating a Todo there will be a panic. This function is not meant to
+// be called by application code.
+func MustNewTodo(
+	id int,
+	name string,
+	completed *time.Time,
+	userID int,
+) *Todo {
+	t, err := newTodo(id, name, completed, userID, defaultPriority())
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
 func (t *Todo) setName(n string) error {
 	if n == "" {
 		return errNameRequired
@@ -53,9 +72,6 @@ func (t *Todo) setName(n string) error {
 	t.name = n
 	return nil
 }
-
-// Todos is a list of Todo
-type Todos []*Todo
 
 type todoJSON struct {
 	ID        int          `json:"id"`
@@ -101,17 +117,19 @@ func (t *Todo) ToJSON() ([]byte, error) {
 	})
 }
 
-type Priorities []*Priority
+type Priority priorityModel
 
-type Priority struct {
+type Priorities []*priorityModel
+
+type priorityModel struct {
 	id     int
 	name   string
 	weight int
 }
 
-// DefaultPriority skips the DB and returns the default priority for a Todo
-func DefaultPriority() Priority {
-	return Priority{
+// defaultPriority skips the DB and returns the default priority for a Todo
+func defaultPriority() priorityModel {
+	return priorityModel{
 		id:     2,
 		name:   "Normal",
 		weight: 2,

@@ -59,8 +59,8 @@ func (r *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 		if err != nil {
 			return nil, err
 		}
-		priority := Priority(pgp)
-		t, err := NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, priority)
+		priority := priorityModel(pgp)
+		t, err := newTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, priority)
 		if err != nil {
 			return nil, err
 		}
@@ -99,8 +99,8 @@ func (r *PostgresRepository) getTodo(userID, todoID int) (*Todo, error) {
 	if err != nil {
 		return nil, err
 	}
-	priority := Priority(pgp)
-	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, priority)
+	priority := priorityModel(pgp)
+	return newTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, priority)
 }
 
 // AddTodo adds a single todo to storage
@@ -108,7 +108,7 @@ func (r *PostgresRepository) addTodo(
 	name string,
 	completed *time.Time,
 	userID int,
-	priority Priority,
+	priority priorityModel,
 ) (*Todo, error) {
 	row := r.DB.QueryRow(`
 		INSERT INTO todo (name, completed, user_id)
@@ -120,7 +120,7 @@ func (r *PostgresRepository) addTodo(
 	if err != nil {
 		return nil, err
 	}
-	return NewTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, priority)
+	return newTodo(pgt.id, pgt.name, pgt.completed, pgt.userID, priority)
 }
 
 // Complete todo marks todo with the given id as complete and returns no error
@@ -227,7 +227,7 @@ func (r *PostgresRepository) getPriorities() (Priorities, error) {
 	}
 	ps := Priorities{}
 	for rows.Next() {
-		p := &Priority{}
+		p := &priorityModel{}
 		err := rows.Scan(&p.id, &p.name, &p.weight)
 		if err != nil {
 			return nil, err
@@ -237,7 +237,7 @@ func (r *PostgresRepository) getPriorities() (Priorities, error) {
 	return ps, nil
 }
 
-func (r *PostgresRepository) getPriority(priorityID int) (*Priority, error) {
+func (r *PostgresRepository) getPriority(priorityID int) (*priorityModel, error) {
 	row := r.DB.QueryRow(`
 		SELECT id, name, weight
 		FROM priority
@@ -248,7 +248,7 @@ func (r *PostgresRepository) getPriority(priorityID int) (*Priority, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Priority{
+	return &priorityModel{
 		id:     pgp.id,
 		name:   pgp.name,
 		weight: pgp.weight,

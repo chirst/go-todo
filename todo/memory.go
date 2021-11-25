@@ -29,7 +29,7 @@ func (r *MemoryRepository) getTodos(userID int) ([]*Todo, error) {
 			if err != nil {
 				return nil, err
 			}
-			userTodo, err := NewTodo(
+			userTodo, err := newTodo(
 				r.todos[i].id,
 				r.todos[i].name,
 				r.todos[i].completed,
@@ -50,7 +50,7 @@ func (r *MemoryRepository) addTodo(
 	name string,
 	completed *time.Time,
 	userID int,
-	priority Priority,
+	priority priorityModel,
 ) (*Todo, error) {
 	id := int(len(r.todos)) + 1
 	mt := memoryTodo{
@@ -62,7 +62,7 @@ func (r *MemoryRepository) addTodo(
 		priorityID: priority.id,
 	}
 	r.todos = append(r.todos, mt)
-	newTodo, err := NewTodo(id, mt.name, mt.completed, mt.userID, priority)
+	newTodo, err := newTodo(id, mt.name, mt.completed, mt.userID, priority)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func (r *MemoryRepository) deleteTodo(userID, todoID int) error {
 }
 
 func (r *MemoryRepository) getPriorities() (Priorities, error) {
-	return []*Priority{
+	return []*priorityModel{
 		{
 			id:     1,
 			name:   "Low",
@@ -120,22 +120,22 @@ func (r *MemoryRepository) getPriorities() (Priorities, error) {
 	}, nil
 }
 
-func (r *MemoryRepository) getPriority(priorityID int) (*Priority, error) {
+func (r *MemoryRepository) getPriority(priorityID int) (*priorityModel, error) {
 	switch priorityID {
 	case 1:
-		return &Priority{
+		return &priorityModel{
 			id:     1,
 			name:   "Low",
 			weight: 1,
 		}, nil
 	case 2:
-		return &Priority{
+		return &priorityModel{
 			id:     2,
 			name:   "Normal",
 			weight: 2,
 		}, nil
 	case 3:
-		return &Priority{
+		return &priorityModel{
 			id:     3,
 			name:   "High",
 			weight: 3,
@@ -172,7 +172,7 @@ func (r *MemoryRepository) getTodo(userID, id int) (*Todo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewTodo(t.id, t.name, t.completed, t.userID, *priority)
+	return newTodo(t.id, t.name, t.completed, t.userID, *priority)
 }
 
 func (r *MemoryRepository) getMemoryTodo(userID, id int) (*memoryTodo, error) {

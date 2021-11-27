@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"log"
 	"net/http"
@@ -25,17 +26,28 @@ func main() {
 	inMemoryFlag := flag.Bool("use-memory", false, "use a temporary database")
 	flag.Parse()
 
+	var db *sql.DB
+	if !*inMemoryFlag {
+		db := database.InitDB()
+		defer db.Close()
+	}
+	router := getRouter(db)
+
+	address := config.ServerAddress()
+	log.Printf("server listening on %s\n", address)
+	http.ListenAndServe(address, router)
+}
+
+func getRouter(db *sql.DB) http.Handler {
 	var todosRepo todo.Repository
 	var usersRepo user.Repository
-	if *inMemoryFlag {
+	if db != nil {
+		todosRepo = &todo.PostgresRepository{DB: db}
+		usersRepo = &user.PostgresRepository{DB: db}
+	} else {
 		log.Println("using in memory db")
 		todosRepo = new(todo.MemoryRepository)
 		usersRepo = new(user.MemoryRepository)
-	} else {
-		db := database.InitDB()
-		defer db.Close()
-		todosRepo = &todo.PostgresRepository{DB: db}
-		usersRepo = &user.PostgresRepository{DB: db}
 	}
 	todoService := todo.NewService(todosRepo)
 	usersService := user.NewService(usersRepo)
@@ -78,7 +90,5 @@ func main() {
 		r.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 	})
 
-	address := config.ServerAddress()
-	log.Printf("server listening on %s\n", address)
-	http.ListenAndServe(address, router)
+	return (http.Handler)(router)
 }

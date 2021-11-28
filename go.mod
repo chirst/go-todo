@@ -22,6 +22,7 @@ require (
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/goccy/go-json v0.7.8 // indirect
 	github.com/google/renameio v0.1.0 // indirect
+	github.com/kinbiko/jsonassert v1.0.2
 	github.com/kisielk/gotool v1.0.0 // indirect
 	github.com/lestrrat-go/jwx v1.2.6
 	github.com/lib/pq v1.10.3

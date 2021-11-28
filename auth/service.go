@@ -4,6 +4,7 @@ package auth
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
@@ -36,6 +37,7 @@ func Authenticator(next http.Handler) http.Handler {
 
 		// Checks from the jwt.Authenticator to see if the token is valid
 		if err != nil {
+			log.Print(err.Error())
 			http.Error(
 				w,
 				http.StatusText(http.StatusUnauthorized),
@@ -44,6 +46,7 @@ func Authenticator(next http.Handler) http.Handler {
 			return
 		}
 		if token == nil || jwt.Validate(token) != nil {
+			log.Print(err.Error())
 			http.Error(
 				w,
 				http.StatusText(http.StatusUnauthorized),

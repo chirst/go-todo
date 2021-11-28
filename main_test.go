@@ -2,25 +2,35 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
+	"database/sql"
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
+	"os"
 	"testing"
+
+	"github.com/chirst/go-todo/database"
+	"github.com/kinbiko/jsonassert"
 )
 
-func setupTest() (*httptest.Server, func()) {
-	router := getRouter(nil)
+func setupTest(t *testing.T) (*httptest.Server, func()) {
+	var db *sql.DB
+	if os.Getenv("TEST_POSTGRES") != "" {
+		db = database.OpenTestDB(t)
+	}
+	router := getRouter(db)
 	testServer := httptest.NewServer(router)
 	teardown := func() {
+		if db != nil {
+			db.Close()
+		}
 		testServer.Close()
 	}
 	return testServer, teardown
 }
 
 func TestAddUser(t *testing.T) {
-	testServer, teardown := setupTest()
+	testServer, teardown := setupTest(t)
 	defer teardown()
 
 	addUser(t, testServer)
@@ -44,15 +54,10 @@ func addUser(t *testing.T, testServer *httptest.Server) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("got status code: %d, want %d", resp.StatusCode, http.StatusOK)
 	}
-	gotBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatalf("unable to read body into bytes slice")
-	}
-	expectedBody := []byte(`{
-		"id": 1,
+	assertJSONEqual(t, resp.Body, `{
+		"id": "<<PRESENCE>>",
 		"username": "gud"
 	}`)
-	checkJSONEqual(t, gotBody, expectedBody)
 }
 
 func loginUser(t *testing.T, testServer *httptest.Server) string {
@@ -71,9 +76,12 @@ func loginUser(t *testing.T, testServer *httptest.Server) string {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("got status code: %d, want %d", resp.StatusCode, http.StatusOK)
 	}
-	buf := bytes.Buffer{}
-	buf.ReadFrom(resp.Body)
-	return "Bearer " + buf.String()[1:126]
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("failed to read login response body to bytes")
+	}
+	bs := string(b)
+	return "Bearer " + bs[1:len(bs)-2]
 }
 
 func addTodo(t *testing.T, testServer *httptest.Server, bearer string) {
@@ -92,33 +100,24 @@ func addTodo(t *testing.T, testServer *httptest.Server, bearer string) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("got status code: %d, want %d", resp.StatusCode, http.StatusOK)
 	}
-	gotBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatalf("unable to read body into bytes slice")
-	}
-	expectedBody := []byte(`{
-		"id": 1,
+	assertJSONEqual(t, resp.Body, `{
+		"id": "<<PRESENCE>>",
 		"name": "todo1",
 		"completed": null,
-		"userId": 1,
+		"userId": "<<PRESENCE>>",
 		"priority": {
 			"id": 2,
 			"name": "Normal",
 			"weight": 2
 		}
 	}`)
-	checkJSONEqual(t, gotBody, expectedBody)
 }
 
-func checkJSONEqual(t *testing.T, a, b []byte) {
-	var av, bv interface{}
-	if err := json.Unmarshal(a, &av); err != nil {
-		t.Fatalf("err comparing json %s", err.Error())
+func assertJSONEqual(t *testing.T, respBody io.ReadCloser, expected string) {
+	got, err := io.ReadAll(respBody)
+	if err != nil {
+		t.Fatalf("unable to read body into bytes slice")
 	}
-	if err := json.Unmarshal(b, &bv); err != nil {
-		t.Fatalf("err comparing json %s", err.Error())
-	}
-	if !reflect.DeepEqual(av, bv) {
-		t.Fatalf("%s, not equal to: %s", av, bv)
-	}
+	ja := jsonassert.New(t)
+	ja.Assertf(string(got), expected)
 }

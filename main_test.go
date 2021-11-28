@@ -29,13 +29,14 @@ func setupTest(t *testing.T) (*httptest.Server, func()) {
 	return testServer, teardown
 }
 
-func TestAddUser(t *testing.T) {
+func TestBehavior(t *testing.T) {
 	testServer, teardown := setupTest(t)
 	defer teardown()
 
 	addUser(t, testServer)
 	bearer := loginUser(t, testServer)
 	addTodo(t, testServer, bearer)
+	getPriorities(t, testServer, bearer)
 }
 
 func addUser(t *testing.T, testServer *httptest.Server) {
@@ -111,6 +112,38 @@ func addTodo(t *testing.T, testServer *httptest.Server, bearer string) {
 			"weight": 2
 		}
 	}`)
+}
+
+func getPriorities(t *testing.T, testServer *httptest.Server, bearer string) {
+	r, err := http.NewRequest("GET", testServer.URL+"/priorities", nil)
+	if err != nil {
+		t.Fatalf("err creating new request: %s", err.Error())
+	}
+	r.Header.Set("Authorization", bearer)
+	resp, err := http.DefaultClient.Do(r)
+	if err != nil {
+		t.Fatalf("err doing request: %s", err.Error())
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("got status code: %d, want %d", resp.StatusCode, http.StatusOK)
+	}
+	assertJSONEqual(t, resp.Body, `[
+		{
+			"id": 1,
+			"name": "Low",
+			"weight": 1
+		},
+		{
+			"id": 2,
+			"name": "Normal",
+			"weight": 2
+		},
+		{
+			"id": 3,
+			"name": "High",
+			"weight": 3
+		}
+	]`)
 }
 
 func assertJSONEqual(t *testing.T, respBody io.ReadCloser, expected string) {

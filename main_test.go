@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"database/sql"
+	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -37,7 +39,9 @@ func TestBehavior(t *testing.T) {
 	bearer := loginUser(t, testServer)
 	addTodo(t, testServer, bearer)
 	getPriorities(t, testServer, bearer)
-	getTodos(t, testServer, bearer)
+	firstTodoId := getTodos(t, testServer, bearer)
+	patchTodo(t, testServer, bearer, firstTodoId)
+	deleteTodo(t, testServer, bearer, firstTodoId)
 }
 
 func addUser(t *testing.T, testServer *httptest.Server) {
@@ -147,7 +151,7 @@ func getPriorities(t *testing.T, testServer *httptest.Server, bearer string) {
 	]`)
 }
 
-func getTodos(t *testing.T, testServer *httptest.Server, bearer string) {
+func getTodos(t *testing.T, testServer *httptest.Server, bearer string) int {
 	r, err := http.NewRequest("GET", testServer.URL+"/todos", nil)
 	if err != nil {
 		t.Fatalf("err creating new request: %s", err.Error())
@@ -160,7 +164,7 @@ func getTodos(t *testing.T, testServer *httptest.Server, bearer string) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("got status code: %d, want %d", resp.StatusCode, http.StatusOK)
 	}
-	assertJSONEqual(t, resp.Body, `[
+	respBody := assertJSONEqual(t, resp.Body, `[
 		{
 			"id": "<<PRESENCE>>",
 			"completed": null,
@@ -173,13 +177,58 @@ func getTodos(t *testing.T, testServer *httptest.Server, bearer string) {
 			}
 		}
 	]`)
+	type todoList struct {
+		ID int
+	}
+	td := []todoList{}
+	err = json.Unmarshal(respBody, &td)
+	if err != nil {
+		t.Fatalf("err unmarshaling response: %s", err.Error())
+	}
+	return td[0].ID
 }
 
-func assertJSONEqual(t *testing.T, respBody io.ReadCloser, expected string) {
+func patchTodo(t *testing.T, testServer *httptest.Server, bearer string, todoID int) {
+	url := fmt.Sprintf("%s/todos/%d", testServer.URL, todoID)
+	body := []byte(`{
+		"complete": true
+	}`)
+	r, err := http.NewRequest("PATCH", url, bytes.NewBuffer(body))
+	if err != nil {
+		t.Fatalf("err creating new request: %s", err.Error())
+	}
+	r.Header.Set("Authorization", bearer)
+	resp, err := http.DefaultClient.Do(r)
+	if err != nil {
+		t.Fatalf("err doing request: %s", err.Error())
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("got status code: %d, want %d", resp.StatusCode, http.StatusOK)
+	}
+}
+
+func deleteTodo(t *testing.T, testServer *httptest.Server, bearer string, todoID int) {
+	url := fmt.Sprintf("%s/todos/%d", testServer.URL, todoID)
+	r, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		t.Fatalf("err creating new request: %s", err.Error())
+	}
+	r.Header.Set("Authorization", bearer)
+	resp, err := http.DefaultClient.Do(r)
+	if err != nil {
+		t.Fatalf("err doing request: %s", err.Error())
+	}
+	if resp.StatusCode != http.StatusNoContent {
+		t.Fatalf("got status code: %d, want %d", resp.StatusCode, http.StatusNoContent)
+	}
+}
+
+func assertJSONEqual(t *testing.T, respBody io.ReadCloser, expected string) []byte {
 	got, err := io.ReadAll(respBody)
 	if err != nil {
 		t.Fatalf("unable to read body into bytes slice")
 	}
 	ja := jsonassert.New(t)
 	ja.Assertf(string(got), expected)
+	return got
 }

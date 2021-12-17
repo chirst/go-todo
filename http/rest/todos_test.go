@@ -3,7 +3,6 @@ package rest
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -57,39 +56,35 @@ func (s *mockTodoService) UpdatePriority(userID, todoID, priorityID int) error {
 }
 
 func TestGetTodos(t *testing.T) {
-	s := &mockTodoService{}
 	token, _, _ := auth.GetTokenForUser(1)
 	ctx := context.WithValue(context.Background(), jwtauth.TokenCtxKey, token)
+	r := httptest.NewRequest("GET", "/todos", nil).WithContext(ctx)
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest("GET", "/todos", nil)
-	r = r.WithContext(ctx)
+	s := &mockTodoService{}
 
 	GetTodos(s)(w, r)
 	resp := w.Result()
 
 	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
+		t.Fatalf("got %d, expected: %d", resp.StatusCode, http.StatusOK)
 	}
 }
 
 func TestAddTodo(t *testing.T) {
-	s := &mockTodoService{}
 	token, _, _ := auth.GetTokenForUser(1)
 	ctx := context.WithValue(context.Background(), jwtauth.TokenCtxKey, token)
-	buffer := new(bytes.Buffer)
-	todoBody := addTodoBody{
-		Name: "gud name",
-	}
-	json.NewEncoder(buffer).Encode(todoBody)
+	todoBody := []byte(`{
+		"name": "gud name"
+	}`)
+	r := httptest.NewRequest("GET", "/todos", bytes.NewBuffer(todoBody)).WithContext(ctx)
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest("GET", "/todos", buffer)
-	r = r.WithContext(ctx)
+	s := &mockTodoService{}
 
 	AddTodo(s)(w, r)
 	resp := w.Result()
 
 	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
+		t.Fatalf("got %d, expected: %d", resp.StatusCode, http.StatusOK)
 	}
 }
 
@@ -97,17 +92,12 @@ func TestPatchTodo(t *testing.T) {
 	t.Run("all", func(t *testing.T) {
 		s := &mockTodoService{}
 		w := httptest.NewRecorder()
-		buffer := &bytes.Buffer{}
-		n := "new name"
-		c := true
-		p := 2
-		ctb := patchTodoBody{
-			Complete:   &c,
-			Name:       &n,
-			PriorityID: &p,
-		}
-		json.NewEncoder(buffer).Encode(ctb)
-		r := httptest.NewRequest("PATCH", "/todos/1", buffer)
+		body := []byte(`{
+			"complete": true,
+			"name": "new name",
+			"priorityId": 2
+		}`)
+		r := httptest.NewRequest("PATCH", "/todos/1", bytes.NewBuffer(body))
 		rctx := chi.NewRouteContext()
 		rctx.URLParams.Add("todoID", "1")
 		r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
@@ -118,20 +108,17 @@ func TestPatchTodo(t *testing.T) {
 		resp := w.Result()
 
 		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
+			t.Fatalf("got %d, expected: %d", resp.StatusCode, http.StatusOK)
 		}
 	})
 
 	t.Run("without a key", func(t *testing.T) {
 		s := &mockTodoService{}
 		w := httptest.NewRecorder()
-		buffer := &bytes.Buffer{}
-		n := "new name"
-		ctb := patchTodoBody{
-			Name: &n,
-		}
-		json.NewEncoder(buffer).Encode(ctb)
-		r := httptest.NewRequest("PATCH", "/todos/1/complete", buffer)
+		body := []byte(`{
+			"name": "new name"
+		}`)
+		r := httptest.NewRequest("PATCH", "/todos/1/complete", bytes.NewBuffer(body))
 		rctx := chi.NewRouteContext()
 		rctx.URLParams.Add("todoID", "1")
 		r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
@@ -142,7 +129,7 @@ func TestPatchTodo(t *testing.T) {
 		resp := w.Result()
 
 		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
+			t.Fatalf("got %d, expected: %d", resp.StatusCode, http.StatusOK)
 		}
 	})
 }
@@ -161,7 +148,7 @@ func TestDeleteTodo(t *testing.T) {
 	resp := w.Result()
 
 	if resp.StatusCode != http.StatusNoContent {
-		t.Errorf("expected %#v, got: %#v", http.StatusNoContent, resp.StatusCode)
+		t.Errorf("got %d, expected: %d", resp.StatusCode, http.StatusNoContent)
 	}
 }
 
@@ -174,6 +161,6 @@ func TestGetPriorities(t *testing.T) {
 	resp := w.Result()
 
 	if resp.StatusCode != http.StatusOK {
-		t.Errorf("expected %#v, got: %#v", http.StatusOK, resp.StatusCode)
+		t.Errorf("got %d, expected: %d", resp.StatusCode, http.StatusOK)
 	}
 }

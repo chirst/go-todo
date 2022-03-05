@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  description: |-
+  description: >
     The purpose of this application is to manage collections of todos owned by
-    authenticated users
+    authenticated users.
   version: 1.0.0
   title: Todo API
 host: localhost
@@ -10,16 +10,15 @@ basePath: /
 schemes:
 - http
 tags:
-- name: "User"
-  description: |-
+- name: User
+  description: >
     The User API provides ways to login and sign up Users who can own
     collections of Todos.
-- name: "Todo"
-  description: |-
+- name: Todo
+  description: >
     The Todo API enables you to create, read, update, and delete Todos.
     Additionally, the Todo API offers actions to change the completion status of
     Todos.
-
 definitions:
   schemas:
     Todo:
@@ -31,11 +30,12 @@ definitions:
         name:
           type: string
           description: A short name or description of the Todo
-          example: "gud username"
+          example: Get stuff done
         completed:
           type: string
           format: date-time
-          description: Timestamp of when the Todo was completed or null if incomplete
+          description: >
+            Timestamp of when the Todo was completed or null if incomplete
         userId:
           type: integer
           description: The primary key of the user who owns this Todo
@@ -52,7 +52,7 @@ definitions:
           example: Normal
         weight:
           type: integer
-          description: An number to compare two priorities to each other. The
+          description: A number to compare two priorities to each other. The
             higher the number the more priority.
           example: 2
     User:
@@ -63,14 +63,17 @@ definitions:
           example: 1
         username:
           type: string
-          description: A unique human friendly name identifying the User. This name is used for authentication.
-          example: "gud username"
-
+          description: >
+            A unique human friendly name identifying the User. This name is
+            used for authentication.
+          example: gud username
 paths:
   /login:
     post:
       summary: Login a User
-      description: Login provides a way of gaining access to protected routes given valid credentials
+      description: >
+        Login provides a way of gaining access to protected routes given valid
+        credentials
       operationId: LoginUser
       consumes:
       - application/json
@@ -79,21 +82,21 @@ paths:
       tags:
       - User
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Login credentials"
+      - in: body
+        name: body
+        description: Login credentials
         required: true
         schema:
-          type: "object"
+          type: object
           properties:
             username:
-              type: "string"
-              example: "gud username"
+              type: string
+              example: gud username
               maxLength: 256
               description: Unique human readable identifier for a User
             password:
-              type: "string"
-              example: "passwordy1234"
+              type: string
+              example: passwordy1234
               maxLength: 256
               description: Secret key for authenticating a User
           required:
@@ -101,19 +104,20 @@ paths:
             - password
       responses:
         "200":
-          description: "Successfully logged in"
+          description: Successfully logged in
           schema:
             type: string
-            description: JSON web token valid for a limited time. Used to access protected resources.
+            description: >
+              JSON web token valid for a limited time. Used to access protected
+              resources.
         "400":
           description: Invalid login body
         "403":
           description: Invalid login credentials
-
   /todos:
     get:
       summary: Get all todos for the current User
-      description: |-
+      description: >
         Returns a list of all todos belonging to the current authenticated user.
       operationId: GetTodos
       produces:
@@ -122,12 +126,11 @@ paths:
       - Todo
       responses:
         "200":
-          description: "list of todos"
+          description: list of todos
           schema:
             type: array
             items:
-              $ref: '#/definitions/schemas/Todo'
-  /todos/{todoId}:
+              $ref: "#/definitions/schemas/Todo"
     post:
       summary: Add a single Todo
       description: Adds a todo belonging to the current authenticated user
@@ -139,21 +142,23 @@ paths:
       tags:
       - Todo
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Details of the Todo to be added"
+      - in: body
+        name: body
+        description: Details of the Todo to be added
         required: true
         schema:
-          type: "object"
+          type: object
           properties:
             name:
-              type: "string"
+              type: string
               description: A short name or description of the Todo
-              example: "Do some things"
+              example: Do some things
             completed:
-              type: "string"
+              type: string
               format: date-time
-              description: The time the Todo was completed. Pass null or exclude parameter if the Todo is incomplete
+              description: >
+                The time the Todo was completed. Pass null or exclude parameter
+                if the Todo is incomplete
             priorityId:
               type: integer
               description: The ID of the priority. The default is ID 2 or
@@ -164,12 +169,13 @@ paths:
             - name
       responses:
         "201":
-          description: "todo that was created"
+          description: todo that was created
           schema:
-            $ref: '#/definitions/schemas/Todo'
+            $ref: "#/definitions/schemas/Todo"
+  /todos/{todoId}:
     patch:
       summary: Update a single existing Todo
-      description: |-
+      description: >
         User owning the given Todo can optionally update one or many different
         properties of a single Todo matching the given todoId. Properties
         include completion status and the name.
@@ -181,21 +187,25 @@ paths:
       tags:
       - Todo
       parameters:
-      - in: "body"
-        name: "body"
-        description: "What properties to be updated"
+      - in: body
+        name: body
+        description: What properties to be updated
         required: true
         schema:
-          type: "object"
+          type: object
           properties:
             complete:
-              type: "bool"
-              description: "true to complete, false to incomplete, and omit to leave status alone."
+              type: bool
+              description: >
+                true to complete, false to incomplete, and omit to leave status
+                alone.
               example: true
             name:
-              type: "string"
-              format: "string"
-              description: "A short description of what the todo is. Omit to leave the name alone."
+              type: string
+              format: string
+              description: >
+                A short description of what the todo is. Omit to leave the name
+                alone.
             priorityId:
               type: integer
               description: The ID of the priority to change to. Omit to leave
@@ -203,7 +213,7 @@ paths:
               example: 1
     delete:
       summary: Delete a single Todo
-      description: |-
+      description: >
         Marks the Todo as deleted meaning the Todo will not be included on get
         requests
       operationId: DeleteTodo
@@ -213,12 +223,11 @@ paths:
       - Todo
       responses:
         "204":
-          description: "todo was successfully deleted"
+          description: todo was successfully deleted
   /priorities:
     get:
       summary: Get all priorities
-      description: |-
-        Returns a list of all the priorities.
+      description: Returns a list of all the priorities.
       operationId: GetPriorities
       produces:
       - application/json
@@ -226,12 +235,11 @@ paths:
       - Todo
       responses:
         "200":
-          description: "list of priorities"
+          description: list of priorities
           schema:
             type: array
             items:
-              $ref: '#/definitions/schemas/Priority'
-
+              $ref: "#/definitions/schemas/Priority"
   /users:
     post:
       summary: Create a new User
@@ -244,21 +252,21 @@ paths:
       tags:
       - User
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Details of the User to be added"
+      - in: body
+        name: body
+        description: Details of the User to be added
         required: true
         schema:
-          type: "object"
+          type: object
           properties:
             username:
-              type: "string"
-              example: "gud username"
+              type: string
+              example: gud username
               maxLength: 256
               description: Unique human readable identifier for a User
             password:
-              type: "string"
-              example: "passwordy1234"
+              type: string
+              example: passwordy1234
               maxLength: 256
               description: Secret key for authenticating a User
           required:
@@ -268,4 +276,4 @@ paths:
         "201":
           description: User that was created
           schema:
-            $ref: '#/definitions/schemas/User'
+            $ref: "#/definitions/schemas/User"

@@ -17,7 +17,7 @@ func main() {
 
 	var db *sql.DB
 	if !*inMemoryFlag {
-		db := database.InitDB()
+		db = database.InitDB()
 		defer db.Close()
 	}
 	router := server.GetRouter(db)

@@ -24,5 +24,8 @@ func main() {
 
 	address := config.ServerAddress()
 	log.Printf("server listening on %s\n", address)
-	http.ListenAndServe(address, router)
+	err := http.ListenAndServe(address, router)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

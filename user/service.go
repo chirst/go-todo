@@ -19,8 +19,8 @@ type Repository interface {
 	getUserByName(string) (*User, error)
 }
 
-// UserService defines a way of managing users.
-type UserService interface {
+// Service defines a way of managing users.
+type Service interface {
 	AddUser(u *User) (*User, error)
 	GetUserTokenString(username, password string) (*string, error)
 }
@@ -30,7 +30,7 @@ type service struct {
 }
 
 // NewService creates an instance of the users service.
-func NewService(r Repository) UserService {
+func NewService(r Repository) Service {
 	return &service{r}
 }
 

@@ -26,8 +26,8 @@ type Repository interface {
 	updatePriority(userID, todoID, priorityID int) error
 }
 
-// TodoService defines a way to manage todos.
-type TodoService interface {
+// Service defines a way to manage todos.
+type Service interface {
 	AddTodo(
 		name string,
 		completed *time.Time,
@@ -48,7 +48,7 @@ type service struct {
 }
 
 // NewService creates an instance of the TodoService.
-func NewService(r Repository) TodoService {
+func NewService(r Repository) Service {
 	return &service{r}
 }
 

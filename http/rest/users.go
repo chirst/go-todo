@@ -14,7 +14,7 @@ type addUserBody struct {
 }
 
 // AddUser adds a user
-func AddUser(s user.UserService) func(w http.ResponseWriter, r *http.Request) {
+func AddUser(s user.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := addUserBody{}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

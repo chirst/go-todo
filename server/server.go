@@ -17,6 +17,7 @@ import (
 	redoc "github.com/go-openapi/runtime/middleware"
 )
 
+// GetRouter configures the application router
 func GetRouter(db *sql.DB) http.Handler {
 	var todosRepo todo.Repository
 	var usersRepo user.Repository

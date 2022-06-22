@@ -72,7 +72,7 @@ type patchTodoBody struct {
 	PriorityID *int
 }
 
-// Patch todo updates the given optional fields of patchTodoBody
+// PatchTodo updates the given optional fields of patchTodoBody
 func PatchTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "todoID")
@@ -144,6 +144,7 @@ func DeleteTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request)
 	}
 }
 
+// GetPriorities returns all possible priorities.
 func GetPriorities(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ps, err := s.GetPriorities()

@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-txdb"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // Database driver for Postgres
 
 	"github.com/chirst/go-todo/config"
 )

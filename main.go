@@ -18,7 +18,12 @@ func main() {
 	var db *sql.DB
 	if !*inMemoryFlag {
 		db = database.InitDB()
-		defer db.Close()
+		defer func() {
+			err := db.Close()
+			if err != nil {
+				log.Print(err.Error())
+			}
+		}()
 	}
 	router := server.GetRouter(db)
 

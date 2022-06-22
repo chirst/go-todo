@@ -41,6 +41,10 @@ func AddUser(s user.UserService) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonUser)
+		_, err = w.Write(jsonUser)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "Unable to write response", http.StatusInternalServerError)
+		}
 	}
 }

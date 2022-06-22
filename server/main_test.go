@@ -12,7 +12,7 @@ func TestBehavior(t *testing.T) {
 	bearer := loginUser(t, ts)
 	addTodo(t, ts, bearer)
 	getPriorities(t, ts, bearer)
-	firstTodoId := getTodos(t, ts, bearer)
-	patchTodo(t, ts, bearer, firstTodoId)
-	deleteTodo(t, ts, bearer, firstTodoId)
+	firstTodoID := getTodos(t, ts, bearer)
+	patchTodo(t, ts, bearer, firstTodoID)
+	deleteTodo(t, ts, bearer, firstTodoID)
 }

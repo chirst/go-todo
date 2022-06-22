@@ -49,10 +49,22 @@ func TestGetTodos(t *testing.T) {
 	s := NewService(r)
 
 	defaultPriorityID := defaultPriority().id
-	s.AddTodo("do stuff", nil, 1, &defaultPriorityID)
-	s.AddTodo("do stuff", nil, 1, &defaultPriorityID)
-	s.AddTodo("do stuff", nil, 1, &defaultPriorityID)
-	s.AddTodo("gud todo", nil, 2, &defaultPriorityID)
+	_, err := s.AddTodo("do stuff", nil, 1, &defaultPriorityID)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	_, err = s.AddTodo("do stuff", nil, 1, &defaultPriorityID)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	_, err = s.AddTodo("do stuff", nil, 1, &defaultPriorityID)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	_, err = s.AddTodo("gud todo", nil, 2, &defaultPriorityID)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 
 	tests := map[string]struct {
 		userID         int
@@ -115,12 +127,12 @@ func TestIncompleteTodo(t *testing.T) {
 		t.Fatalf(err.Error())
 	}
 
-	incompletedTodo, err := r.getTodo(userID, addedTodo.id)
+	incompleteTodo, err := r.getTodo(userID, addedTodo.id)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
 
-	if incompletedTodo.completed != nil {
+	if incompleteTodo.completed != nil {
 		t.Fatalf("expected incomplete todo, got completed todo")
 	}
 }
@@ -211,13 +223,13 @@ func TestUpdatePriority(t *testing.T) {
 	s := NewService(r)
 
 	uid := 1
-	newPriorityId := 1
+	newPriorityID := 1
 	addedTodo, err := r.addTodo("todo1", nil, uid, defaultPriority())
 	if err != nil {
 		t.Errorf("failed to add todo")
 	}
 
-	err = s.UpdatePriority(uid, addedTodo.id, newPriorityId)
+	err = s.UpdatePriority(uid, addedTodo.id, newPriorityID)
 
 	if err != nil {
 		t.Errorf("got error: %#v, want no error", err.Error())
@@ -226,11 +238,11 @@ func TestUpdatePriority(t *testing.T) {
 	if err != nil {
 		t.Errorf("error getting saved todo")
 	}
-	if savedTd.priority.id != newPriorityId {
+	if savedTd.priority.id != newPriorityID {
 		t.Errorf(
 			"saved priorityID %#v, want priorityID %#v",
 			savedTd.priority.id,
-			newPriorityId,
+			newPriorityID,
 		)
 	}
 }

@@ -51,7 +51,10 @@ func TestAddUserHashesPassword(t *testing.T) {
 	if err != nil {
 		t.Errorf("unable to create user")
 	}
-	s.AddUser(nu)
+	_, err = s.AddUser(nu)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	u, err := userStorage.getUserByName(username)
 	if err != nil {

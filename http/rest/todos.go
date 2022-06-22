@@ -29,7 +29,11 @@ func GetTodos(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonTodos)
+		_, err = w.Write(jsonTodos)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "Unable to write response", http.StatusInternalServerError)
+		}
 	}
 }
 
@@ -62,7 +66,11 @@ func AddTodo(s todo.TodoService) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonTodo)
+		_, err = w.Write(jsonTodo)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "Unable to write response", http.StatusInternalServerError)
+		}
 	}
 }
 
@@ -160,6 +168,10 @@ func GetPriorities(s todo.TodoService) func(w http.ResponseWriter, r *http.Reque
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonPriorities)
+		_, err = w.Write(jsonPriorities)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "Unable to write response", http.StatusInternalServerError)
+		}
 	}
 }

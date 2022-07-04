@@ -90,7 +90,7 @@ func TestCompleteTodo(t *testing.T) {
 	r := new(MemoryRepository)
 	s := NewService(r)
 
-	var userID int = 1
+	userID := 1
 	addedTodo, err := r.addTodo("todo1", nil, userID, defaultPriority())
 	if err != nil {
 		t.Fatalf("failed to add todo")
@@ -183,7 +183,7 @@ func TestDeleteTodo(t *testing.T) {
 	r := &MemoryRepository{}
 	s := NewService(r)
 
-	var userID int = 1
+	userID := 1
 	addedTodo, err := r.addTodo("todo1", nil, userID, defaultPriority())
 	if err != nil {
 		t.Errorf("failed to add todo")

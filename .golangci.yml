@@ -5,11 +5,26 @@ run:
 linters:
   disable-all: true
   enable:
+    - deadcode
     - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    # - structcheck
+    - typecheck
+    - unused
+    - varcheck
     - goimports
     - golint
-    - govet
-    - staticcheck
+    - stylecheck
+    # - testpackage
+    # - wrapcheck
+    # - varnamelen
+
+linters-settings:
+  stylecheck:
+    checks: ["*", "-ST1000"]
 
 issues:
   exclude-use-default: false

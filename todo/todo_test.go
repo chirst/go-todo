@@ -58,7 +58,7 @@ func TestTodoToJSON(t *testing.T) {
 
 func TestTodosToJSON(t *testing.T) {
 	nt := MustNewTodo(1, "gud todo", nil, 2)
-	var ts Todos = Todos{nt}
+	ts := Todos{nt}
 
 	j, err := ts.ToJSON()
 

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -28,7 +29,7 @@ func TestNewUser(t *testing.T) {
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			_, got := NewUser(tc.id, tc.username, tc.password)
-			if tc.want != got {
+			if !errors.Is(tc.want, got) {
 				t.Fatalf("expected %#v, got %#v", tc.want, got)
 			}
 		})

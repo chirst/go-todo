@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
@@ -33,7 +34,7 @@ func TestNewTodo(t *testing.T) {
 				tc.userID,
 				tc.priority,
 			)
-			if tc.want != got {
+			if !errors.Is(tc.want, got) {
 				t.Fatalf("expected %#v, got %#v", tc.want, got)
 			}
 		})

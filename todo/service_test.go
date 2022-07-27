@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 	"time"
@@ -37,7 +38,7 @@ func TestAddTodo(t *testing.T) {
 			if !reflect.DeepEqual(tc.want, got) {
 				t.Fatalf("expected %#v, got: %#v", tc.want, got)
 			}
-			if tc.want2 != got2 {
+			if !errors.Is(tc.want2, got2) {
 				t.Fatalf("expected %#v, got %#v", tc.want2, got2)
 			}
 		})

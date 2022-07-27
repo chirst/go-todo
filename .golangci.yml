@@ -11,20 +11,23 @@ linters:
     - govet
     - ineffassign
     - staticcheck
-    # - structcheck
     - typecheck
     - unused
     - varcheck
     - goimports
-    - golint
+    - golint # replace with revive
     - stylecheck
     # - testpackage
-    # - wrapcheck
-    # - varnamelen
+    - lll
 
 linters-settings:
   stylecheck:
-    checks: ["*", "-ST1000"]
+    checks: [
+      "*",
+      "-ST1000" # disables package comment
+    ]
+  lll:
+    line-length: 100 # should probably be 80
 
 issues:
   exclude-use-default: false

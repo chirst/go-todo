@@ -47,7 +47,10 @@ func (s *service) AddUser(u *User) (*User, error) {
 // GetUserTokenString returns an auth token string for the first user matching
 // the given username and password. It returns nil and an error for anything
 // invalid.
-func (s *service) GetUserTokenString(username, password string) (*string, error) {
+func (s *service) GetUserTokenString(
+	username,
+	password string,
+) (*string, error) {
 	u, err := s.r.getUserByName(username)
 	if err != nil {
 		return nil, err

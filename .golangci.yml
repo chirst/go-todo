@@ -29,6 +29,19 @@ linters:
     - errname
     - errorlint
     - forcetypeassert
+    # - goerr113
+    - gofmt
+    # - gofumpt
+    # - gosec
+    # - ifshort
+    # - ireturn
+    # - rowserrcheck
+    # - sqlclosecheck
+    - tagliatelle
+    - tenv
+    # - thelper
+    - unparam
+    - wastedassign
 
 linters-settings:
   stylecheck:

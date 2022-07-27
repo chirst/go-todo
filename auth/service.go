@@ -4,6 +4,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -76,12 +77,16 @@ func Authenticator(next http.Handler) http.Handler {
 }
 
 // GetUIDClaim gets the userID from claims.
-func GetUIDClaim(ctx context.Context) int {
+func GetUIDClaim(ctx context.Context) (*int, error) {
 	_, claims, _ := jwtauth.FromContext(ctx)
 	if t, ok := claims["userID"].(float64); ok {
-		return int(t)
+		ti := int(t)
+		return &ti, nil
 	}
-	return claims["userID"].(int)
+	if t, ok := claims["userID"].(int); ok {
+		return &t, nil
+	}
+	return nil, fmt.Errorf("failed to assert type of %v", claims["userID"])
 }
 
 // GetTokenForUser returns a token with the given claims.

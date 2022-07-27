@@ -21,13 +21,14 @@ linters:
     - lll
     - containedctx
     - contextcheck
-    - cyclop
+    # - cyclop
     - decorder
     - dogsled
     - durationcheck
     - errchkjson
     - errname
     - errorlint
+    - forcetypeassert
 
 linters-settings:
   stylecheck:

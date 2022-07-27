@@ -15,10 +15,18 @@ linters:
     - unused
     - varcheck
     - goimports
-    - golint # replace with revive
+    - revive
     - stylecheck
     # - testpackage
     - lll
+    - containedctx
+    - contextcheck
+    - cyclop
+    - decorder
+    - dogsled
+    - durationcheck
+    - errchkjson
+    - errname
 
 linters-settings:
   stylecheck:

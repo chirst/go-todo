@@ -21,7 +21,7 @@ linters:
     - lll
     - containedctx
     - contextcheck
-    # - cyclop
+    - cyclop
     - decorder
     - dogsled
     - durationcheck

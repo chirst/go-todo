@@ -111,7 +111,10 @@ type patchTodoBody struct {
 }
 
 // PatchTodo updates the given optional fields of patchTodoBody
-func PatchTodo(s todo.Service) func(w http.ResponseWriter, r *http.Request) {
+func PatchTodo(s todo.Service) func( // nolint:cyclop // TODO
+	w http.ResponseWriter,
+	r *http.Request,
+) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "todoID")
 		todoID, err := strconv.Atoi(id)

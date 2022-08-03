@@ -62,7 +62,10 @@ var registered bool
 // The returned function handles closing the database.
 func OpenTestDB(t *testing.T) (*sql.DB, func()) {
 	if os.Getenv("TEST_POSTGRES") == "" {
-		t.Skip("Skipped Postgres test. Define TEST_POSTGRES env variable to run postgres tests")
+		t.Skip(
+			"Skipped Postgres test. Define TEST_POSTGRES env variable to" +
+				"run postgres tests",
+		)
 	}
 	if !registered {
 		db := InitDB()

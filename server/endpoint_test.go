@@ -157,6 +157,10 @@ func deleteTodo(t *testing.T, ts *httptest.Server, bearer string, todoID int) {
 		t.Fatalf("err doing request: %s", err.Error())
 	}
 	if resp.StatusCode != http.StatusNoContent {
-		t.Fatalf("got status code: %d, want %d", resp.StatusCode, http.StatusNoContent)
+		t.Fatalf(
+			"got status code: %d, want %d",
+			resp.StatusCode,
+			http.StatusNoContent,
+		)
 	}
 }

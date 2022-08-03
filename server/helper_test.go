@@ -15,7 +15,11 @@ func makePost(
 	endpoint string,
 	body string,
 ) string {
-	r, err := http.NewRequest("POST", ts.URL+endpoint, bytes.NewBuffer([]byte(body)))
+	r, err := http.NewRequest(
+		"POST",
+		ts.URL+endpoint,
+		bytes.NewBuffer([]byte(body)),
+	)
 	if err != nil {
 		t.Fatalf("err creating new request: %s", err.Error())
 	}

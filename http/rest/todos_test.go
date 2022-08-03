@@ -43,7 +43,11 @@ func (s *mockTodoService) DeleteTodo(userID, todoID int) error {
 	return nil
 }
 
-func (s *mockTodoService) ChangeTodoName(userID, todoID int, name string) error {
+func (s *mockTodoService) ChangeTodoName(
+	userID,
+	todoID int,
+	name string,
+) error {
 	return nil
 }
 
@@ -76,7 +80,11 @@ func TestAddTodo(t *testing.T) {
 	todoBody := []byte(`{
 		"name": "gud name"
 	}`)
-	r := httptest.NewRequest("GET", "/todos", bytes.NewBuffer(todoBody)).WithContext(ctx)
+	r := httptest.NewRequest(
+		"GET",
+		"/todos",
+		bytes.NewBuffer(todoBody),
+	).WithContext(ctx)
 	w := httptest.NewRecorder()
 	s := &mockTodoService{}
 
@@ -102,7 +110,9 @@ func TestPatchTodo(t *testing.T) {
 		rctx.URLParams.Add("todoID", "1")
 		r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
 		token, _, _ := auth.GetTokenForUser(1)
-		r = r.WithContext(context.WithValue(r.Context(), jwtauth.TokenCtxKey, token))
+		r = r.WithContext(
+			context.WithValue(r.Context(), jwtauth.TokenCtxKey, token),
+		)
 
 		PatchTodo(s)(w, r)
 		resp := w.Result()
@@ -118,12 +128,18 @@ func TestPatchTodo(t *testing.T) {
 		body := []byte(`{
 			"name": "new name"
 		}`)
-		r := httptest.NewRequest("PATCH", "/todos/1/complete", bytes.NewBuffer(body))
+		r := httptest.NewRequest(
+			"PATCH",
+			"/todos/1/complete",
+			bytes.NewBuffer(body),
+		)
 		rctx := chi.NewRouteContext()
 		rctx.URLParams.Add("todoID", "1")
 		r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
 		token, _, _ := auth.GetTokenForUser(1)
-		r = r.WithContext(context.WithValue(r.Context(), jwtauth.TokenCtxKey, token))
+		r = r.WithContext(
+			context.WithValue(r.Context(), jwtauth.TokenCtxKey, token),
+		)
 
 		PatchTodo(s)(w, r)
 		resp := w.Result()
@@ -142,7 +158,9 @@ func TestDeleteTodo(t *testing.T) {
 	rctx.URLParams.Add("todoID", "1")
 	r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
 	token, _, _ := auth.GetTokenForUser(1)
-	r = r.WithContext(context.WithValue(r.Context(), jwtauth.TokenCtxKey, token))
+	r = r.WithContext(
+		context.WithValue(r.Context(), jwtauth.TokenCtxKey, token),
+	)
 
 	DeleteTodo(s)(w, r)
 	resp := w.Result()

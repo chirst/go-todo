@@ -20,13 +20,21 @@ func Login(s user.Service) func(w http.ResponseWriter, r *http.Request) {
 		err := json.NewDecoder(r.Body).Decode(&b)
 		if err != nil {
 			log.Print(err.Error())
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			http.Error(
+				w,
+				http.StatusText(http.StatusBadRequest),
+				http.StatusBadRequest,
+			)
 			return
 		}
 		tokenString, err := s.GetUserTokenString(b.Username, b.Password)
 		if err != nil {
 			log.Print(err.Error())
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+			http.Error(
+				w,
+				http.StatusText(http.StatusUnauthorized),
+				http.StatusUnauthorized,
+			)
 			return
 		}
 		w.Header().Set("Content-Type", "text/plain")

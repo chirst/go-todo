@@ -28,7 +28,11 @@ func TestPostgresGetTodos(t *testing.T) {
 			t.Errorf("getTodos(%v) returned err: %v", firstUserID, err)
 		}
 		if len(todos) != 1 {
-			t.Errorf("getTodos(%v) returned %v todos, want 1 todo", firstUserID, len(todos))
+			t.Errorf(
+				"getTodos(%v) returned %v todos, want 1 todo",
+				firstUserID,
+				len(todos),
+			)
 		}
 	})
 
@@ -52,7 +56,11 @@ func TestPostgresGetTodos(t *testing.T) {
 			t.Errorf("getTodos(%v) returned err: %v", userID, err)
 		}
 		if len(todos) != 2 {
-			t.Errorf("getTodos(%v) returned %v todos, want 2 todos", userID, len(todos))
+			t.Errorf(
+				"getTodos(%v) returned %v todos, want 2 todos",
+				userID,
+				len(todos),
+			)
 		}
 	})
 }
@@ -78,7 +86,10 @@ func TestPostgresGetTodo(t *testing.T) {
 		t.Fatalf("expected todo with id: %v, got todo with id: %v", todoID, todo.id)
 	}
 	if todo.priority.id != 2 {
-		t.Fatalf("expected todo with default priorityID of 2, got priorityID: %v", todo.priority.id)
+		t.Fatalf(
+			"expected todo with default priorityID of 2, got priorityID: %v",
+			todo.priority.id,
+		)
 	}
 }
 
@@ -111,7 +122,12 @@ func TestPostgresCompleteTodo(t *testing.T) {
 		err := r.completeTodo(userID, todoID)
 
 		if err != nil {
-			t.Errorf("completeTodo(%v, %v) err: %s", userID, todoID, err.Error())
+			t.Errorf(
+				"completeTodo(%v, %v) err: %s",
+				userID,
+				todoID,
+				err.Error(),
+			)
 		}
 
 		time := getTodoTime(t, db, todoID)
@@ -138,7 +154,8 @@ func TestPostgresCompleteTodo(t *testing.T) {
 
 		if err == nil {
 			t.Errorf(
-				"completeTodo(%v, %v) expected err todo id: %v owned by user id: %v",
+				"completeTodo(%v, %v) expected err todo id: %v owned by user"+
+					"id: %v",
 				secondUserID,
 				todoID,
 				todoID,
@@ -162,7 +179,12 @@ func TestPostgresIncompleteTodo(t *testing.T) {
 		err := r.incompleteTodo(userID, todoID)
 
 		if err != nil {
-			t.Errorf("incompleteTodo(%v, %v) err: %s", userID, todoID, err.Error())
+			t.Errorf(
+				"incompleteTodo(%v, %v) err: %s",
+				userID,
+				todoID,
+				err.Error(),
+			)
 		}
 
 		time := getTodoTime(t, db, todoID)
@@ -189,7 +211,8 @@ func TestPostgresIncompleteTodo(t *testing.T) {
 
 		if err == nil {
 			t.Errorf(
-				"incompleteTodo(%v, %v) expected err todo id: %v owned by user id: %v",
+				"incompleteTodo(%v, %v) expected err todo id: %v owned by"+
+					"user id: %v",
 				secondUserID,
 				todoID,
 				todoID,
@@ -217,11 +240,19 @@ func TestPostgresUpdateName(t *testing.T) {
 
 	updatedTodo, err := r.getTodo(userID, todoID)
 	if err != nil {
-		t.Fatalf("failed to lookup todo with userID: %v, todoID %v", userID, todoID)
+		t.Fatalf(
+			"failed to lookup todo with userID: %v, todoID %v",
+			userID,
+			todoID,
+		)
 	}
 
 	if updatedTodo.name != newName {
-		t.Fatalf("expected todo to have name: %s, got: %s", newName, updatedTodo.name)
+		t.Fatalf(
+			"expected todo to have name: %s, got: %s",
+			newName,
+			updatedTodo.name,
+		)
 	}
 }
 
@@ -243,7 +274,11 @@ func TestPostgresUpdatePriority(t *testing.T) {
 
 	updatedTodo, err := r.getTodo(userID, todoID)
 	if err != nil {
-		t.Fatalf("failed to lookup todo with userID: %v, todoID %v", userID, todoID)
+		t.Fatalf(
+			"failed to lookup todo with userID: %v, todoID %v",
+			userID,
+			todoID,
+		)
 	}
 
 	if updatedTodo.priority.id != newPriorityID {
@@ -296,7 +331,8 @@ func TestPostgresDeleteTodo(t *testing.T) {
 
 		if err == nil {
 			t.Errorf(
-				"deleteTodo(%v, %v) expected err todo id: %v owned by user id: %v",
+				"deleteTodo(%v, %v) expected err todo id: %v owned by user"+
+					"id: %v",
 				secondUserID,
 				todoID,
 				todoID,
@@ -363,7 +399,12 @@ func insertTodo(t *testing.T, r *PostgresRepository, userID int) int {
 
 func insertCompleteTodo(t *testing.T, r *PostgresRepository, userID int) int {
 	now := time.Now()
-	addedTodo, err := r.addTodo("complete todo", &now, userID, defaultPriority())
+	addedTodo, err := r.addTodo(
+		"complete todo",
+		&now,
+		userID,
+		defaultPriority(),
+	)
 	if err != nil {
 		t.Fatalf("unable to add todo")
 	}

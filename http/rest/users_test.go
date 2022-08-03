@@ -19,7 +19,10 @@ func (s *mockUserService) AddUser(_ *user.User) (*user.User, error) {
 	return u, nil
 }
 
-func (s *mockUserService) GetUserTokenString(username, password string) (*string, error) {
+func (s *mockUserService) GetUserTokenString(
+	username,
+	password string,
+) (*string, error) {
 	ts := "asdf33890fjxl;aksd"
 	return &ts, nil
 }

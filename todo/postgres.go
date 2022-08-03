@@ -178,7 +178,11 @@ func (r *PostgresRepository) updateName(userID, todoID int, name string) error {
 	return nil
 }
 
-func (r *PostgresRepository) updatePriority(userID, todoID, priorityID int) error {
+func (r *PostgresRepository) updatePriority(
+	userID,
+	todoID,
+	priorityID int,
+) error {
 	result, err := r.DB.Exec(`
 		UPDATE todo
 		SET priority_id = $3
@@ -233,7 +237,9 @@ func (r *PostgresRepository) getPriorities() (Priorities, error) {
 	return ps, nil
 }
 
-func (r *PostgresRepository) getPriority(priorityID int) (*priorityModel, error) {
+func (r *PostgresRepository) getPriority(
+	priorityID int,
+) (*priorityModel, error) {
 	row := r.DB.QueryRow(`
 		SELECT id, name, weight
 		FROM priority

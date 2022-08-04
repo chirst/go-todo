@@ -65,6 +65,9 @@ func (r *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 		}
 		userTodos = append(userTodos, t)
 	}
+	if err = rows.Err(); rows.Err() != nil {
+		return nil, err
+	}
 	return userTodos, nil
 }
 
@@ -233,6 +236,9 @@ func (r *PostgresRepository) getPriorities() (Priorities, error) {
 			return nil, err
 		}
 		ps = append(ps, p)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
 	}
 	return ps, nil
 }

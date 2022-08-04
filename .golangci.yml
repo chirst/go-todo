@@ -29,12 +29,11 @@ linters:
     - errorlint
     - forcetypeassert
     - gofmt
-    # - ireturn
-    # - rowserrcheck
+    - rowserrcheck
     # - sqlclosecheck
     - tagliatelle
     - tenv
-    # - thelper
+    - thelper
     - unparam
     - wastedassign
 

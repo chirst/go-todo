@@ -16,7 +16,7 @@ test-integration:
 
 # lint entire project
 lint:
-	golint ./...
+	$(shell go env GOPATH)/bin/golangci-lint run
 
 # docker
 run-services:

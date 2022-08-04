@@ -150,7 +150,11 @@ func (r *MemoryRepository) updateName(userID, todoID int, name string) error {
 	return nil
 }
 
-func (r *MemoryRepository) updatePriority(userID, todoID, priorityID int) error {
+func (r *MemoryRepository) updatePriority(
+	userID,
+	todoID,
+	priorityID int,
+) error {
 	t, err := r.getMemoryTodo(userID, todoID)
 	if err != nil {
 		return err
@@ -177,5 +181,9 @@ func (r *MemoryRepository) getMemoryTodo(userID, id int) (*memoryTodo, error) {
 			return &r.todos[i], nil
 		}
 	}
-	return nil, fmt.Errorf("no todo found with id: %v and userID: %v", id, userID)
+	return nil, fmt.Errorf(
+		"no todo found with id: %v and userID: %v",
+		id,
+		userID,
+	)
 }

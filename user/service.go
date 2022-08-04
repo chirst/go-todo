@@ -19,8 +19,8 @@ type Repository interface {
 	getUserByName(string) (*User, error)
 }
 
-// UserService defines a way of managing users.
-type UserService interface {
+// Service defines a way of managing users.
+type Service interface {
 	AddUser(u *User) (*User, error)
 	GetUserTokenString(username, password string) (*string, error)
 }
@@ -30,7 +30,7 @@ type service struct {
 }
 
 // NewService creates an instance of the users service.
-func NewService(r Repository) UserService {
+func NewService(r Repository) Service {
 	return &service{r}
 }
 
@@ -47,7 +47,10 @@ func (s *service) AddUser(u *User) (*User, error) {
 // GetUserTokenString returns an auth token string for the first user matching
 // the given username and password. It returns nil and an error for anything
 // invalid.
-func (s *service) GetUserTokenString(username, password string) (*string, error) {
+func (s *service) GetUserTokenString(
+	username,
+	password string,
+) (*string, error) {
 	u, err := s.r.getUserByName(username)
 	if err != nil {
 		return nil, err

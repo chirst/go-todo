@@ -1,0 +1,51 @@
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+
+linters:
+  disable-all: true
+  enable:
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - varcheck
+    - goimports
+    - revive
+    - stylecheck
+    - lll
+    - containedctx
+    - contextcheck
+    - cyclop
+    - decorder
+    - dogsled
+    - durationcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - forcetypeassert
+    - gofmt
+    - rowserrcheck
+    - sqlclosecheck
+    - tagliatelle
+    - tenv
+    - unparam
+    - wastedassign
+
+linters-settings:
+  stylecheck:
+    checks: [
+      "*",
+      "-ST1000" # disables package comment
+    ]
+  lll:
+    line-length: 80
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0

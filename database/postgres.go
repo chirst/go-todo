@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-txdb"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // Database driver for Postgres
 
 	"github.com/chirst/go-todo/config"
 )
@@ -59,13 +59,20 @@ func InitDB() *sql.DB {
 var registered bool
 
 // OpenTestDB returns a transactional database rolled back when it is closed.
-func OpenTestDB(t *testing.T) *sql.DB {
+// The returned function handles closing the database.
+func OpenTestDB(t *testing.T) (*sql.DB, func()) {
 	if os.Getenv("TEST_POSTGRES") == "" {
-		t.Skip("Skipped Postgres test. Define TEST_POSTGRES env variable to run postgres tests")
+		t.Skip(
+			"Skipped Postgres test. Define TEST_POSTGRES env variable to" +
+				"run postgres tests",
+		)
 	}
 	if !registered {
 		db := InitDB()
-		db.Close()
+		err := db.Close()
+		if err != nil {
+			t.Fatal(err.Error())
+		}
 		txdb.Register("txdb", "postgres", config.PostgresSourceName())
 		registered = true
 	}
@@ -73,5 +80,10 @@ func OpenTestDB(t *testing.T) *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return db
+	return db, func() {
+		err := db.Close()
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+	}
 }

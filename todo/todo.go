@@ -81,6 +81,7 @@ type todoJSON struct {
 	Priority  priorityJSON `json:"priority"`
 }
 
+// ToJSON serializes a list of todos to JSON
 func (ts *Todos) ToJSON() ([]byte, error) {
 	jts := []*todoJSON{}
 	for _, t := range *ts {
@@ -100,6 +101,7 @@ func (ts *Todos) ToJSON() ([]byte, error) {
 	return json.Marshal(jts)
 }
 
+// ToJSON serializes a single todo to JSON
 func (t *Todo) ToJSON() ([]byte, error) {
 	p := priorityJSON{
 		ID:     t.priority.id,
@@ -115,8 +117,10 @@ func (t *Todo) ToJSON() ([]byte, error) {
 	})
 }
 
+// Priority is the priority of a todo
 type Priority priorityModel
 
+// Priorities is a list of priority
 type Priorities []*priorityModel
 
 type priorityModel struct {
@@ -140,6 +144,7 @@ type priorityJSON struct {
 	Weight int    `json:"weight"`
 }
 
+// ToJSON serializes priorities to JSON
 func (p *Priorities) ToJSON() ([]byte, error) {
 	ps := []*priorityJSON{}
 	for _, priority := range *p {

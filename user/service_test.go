@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 )
@@ -34,7 +35,7 @@ func TestAddUser(t *testing.T) {
 					t.Fatalf("expected %#v, got: %#v", tc.want, got)
 				}
 			}
-			if tc.want2 != got2 {
+			if !errors.Is(tc.want2, got2) {
 				t.Fatalf("expected %#v, got %#v", tc.want2, got2)
 			}
 		})
@@ -51,7 +52,10 @@ func TestAddUserHashesPassword(t *testing.T) {
 	if err != nil {
 		t.Errorf("unable to create user")
 	}
-	s.AddUser(nu)
+	_, err = s.AddUser(nu)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	u, err := userStorage.getUserByName(username)
 	if err != nil {
@@ -107,7 +111,7 @@ func TestGetUserTokenString(t *testing.T) {
 			if reflect.TypeOf(tc.want) != reflect.TypeOf(got) {
 				t.Fatalf("expected %#v, got %#v", tc.want, got)
 			}
-			if tc.want2 != got2 {
+			if !errors.Is(tc.want2, got2) {
 				t.Fatalf("expected %#v, got %#v", tc.want2, got2)
 			}
 		})

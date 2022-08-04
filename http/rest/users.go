@@ -14,12 +14,16 @@ type addUserBody struct {
 }
 
 // AddUser adds a user
-func AddUser(s user.UserService) func(w http.ResponseWriter, r *http.Request) {
+func AddUser(s user.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := addUserBody{}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			log.Print(err.Error())
-			http.Error(w, "Unable to decode request body", http.StatusBadRequest)
+			http.Error(
+				w,
+				"Unable to decode request body",
+				http.StatusBadRequest,
+			)
 			return
 		}
 		newUser, err := user.NewUser(0, body.Username, body.Password)
@@ -37,10 +41,22 @@ func AddUser(s user.UserService) func(w http.ResponseWriter, r *http.Request) {
 		jsonUser, err := addedUser.ToJSON()
 		if err != nil {
 			log.Print(err.Error())
-			http.Error(w, "Unable to serialize added user", http.StatusInternalServerError)
+			http.Error(
+				w,
+				"Unable to serialize added user",
+				http.StatusInternalServerError,
+			)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonUser)
+		_, err = w.Write(jsonUser)
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(
+				w,
+				"Unable to write response",
+				http.StatusInternalServerError,
+			)
+		}
 	}
 }

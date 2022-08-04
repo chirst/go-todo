@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
@@ -33,7 +34,7 @@ func TestNewTodo(t *testing.T) {
 				tc.userID,
 				tc.priority,
 			)
-			if tc.want != got {
+			if !errors.Is(tc.want, got) {
 				t.Fatalf("expected %#v, got %#v", tc.want, got)
 			}
 		})
@@ -58,7 +59,7 @@ func TestTodoToJSON(t *testing.T) {
 
 func TestTodosToJSON(t *testing.T) {
 	nt := MustNewTodo(1, "gud todo", nil, 2)
-	var ts Todos = Todos{nt}
+	ts := Todos{nt}
 
 	j, err := ts.ToJSON()
 

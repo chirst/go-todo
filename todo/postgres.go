@@ -39,6 +39,9 @@ func (r *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 			JOIN priority p ON p.id = t.priority_id
 		WHERE t.user_id = $1 AND t.deleted IS NULL
 	`, userID)
+	defer func() {
+		err = rows.Close()
+	}()
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +68,10 @@ func (r *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 		}
 		userTodos = append(userTodos, t)
 	}
-	return userTodos, nil
+	if err = rows.Err(); rows.Err() != nil {
+		return nil, err
+	}
+	return userTodos, err
 }
 
 func (r *PostgresRepository) getTodo(userID, todoID int) (*Todo, error) {
@@ -178,7 +184,11 @@ func (r *PostgresRepository) updateName(userID, todoID int, name string) error {
 	return nil
 }
 
-func (r *PostgresRepository) updatePriority(userID, todoID, priorityID int) error {
+func (r *PostgresRepository) updatePriority(
+	userID,
+	todoID,
+	priorityID int,
+) error {
 	result, err := r.DB.Exec(`
 		UPDATE todo
 		SET priority_id = $3
@@ -218,6 +228,9 @@ func (r *PostgresRepository) deleteTodo(userID, todoID int) error {
 
 func (r *PostgresRepository) getPriorities() (Priorities, error) {
 	rows, err := r.DB.Query("SELECT id, name, weight FROM priority")
+	defer func() {
+		err = rows.Close()
+	}()
 	if err != nil {
 		return nil, err
 	}
@@ -230,10 +243,15 @@ func (r *PostgresRepository) getPriorities() (Priorities, error) {
 		}
 		ps = append(ps, p)
 	}
-	return ps, nil
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return ps, err
 }
 
-func (r *PostgresRepository) getPriority(priorityID int) (*priorityModel, error) {
+func (r *PostgresRepository) getPriority(
+	priorityID int,
+) (*priorityModel, error) {
 	row := r.DB.QueryRow(`
 		SELECT id, name, weight
 		FROM priority

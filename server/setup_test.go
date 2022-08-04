@@ -11,14 +11,15 @@ import (
 
 func setupTest(t *testing.T) (*httptest.Server, func()) {
 	var db *sql.DB
+	var teardownDB func()
 	if os.Getenv("TEST_POSTGRES") != "" {
-		db = database.OpenTestDB(t)
+		db, teardownDB = database.OpenTestDB(t)
 	}
 	router := GetRouter(db)
 	testServer := httptest.NewServer(router)
 	teardown := func() {
 		if db != nil {
-			db.Close()
+			teardownDB()
 		}
 		testServer.Close()
 	}

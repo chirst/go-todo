@@ -39,6 +39,9 @@ func (r *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 			JOIN priority p ON p.id = t.priority_id
 		WHERE t.user_id = $1 AND t.deleted IS NULL
 	`, userID)
+	defer func() {
+		err = rows.Close()
+	}()
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +71,7 @@ func (r *PostgresRepository) getTodos(userID int) ([]*Todo, error) {
 	if err = rows.Err(); rows.Err() != nil {
 		return nil, err
 	}
-	return userTodos, nil
+	return userTodos, err
 }
 
 func (r *PostgresRepository) getTodo(userID, todoID int) (*Todo, error) {
@@ -225,6 +228,9 @@ func (r *PostgresRepository) deleteTodo(userID, todoID int) error {
 
 func (r *PostgresRepository) getPriorities() (Priorities, error) {
 	rows, err := r.DB.Query("SELECT id, name, weight FROM priority")
+	defer func() {
+		err = rows.Close()
+	}()
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +246,7 @@ func (r *PostgresRepository) getPriorities() (Priorities, error) {
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
-	return ps, nil
+	return ps, err
 }
 
 func (r *PostgresRepository) getPriority(

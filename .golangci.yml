@@ -30,7 +30,7 @@ linters:
     - forcetypeassert
     - gofmt
     - rowserrcheck
-    # - sqlclosecheck
+    - sqlclosecheck
     - tagliatelle
     - tenv
     - thelper

@@ -33,7 +33,6 @@ linters:
     - sqlclosecheck
     - tagliatelle
     - tenv
-    - thelper
     - unparam
     - wastedassign
 

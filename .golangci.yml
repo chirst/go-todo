@@ -17,7 +17,6 @@ linters:
     - goimports
     - revive
     - stylecheck
-    # - testpackage
     - lll
     - containedctx
     - contextcheck
@@ -29,11 +28,7 @@ linters:
     - errname
     - errorlint
     - forcetypeassert
-    # - goerr113
     - gofmt
-    # - gofumpt
-    # - gosec
-    # - ifshort
     # - ireturn
     # - rowserrcheck
     # - sqlclosecheck

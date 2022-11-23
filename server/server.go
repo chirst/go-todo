@@ -37,7 +37,7 @@ func GetRouter(db *sql.DB) http.Handler {
 	router.Use(httprate.LimitByIP(100, time.Minute))
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"https://*", "http://*"},
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedMethods: []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{
 			"Accept",
 			"Authorization",

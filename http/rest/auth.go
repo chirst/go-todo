@@ -13,6 +13,10 @@ type loginBody struct {
 	Password string
 }
 
+type loginResponse struct {
+	Jwt string `json:"jwt"`
+}
+
 // Login returns an auth token for a valid login
 func Login(s user.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -37,8 +41,10 @@ func Login(s user.Service) func(w http.ResponseWriter, r *http.Request) {
 			)
 			return
 		}
-		w.Header().Set("Content-Type", "text/plain")
-		err = json.NewEncoder(w).Encode(tokenString)
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(loginResponse{
+			Jwt: *tokenString,
+		})
 		if err != nil {
 			log.Print(err.Error())
 			http.Error(

@@ -39,27 +39,22 @@ func addUser(t *testing.T, ts *httptest.Server) {
 }
 
 func loginUser(t *testing.T, ts *httptest.Server) string {
-	var body = []byte(`{
+	respBody := makePost(t, ts, "", "/login", `{
 		"username": "gud",
 		"password": "wordpass"
 	}`)
-	r, err := http.NewRequest("POST", ts.URL+"/login", bytes.NewBuffer(body))
+	jsonassert.New(t).Assertf(respBody, `{
+		"jwt": "<<PRESENCE>>"
+	}`)
+	type loginResponse struct {
+		Jwt string
+	}
+	lr := loginResponse{}
+	err := json.Unmarshal([]byte(respBody), &lr)
 	if err != nil {
-		t.Fatalf("err creating new request: %s", err.Error())
+		t.Fatalf("failed to unmarshal response %s", err.Error())
 	}
-	resp, err := http.DefaultClient.Do(r)
-	if err != nil {
-		t.Fatalf("err doing request: %s", err.Error())
-	}
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("got status code: %d, want %d", resp.StatusCode, http.StatusOK)
-	}
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatalf("failed to read login response body to bytes")
-	}
-	bs := string(b)
-	return "Bearer " + bs[1:len(bs)-2]
+	return "Bearer " + lr.Jwt
 }
 
 func addTodo(t *testing.T, ts *httptest.Server, bearer string) {

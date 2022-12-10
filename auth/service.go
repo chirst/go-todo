@@ -4,6 +4,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -38,42 +39,49 @@ func Authenticator(next http.Handler) http.Handler {
 
 		// Checks from the jwt.Authenticator to see if the token is valid
 		if err != nil {
-			log.Print(err.Error())
-			http.Error(
-				w,
-				http.StatusText(http.StatusUnauthorized),
-				http.StatusUnauthorized,
-			)
+			writeUnauthorized(&w, err.Error())
 			return
 		}
-		if token == nil || jwt.Validate(token) != nil {
-			log.Print(err.Error())
-			http.Error(
-				w,
-				http.StatusText(http.StatusUnauthorized),
-				http.StatusUnauthorized,
-			)
+		if token == nil {
+			writeUnauthorized(&w, "token is nil")
+			return
+		}
+		if err = jwt.Validate(token); err != nil {
+			writeUnauthorized(&w, err.Error())
 			return
 		}
 
 		// Check if token is expired.
-		e, ok := claims["expires"].(float64)
-		if !ok {
-			http.Error(
-				w,
-				"unauthorized failed to parse expiration",
-				http.StatusUnauthorized,
-			)
+		expiry, err := getExpiry(claims)
+		if err != nil {
+			writeUnauthorized(&w, err.Error())
 			return
 		}
-		if int64(e) < time.Now().Unix() {
-			http.Error(w, "unauthorized token expired", http.StatusUnauthorized)
+		if time.Now().Unix() > expiry {
+			writeUnauthorized(&w, "token expired")
 			return
 		}
 
 		// Token is authenticated, pass it through.
 		next.ServeHTTP(w, r)
 	})
+}
+
+func writeUnauthorized(w *http.ResponseWriter, message string) {
+	log.Print(message)
+	http.Error(
+		*w,
+		http.StatusText(http.StatusUnauthorized),
+		http.StatusUnauthorized,
+	)
+}
+
+func getExpiry(claims map[string]interface{}) (int64, error) {
+	e, ok := claims["expires"].(float64)
+	if !ok {
+		return 0, errors.New("unable to parse expires from claims")
+	}
+	return int64(e), nil
 }
 
 // GetUIDClaim gets the userID from claims.

@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/chirst/go-todo/auth"
 	"github.com/chirst/go-todo/todo"
 	"github.com/go-chi/chi"
 )
@@ -19,13 +18,8 @@ type todoGetter interface {
 // GetTodos returns all todos belonging to the current user
 func GetTodos(s todoGetter) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		uid, err := auth.GetUIDClaim(r.Context())
-		if err != nil {
-			log.Print(err.Error())
-			http.Error(w, "Unable to get user", http.StatusUnauthorized)
-			return
-		}
-		todos, err := s.GetTodos(*uid)
+		uid := getUserID(r)
+		todos, err := s.GetTodos(uid)
 		if err != nil {
 			log.Print(err.Error())
 			http.Error(w, "Unable to get todos", http.StatusInternalServerError)
@@ -82,13 +76,8 @@ func AddTodo(s todoAdder) func(w http.ResponseWriter, r *http.Request) {
 			)
 			return
 		}
-		uid, err := auth.GetUIDClaim(r.Context())
-		if err != nil {
-			log.Print(err.Error())
-			http.Error(w, "Unable to get user", http.StatusUnauthorized)
-			return
-		}
-		addedTodo, err := s.AddTodo(bt.Name, bt.Completed, *uid, bt.Priority)
+		uid := getUserID(r)
+		addedTodo, err := s.AddTodo(bt.Name, bt.Completed, uid, bt.Priority)
 		if err != nil {
 			log.Print(err.Error())
 			http.Error(w, "Unable to add todo", http.StatusInternalServerError)
@@ -131,7 +120,7 @@ type patchTodoBody struct {
 }
 
 // PatchTodo updates the given optional fields of patchTodoBody
-func PatchTodo(s todoPatcher) func( // nolint:cyclop // TODO
+func PatchTodo(s todoPatcher) func(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
@@ -144,12 +133,7 @@ func PatchTodo(s todoPatcher) func( // nolint:cyclop // TODO
 			return
 		}
 
-		uid, err := auth.GetUIDClaim(r.Context())
-		if err != nil {
-			log.Print(err.Error())
-			http.Error(w, "Unable to get user", http.StatusUnauthorized)
-			return
-		}
+		uid := getUserID(r)
 
 		body := patchTodoBody{}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -160,9 +144,9 @@ func PatchTodo(s todoPatcher) func( // nolint:cyclop // TODO
 
 		if body.Complete != nil {
 			if *body.Complete {
-				err = s.CompleteTodo(*uid, todoID)
+				err = s.CompleteTodo(uid, todoID)
 			} else {
-				err = s.IncompleteTodo(*uid, todoID)
+				err = s.IncompleteTodo(uid, todoID)
 			}
 			if err != nil {
 				log.Print(err.Error())
@@ -175,7 +159,7 @@ func PatchTodo(s todoPatcher) func( // nolint:cyclop // TODO
 		}
 
 		if body.Name != nil {
-			err = s.ChangeTodoName(*uid, todoID, *body.Name)
+			err = s.ChangeTodoName(uid, todoID, *body.Name)
 			if err != nil {
 				log.Print(err.Error())
 				http.Error(
@@ -187,7 +171,7 @@ func PatchTodo(s todoPatcher) func( // nolint:cyclop // TODO
 		}
 
 		if body.PriorityID != nil {
-			err = s.UpdatePriority(*uid, todoID, *body.PriorityID)
+			err = s.UpdatePriority(uid, todoID, *body.PriorityID)
 			if err != nil {
 				log.Print(err.Error())
 				http.Error(
@@ -214,13 +198,8 @@ func DeleteTodo(s todoDeleter) func(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "unable to delete todo", http.StatusBadRequest)
 			return
 		}
-		uid, err := auth.GetUIDClaim(r.Context())
-		if err != nil {
-			log.Print(err.Error())
-			http.Error(w, "Unable to get user", http.StatusUnauthorized)
-			return
-		}
-		err = s.DeleteTodo(*uid, id)
+		uid := getUserID(r)
+		err = s.DeleteTodo(uid, id)
 		if err != nil {
 			log.Print(err.Error())
 			http.Error(

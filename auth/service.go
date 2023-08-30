@@ -17,6 +17,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type uidType string
+
+const UIDKey uidType = "uid"
+
 var tokenAuth *jwtauth.JWTAuth
 
 func init() {
@@ -62,8 +66,21 @@ func Authenticator(next http.Handler) http.Handler {
 			return
 		}
 
-		// Token is authenticated, pass it through.
-		next.ServeHTTP(w, r)
+		uid, err := getUIDClaim(r.Context())
+		if err != nil {
+			log.Print(err.Error())
+			http.Error(w, "Unable to get user", http.StatusUnauthorized)
+			return
+		}
+		if uid == nil {
+			http.Error(w, "Unable to get user", http.StatusUnauthorized)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), UIDKey, *uid)
+		r2 := r.WithContext(ctx)
+
+		next.ServeHTTP(w, r2)
 	})
 }
 
@@ -84,8 +101,7 @@ func getExpiry(claims map[string]interface{}) (int64, error) {
 	return int64(e), nil
 }
 
-// GetUIDClaim gets the userID from claims.
-func GetUIDClaim(ctx context.Context) (*int, error) {
+func getUIDClaim(ctx context.Context) (*int, error) {
 	_, claims, _ := jwtauth.FromContext(ctx)
 	if t, ok := claims["userID"].(float64); ok {
 		ti := int(t)

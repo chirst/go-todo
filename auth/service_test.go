@@ -8,11 +8,11 @@ import (
 
 func TestAuthMiddleware(t *testing.T) {
 	next := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		uid, err := GetUIDClaim(r.Context())
-		if err != nil {
-			t.Errorf("failed to get uid %s", err.Error())
+		uid, ok := r.Context().Value(UIDKey).(int)
+		if !ok {
+			t.Errorf("type assertion is not ok")
 		}
-		if *uid != 1 {
+		if uid != 1 {
 			t.Errorf("expected uid to be 1, got %d", uid)
 		}
 	})

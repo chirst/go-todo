@@ -7,6 +7,16 @@ import (
 	"testing"
 )
 
+type mockTokenGetter struct{}
+
+func (s *mockTokenGetter) GetUserTokenString(
+	username,
+	password string,
+) (*string, error) {
+	ts := "asdf33890fjxl;aksd"
+	return &ts, nil
+}
+
 func TestLogin(t *testing.T) {
 	w := httptest.NewRecorder()
 	body := []byte(`{
@@ -14,7 +24,7 @@ func TestLogin(t *testing.T) {
 		"password": "1234"
 	}`)
 	r := httptest.NewRequest("POST", "/login", bytes.NewBuffer(body))
-	s := &mockUserService{}
+	s := &mockTokenGetter{}
 
 	Login(s)(w, r)
 	resp := w.Result()

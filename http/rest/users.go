@@ -8,13 +8,17 @@ import (
 	"github.com/chirst/go-todo/user"
 )
 
+type userAdder interface {
+	AddUser(u *user.User) (*user.User, error)
+}
+
 type addUserBody struct {
 	Username string
 	Password string
 }
 
 // AddUser adds a user
-func AddUser(s user.Service) func(w http.ResponseWriter, r *http.Request) {
+func AddUser(s userAdder) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := addUserBody{}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

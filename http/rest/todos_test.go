@@ -15,48 +15,11 @@ import (
 	"github.com/go-chi/jwtauth"
 )
 
-type mockTodoService struct{}
+type mockTodoGetter struct{}
 
-func (s *mockTodoService) GetTodos(userID int) (todo.Todos, error) {
+func (s *mockTodoGetter) GetTodos(userID int) (todo.Todos, error) {
 	ts := todo.Todos{}
 	return ts, nil
-}
-
-func (s *mockTodoService) AddTodo(
-	name string,
-	completed *time.Time,
-	userID int,
-	priorityID *int,
-) (*todo.Todo, error) {
-	return todo.MustNewTodo(1, "gud todo", nil, 1), nil
-}
-
-func (s *mockTodoService) CompleteTodo(userID int, todoID int) error {
-	return nil
-}
-
-func (s *mockTodoService) IncompleteTodo(userID int, todoID int) error {
-	return nil
-}
-
-func (s *mockTodoService) DeleteTodo(userID, todoID int) error {
-	return nil
-}
-
-func (s *mockTodoService) ChangeTodoName(
-	userID,
-	todoID int,
-	name string,
-) error {
-	return nil
-}
-
-func (s *mockTodoService) GetPriorities() (todo.Priorities, error) {
-	return todo.Priorities{}, nil
-}
-
-func (s *mockTodoService) UpdatePriority(userID, todoID, priorityID int) error {
-	return nil
 }
 
 func TestGetTodos(t *testing.T) {
@@ -64,7 +27,7 @@ func TestGetTodos(t *testing.T) {
 	ctx := context.WithValue(context.Background(), jwtauth.TokenCtxKey, token)
 	r := httptest.NewRequest("GET", "/todos", nil).WithContext(ctx)
 	w := httptest.NewRecorder()
-	s := &mockTodoService{}
+	s := &mockTodoGetter{}
 
 	GetTodos(s)(w, r)
 	resp := w.Result()
@@ -72,6 +35,17 @@ func TestGetTodos(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("got %d, expected: %d", resp.StatusCode, http.StatusOK)
 	}
+}
+
+type mockTodoAdder struct{}
+
+func (s *mockTodoAdder) AddTodo(
+	name string,
+	completed *time.Time,
+	userID int,
+	priorityID *int,
+) (*todo.Todo, error) {
+	return todo.MustNewTodo(1, "gud todo", nil, 1), nil
 }
 
 func TestAddTodo(t *testing.T) {
@@ -86,7 +60,7 @@ func TestAddTodo(t *testing.T) {
 		bytes.NewBuffer(todoBody),
 	).WithContext(ctx)
 	w := httptest.NewRecorder()
-	s := &mockTodoService{}
+	s := &mockTodoAdder{}
 
 	AddTodo(s)(w, r)
 	resp := w.Result()
@@ -96,9 +70,31 @@ func TestAddTodo(t *testing.T) {
 	}
 }
 
+type mockTodoPatcher struct{}
+
+func (s *mockTodoPatcher) UpdatePriority(userID, todoID, priorityID int) error {
+	return nil
+}
+
+func (s *mockTodoPatcher) CompleteTodo(userID int, todoID int) error {
+	return nil
+}
+
+func (s *mockTodoPatcher) IncompleteTodo(userID int, todoID int) error {
+	return nil
+}
+
+func (s *mockTodoPatcher) ChangeTodoName(
+	userID,
+	todoID int,
+	name string,
+) error {
+	return nil
+}
+
 func TestPatchTodo(t *testing.T) {
 	t.Run("all", func(t *testing.T) {
-		s := &mockTodoService{}
+		s := &mockTodoPatcher{}
 		w := httptest.NewRecorder()
 		body := []byte(`{
 			"complete": true,
@@ -123,7 +119,7 @@ func TestPatchTodo(t *testing.T) {
 	})
 
 	t.Run("without a key", func(t *testing.T) {
-		s := &mockTodoService{}
+		s := &mockTodoPatcher{}
 		w := httptest.NewRecorder()
 		body := []byte(`{
 			"name": "new name"
@@ -150,8 +146,14 @@ func TestPatchTodo(t *testing.T) {
 	})
 }
 
+type mockTodoDeleter struct{}
+
+func (s *mockTodoDeleter) DeleteTodo(userID, todoID int) error {
+	return nil
+}
+
 func TestDeleteTodo(t *testing.T) {
-	s := &mockTodoService{}
+	s := &mockTodoDeleter{}
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("DELETE", "/todos/1", nil)
 	rctx := chi.NewRouteContext()
@@ -170,8 +172,14 @@ func TestDeleteTodo(t *testing.T) {
 	}
 }
 
+type mockPriorityGetter struct{}
+
+func (s *mockPriorityGetter) GetPriorities() (todo.Priorities, error) {
+	return todo.Priorities{}, nil
+}
+
 func TestGetPriorities(t *testing.T) {
-	s := &mockTodoService{}
+	s := &mockPriorityGetter{}
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/priorities", nil)
 

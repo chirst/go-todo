@@ -12,8 +12,12 @@ import (
 	"github.com/go-chi/chi"
 )
 
+type todoGetter interface {
+	GetTodos(userID int) (todo.Todos, error)
+}
+
 // GetTodos returns all todos belonging to the current user
-func GetTodos(s todo.Service) func(w http.ResponseWriter, r *http.Request) {
+func GetTodos(s todoGetter) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uid, err := auth.GetUIDClaim(r.Context())
 		if err != nil {
@@ -50,6 +54,15 @@ func GetTodos(s todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type todoAdder interface {
+	AddTodo(
+		name string,
+		completed *time.Time,
+		userID int,
+		priorityID *int,
+	) (*todo.Todo, error)
+}
+
 type addTodoBody struct {
 	Name      string
 	Completed *time.Time
@@ -57,7 +70,7 @@ type addTodoBody struct {
 }
 
 // AddTodo adds a todo for the current user
-func AddTodo(s todo.Service) func(w http.ResponseWriter, r *http.Request) {
+func AddTodo(s todoAdder) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		bt := addTodoBody{}
 		if err := json.NewDecoder(r.Body).Decode(&bt); err != nil {
@@ -104,6 +117,13 @@ func AddTodo(s todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type todoPatcher interface {
+	UpdatePriority(userID, todoID, priorityID int) error
+	CompleteTodo(userID, todoID int) error
+	IncompleteTodo(userID, todoID int) error
+	ChangeTodoName(userID, todoID int, name string) error
+}
+
 type patchTodoBody struct {
 	Complete   *bool
 	Name       *string
@@ -111,7 +131,7 @@ type patchTodoBody struct {
 }
 
 // PatchTodo updates the given optional fields of patchTodoBody
-func PatchTodo(s todo.Service) func( // nolint:cyclop // TODO
+func PatchTodo(s todoPatcher) func( // nolint:cyclop // TODO
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
@@ -180,8 +200,12 @@ func PatchTodo(s todo.Service) func( // nolint:cyclop // TODO
 	}
 }
 
+type todoDeleter interface {
+	DeleteTodo(userID, todoID int) error
+}
+
 // DeleteTodo deletes todo with the given id
-func DeleteTodo(s todo.Service) func(w http.ResponseWriter, r *http.Request) {
+func DeleteTodo(s todoDeleter) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todoID := chi.URLParam(r, "todoID")
 		id, err := strconv.Atoi(todoID)
@@ -211,8 +235,12 @@ func DeleteTodo(s todo.Service) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type priorityGetter interface {
+	GetPriorities() (todo.Priorities, error)
+}
+
 // GetPriorities returns all possible priorities.
-func GetPriorities(s todo.Service) func(
+func GetPriorities(s priorityGetter) func(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {

@@ -84,10 +84,6 @@ working on this:
 - Database details should not leak into application logic.
 - Try to comment data structures and public members.
 - Probably forgetting the rest.
-- Write good code.
-- Don't write bad code.
-- End up writing bad code anyways and feel bad.
-- README should have emojis.
 
 ## :pray: Credit
 
@@ -104,3 +100,4 @@ Here are some things that inspired this project in some way:
 * https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design
 * https://docs.docker.com/language/golang/
 * https://www.youtube.com/watch?v=poejKP1wTpc
+* https://jrock.us/posts/go-interfaces/

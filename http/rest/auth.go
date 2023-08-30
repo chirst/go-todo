@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
-	"github.com/chirst/go-todo/user"
 )
+
+type tokenGetter interface {
+	GetUserTokenString(username, password string) (*string, error)
+}
 
 type loginBody struct {
 	Username string
@@ -18,7 +20,7 @@ type loginResponse struct {
 }
 
 // Login returns an auth token for a valid login
-func Login(s user.Service) func(w http.ResponseWriter, r *http.Request) {
+func Login(s tokenGetter) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		b := loginBody{}
 		err := json.NewDecoder(r.Body).Decode(&b)

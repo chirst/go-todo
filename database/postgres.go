@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -29,7 +28,7 @@ func InitDB() *sql.DB {
 	}
 	d := path.Join(path.Dir(b))
 	rootPath := filepath.Dir(d)
-	files, err := ioutil.ReadDir(path.Join(
+	files, err := os.ReadDir(path.Join(
 		rootPath,
 		"database",
 		"migrations",
@@ -39,7 +38,7 @@ func InitDB() *sql.DB {
 	}
 	for _, f := range files {
 		log.Printf("starting migration: %s\n", f.Name())
-		q, err := ioutil.ReadFile(path.Join(
+		q, err := os.ReadFile(path.Join(
 			rootPath,
 			"database",
 			"migrations",
